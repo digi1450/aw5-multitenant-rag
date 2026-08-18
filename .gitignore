@@ -1,0 +1,30 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# macOS and editor files
+.DS_Store
+**/.DS_Store
+.vscode/
+.idea/
+
+# Temporary and generated files
+tmp/
+.memory-staging/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+build/
+
+# Private Nature Footprint corpus
+# Publication permission has not been established.
+knowledge_base/nature_footprint/sources/
+knowledge_base/nature_footprint/derived/
+
