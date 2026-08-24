@@ -10,3 +10,9 @@ After a meaningful workflow change:
 4. Commit the export together with a short note describing the tested change.
 
 Do not place provider API keys or private corpus files in this directory.
+
+## Custom model plugins
+
+Custom model plugins are maintained in separate Git repositories. A local plugin
+checkout may be placed under `dify/plugins/`, but that directory, generated
+`.difypkg` files, and local `.env` credentials are excluded from this repository.

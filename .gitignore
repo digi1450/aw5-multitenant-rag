@@ -22,9 +22,15 @@ __pycache__/
 node_modules/
 dist/
 build/
+*.difypkg
+/output/
+/test_*.pdf
+/test_*.html
+
+# Custom Dify plugins are maintained in separate Git repositories.
+/dify/plugins/
 
 # Private Nature Footprint corpus
 # Publication permission has not been established.
 knowledge_base/nature_footprint/sources/
 knowledge_base/nature_footprint/derived/
-

@@ -30,3 +30,4 @@ The GitHub repository must remain **Private** while student information and cour
 
 The running Dify application is maintained separately from this repository. Export its DSL/YAML after meaningful workflow changes and store the export under `dify/exports/`; never commit API keys or provider credentials.
 
+Custom Dify plugins are maintained in separate Git repositories and are not versioned in this repository.
