@@ -6,8 +6,10 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 - DS1 Project Concept submitted.
 - Nature Footprint corpus prepared locally for controlled RAG experiments.
-- Dify knowledge bases and an initial retrieval workflow configured.
-- DS2 scope, requirements specification, mockup, and evaluation set are the next deliverables.
+- Dify source-routed Chatflow draft configured with separate TOR, SDS, and ER retrieval paths.
+- Current verified draft export: `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`; see `dify/exports/CURRENT.md` for its hash and frozen settings.
+- Full currently executable evaluation: strict pass `19/19`; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`.
+- The verified workflow remains a Dify draft and is not Published. `ISO-01` remains N/A until a Project B fixture and trusted tenant/project filter exist.
 
 ## Repository structure
 
@@ -28,6 +30,6 @@ The GitHub repository must remain **Private** while student information and cour
 
 ## Dify workflow
 
-The running Dify application is maintained separately from this repository. Export its DSL/YAML after meaningful workflow changes and store the export under `dify/exports/`; never commit API keys or provider credentials.
+The running Dify application is maintained separately from this repository. Export its DSL/YAML after meaningful workflow changes and store the export under `dify/exports/`; never commit API keys or provider credentials. `dify/exports/CURRENT.md` identifies the repository snapshot that should be used for continuation.
 
 Custom Dify plugins are maintained in separate Git repositories and are not versioned in this repository.

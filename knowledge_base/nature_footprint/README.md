@@ -21,7 +21,7 @@ nature_footprint/
 ├── sources/          Original, byte-preserved source copies
 ├── derived/text/     Reproducible plain-text extractions
 ├── notes/            Corpus profile and ingestion cautions
-└── evaluation/       Candidate questions; not yet a scored gold dataset
+└── evaluation/       Versioned evaluation suite, run templates, and scored evidence
 ```
 
 ## Important boundaries
@@ -41,4 +41,3 @@ Use this corpus for a controlled proof of concept:
 3. Retrieve the relevant tables and relationships from `er-dbdiagram.txt`.
 4. Verify that all results are scoped to the Nature Footprint project.
 5. Record document, page/section, and chunk provenance for every answer.
-

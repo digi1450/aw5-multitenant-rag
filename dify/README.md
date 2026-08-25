@@ -11,6 +11,10 @@ After a meaningful workflow change:
 
 Do not place provider API keys or private corpus files in this directory.
 
+The current verified repository snapshot and validation evidence are recorded in
+`exports/CURRENT.md`. Consult that pointer instead of inferring the latest workflow
+from filenames alone.
+
 ## Custom model plugins
 
 Custom model plugins are maintained in separate Git repositories. A local plugin
