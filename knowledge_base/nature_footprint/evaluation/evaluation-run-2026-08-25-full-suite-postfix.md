@@ -3,7 +3,7 @@
 ## Run status
 
 - Run ID: `full-suite-postfix-2026-08-25`
-- Status: **scored evaluation and final DSL capture complete; repository handoff pending**
+- Status: **scored evaluation and final DSL capture complete; repository handoff completed in commit `64418f8`**
 - Retrieval: Weighted Score, semantic `0.5` / keyword `0.5`, rerank disabled
 - Top K: TOR `3`, SDS `3`, ER `6`
 - Verified workflow export: `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`

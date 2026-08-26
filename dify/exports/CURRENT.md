@@ -34,4 +34,4 @@ Do not treat either previous snapshot as the current workflow.
 - Final live-draft evaluation: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`; strict pass `19/19` scored cases
 - The Dify UI showed the improved workflow as an Auto-Saved draft while the Published version remained older
 - `ISO-01` remains N/A until a Project B fixture and trusted tenant/project filter exist; do not call tenant isolation complete
-- This final export and the full-suite evidence are not committed or pushed yet; check current git evidence before claiming repository completion
+- Repository handoff for this snapshot and its full-suite evidence was completed on `origin/main` in commit `64418f8` (`feat: finalize AW5 RAG source-routing workflow`). This confirms the Git snapshot, not the current Dify Cloud Published state.

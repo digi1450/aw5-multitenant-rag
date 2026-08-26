@@ -28,9 +28,19 @@ nature_footprint/
 
 - The source files are preserved without modification. Their SHA-256 checksums are recorded in `manifest.json`.
 - Extracted text is derived data and may be regenerated.
-- No embeddings or vector index are committed yet. Those decisions belong after the DS2 scope and requirements are agreed.
+- Dify Cloud knowledge bases and hosted vector indexes were used for the recorded RAG evaluation. Embeddings and vector-index data are not committed to this repository and cannot be reconstructed from Git alone without recreating the Dify knowledge bases.
 - Permission to publish or distribute these documents has not been established. Treat the corpus as private project material unless the owner confirms otherwise.
 - The TOR extraction contains legacy Thai glyph/encoding artifacts. The ER diagram extraction does not preserve visual reading order reliably.
+
+## Dify ingestion files
+
+The local `output/pdf/` directory is generated/private and excluded from Git. The files used for the current Dify knowledge bases are:
+
+- `output/pdf/Attach_TOR_1.pdf` — cleaned/OCR-ready TOR, renamed to the original user-facing filename so questions and citations match `Attach_TOR_1.pdf`.
+- `output/pdf/System Design Specification.pdf` — cleaned/OCR-ready SDS, renamed to the user-facing filename used in Dify and citations.
+- `knowledge_base/nature_footprint/sources/er-dbdiagram.txt` — structured ER/dbdiagram source used directly as `ER_dbdiagram.txt`; it does not require OCR or PDF noise removal.
+
+The byte-preserved originals remain under the private `sources/` directory. Do not replace provenance sources with cleaned outputs or commit either private directory without explicit publication permission.
 
 ## Recommended first use
 
