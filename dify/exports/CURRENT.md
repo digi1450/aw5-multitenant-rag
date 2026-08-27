@@ -1,5 +1,17 @@
 # AW5-RAG Dify Export Pointer
 
+## Latest experimental candidate
+
+- File: `aw5-rag-route-guard-candidate-2026-08-27.yml`
+- SHA-256: `52a4598dad3f2d56d5deee5f058bf5fdfce82a43523d050b858b66d9b2864754`
+- Exported from: Dify Cloud test app on 2026-08-27 Asia/Bangkok
+- Validated graph: 19 nodes / 23 edges
+- Changes from the frozen baseline: conditional retrieval branches, deterministic `ROUTE GUARD`, fail-closed blank/generic queries, and ER Top K 7
+- Validation: YAML/graph/source wiring passed; manual seven-question Preview smoke test passed after correcting the `TOR` token-boundary rule
+- Status: **experimental candidate; full 19-case regression has not been rerun after the final Route Guard and ER Top K 7 changes**
+
+Use this candidate when continuing the current conditional-gating experiment. Do not treat it as the verified correctness baseline or promote it over the snapshot below until the full executable suite passes. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
+
 ## Current verified draft snapshot
 
 - File: `aw5-rag-source-routing-final-2026-08-25.yml`
@@ -8,7 +20,7 @@
 - Validated graph: 9 nodes / 10 edges
 - Status: **verified final draft snapshot; not Published**
 
-Use this file as the current workflow reference when reviewing, comparing, or continuing AW5-RAG work. It contains the LLM prompt revisions and retrieval settings used for the final `19/19` scored evaluation.
+Use this file as the verified correctness and rollback reference. It contains the LLM prompt revisions and retrieval settings used for the final `19/19` scored evaluation.
 
 ## Frozen configuration evidence
 
@@ -25,8 +37,9 @@ Use this file as the current workflow reference when reviewing, comparing, or co
 - `aw5-rag-baseline-2026-08-25.yml` — original baseline before prompt/workflow tuning
 - `aw5-rag-pre-source-routing-2026-08-25.yml` — rollback point immediately before source-specific routing changes
 - `aw5-rag-source-routing-postfix-2026-08-25.yml` — earlier source-routing draft before the final prompt revisions
+- `aw5-rag-conditional-gating-test-2026-08-27.yml` — first generated gating candidate before the final live Route Guard export
 
-Do not treat either previous snapshot as the current workflow.
+Do not treat these historical snapshots as the latest candidate or the verified baseline.
 
 ## Evidence and boundaries
 

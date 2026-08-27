@@ -4,9 +4,9 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 ## Current status
 
-Last verified: **2026-08-26** from repository evidence. The Dify Cloud live state was last inspected on **2026-08-25**.
+Last verified: **2026-08-27** from repository and owner-supplied Dify Preview evidence. The current Dify Cloud candidate was exported on **2026-08-27**.
 
-Current phase: **RAG baseline frozen; tenant/project isolation pending**.
+Current phase: **RAG baseline frozen; conditional-gating candidate under regression; tenant/project isolation pending**.
 
 Verified:
 
@@ -16,20 +16,22 @@ Verified:
 - The current verified export is `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`; `dify/exports/CURRENT.md` records its hash and frozen settings.
 - The full currently executable evaluation achieved strict pass `19/19`; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`.
 - The final export and its evaluation evidence are committed and available on `origin/main`.
+- The latest experimental export is `dify/exports/aw5-rag-route-guard-candidate-2026-08-27.yml`. It adds conditional retrieval, a deterministic Route Guard, fail-closed query checks, and ER Top K 7. Its structure and seven-question smoke test are verified, but it has not yet passed a fresh full 19-case regression after these final changes.
 
 Not yet verified or complete:
 
-- The improved workflow was last observed as a saved Dify draft, not Published. Recheck Dify Cloud before making a current live-state claim.
+- The verified `19/19` workflow was last observed as a saved Dify draft, not Published. Recheck Dify Cloud before making a current live-state claim about either app.
+- The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
 - `ISO-01` remains N/A until a Project B fixture and a trusted backend tenant/project filter exist.
 - Multi-tenant authorization, production deployment, frontend/backend implementation, and conversation-memory behavior are not complete or proven.
 
 Next priorities:
 
-1. Enforce trusted `tenant_id` and `project_id` authorization before retrieval.
-2. Add document metadata filtering and a synthetic Project B fixture.
-3. Run and record the `ISO-01` cross-project leakage test.
-4. Add deterministic insufficient-evidence handling before introducing retrieval fallback or reranking.
-5. Continue with the application API, authentication/authorization, and frontend after the isolation boundary is defined.
+1. Rerun the 19 executable RAG cases against the final Route Guard candidate and record routing, retrieval, answer, and citation precision.
+2. Keep the frozen `19/19` workflow as rollback until the candidate passes the full suite.
+3. Enforce trusted `tenant_id` and `project_id` authorization before retrieval.
+4. Add document metadata filtering, a synthetic Project B fixture, and execute `ISO-01`.
+5. Add deterministic insufficient-evidence handling before introducing retrieval fallback or reranking.
 
 ## Repository structure
 
