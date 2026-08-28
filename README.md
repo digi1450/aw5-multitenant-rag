@@ -4,7 +4,7 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 ## Current status
 
-Last verified: **2026-08-28** from repository artifacts and sanitized Dify Service API traces. The latest Production Core candidate was exported on **2026-08-28**.
+Last verified: **2026-08-28** from repository artifacts and sanitized Dify Service API traces. The latest live-tested Production Core candidate was exported on **2026-08-28**; a newer facet-contract candidate is locally validated but not yet imported or tested live.
 
 Current phase: **verified RAG baseline frozen; Production Core experiment isolated on `codex/rag-production-core-v1`; tenant/project isolation pending**.
 
@@ -16,7 +16,8 @@ Verified:
 - The current verified export is `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`; `dify/exports/CURRENT.md` records its hash and frozen settings.
 - The full currently executable evaluation achieved strict pass `19/19`; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`.
 - The final export and its evaluation evidence are committed and available on `origin/main`.
-- The latest experimental export is `dify/exports/aw5-rag-production-core-v1-coverage-candidate-2026-08-28.yml`. It contains 27 nodes / 32 edges and adds conditional retrieval, a deterministic Route Guard, evidence sufficiency, answer verification, deterministic final-answer coverage, and safe insufficient-evidence handling.
+- The latest live-tested experimental export is `dify/exports/aw5-rag-production-core-v1-coverage-candidate-2026-08-28.yml`. It contains 27 nodes / 32 edges and adds conditional retrieval, a deterministic Route Guard, evidence sufficiency, answer verification, deterministic final-answer coverage, and safe insufficient-evidence handling.
+- The next local candidate is `dify/exports/aw5-rag-production-core-v2-facet-contract-candidate-2026-08-28.yml`. It contains 28 nodes / 33 edges and adds an explicit request-facet contract plus per-facet evidence mapping. Its YAML, graph, selectors, embedded Code nodes, and local contract/coverage fixtures pass, but it has not been imported, Published, or evaluated through the Service API.
 - The Production Core candidate completed a targeted repeated test of `SDS-03` and `XDOC-02` with 10/10 successful executions and correct citations after verified visual extraction was added to the SDS knowledge base.
 - The latest full 19-case regression produced authoritative route matches and citation boundaries for 19/19 cases. Eight primary executions failed in Gemini provider/model calls and every case eventually obtained a successful execution through bounded provider retries.
 
@@ -30,8 +31,8 @@ Not yet verified or complete:
 
 Next priorities:
 
-1. Replace the fully LLM-generated final-answer term contract with a hybrid deterministic contract for exact identifiers, figures, sections, values, and high-risk security facets.
-2. Rerun the 19 executable cases with repeated controls and retain the frozen `19/19` workflow as rollback until the candidate passes consistently.
+1. Import the locally validated facet-contract v2 candidate into a Dify test app and confirm the Published node trace contains `REQUEST FACET CONTRACT`.
+2. Run `SDS-03` ten times, then the six-case risk suite, then all 19 executable cases; retain the frozen `19/19` workflow as rollback until the candidate passes consistently.
 3. Enforce trusted `tenant_id` and `project_id` authorization before retrieval.
 4. Add document metadata filtering, a synthetic Project B fixture, and execute `ISO-01`.
 5. Define provider retry/error handling separately from semantic RAG quality.

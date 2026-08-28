@@ -1,5 +1,18 @@
 # AW5-RAG Dify Export Pointer
 
+## Latest local Production Core candidate
+
+- File: `aw5-rag-production-core-v2-facet-contract-candidate-2026-08-28.yml`
+- SHA-256: `7bfc598f377a34d06315d9694a1b008bd51a18dcfe66e5b03d5a2c2c97fa8a08`
+- Source: generated from the owner-exported v1 coverage candidate by `../../scripts/build_dify_production_core_v2.rb`
+- Validated graph: 28 nodes / 33 edges
+- Branch: `codex/rag-production-core-v1`
+- Changes: adds `REQUEST FACET CONTRACT`, maps evidence to every requested facet, validates facet sources and request terms against the authoritative route, fails closed on missing/duplicate/unknown facet evidence, and checks final coverage per supported facet
+- Local validation: deterministic build hash; 67 selectors reference valid nodes; DAG validation passed; all embedded Code nodes compile; complete, missing-facet, and missing-answer-term fixtures passed; secret-pattern scan passed
+- Status: **locally validated candidate; not imported, Published, or evaluated live**
+
+Use the staged test order in `../../knowledge_base/nature_footprint/evaluation/evaluation-plan-2026-08-28-production-core-v2-facet-contract.md`. Do not promote this file until its Published Service API trace proves the new node executes and the repeated/full suites pass.
+
 ## Latest Production Core experiment
 
 - File: `aw5-rag-production-core-v1-coverage-candidate-2026-08-28.yml`
@@ -9,7 +22,7 @@
 - Branch: `codex/rag-production-core-v1`
 - Changes: conditional source gates, authoritative Route Guard, evidence sufficiency decision, normalized evidence contract, safe insufficient response, answer verifier, finalization, and deterministic final-answer coverage check
 - Validation: YAML/graph/wiring and secret-pattern checks passed; targeted repeated controls succeeded 10/10; full 19-case run matched authoritative routes and citation boundaries 19/19, but strict answer quality was 18/19 after provider-controlled retries
-- Status: **experimental candidate; not promoted over the verified 2026-08-25 baseline**
+- Status: **latest live-tested experimental candidate; not promoted over the verified 2026-08-25 baseline**
 
 The remaining semantic failure is `SDS-03`: one successful full-suite execution omitted the requested Audit Log events while the LLM-generated `required_answer_terms` list was incomplete, so the deterministic coverage node had no missing term to reject. The next design step is a hybrid contract that combines evidence-generated terms with deterministic anchors for high-risk exact facets. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-production-core-coverage.md`.
 
