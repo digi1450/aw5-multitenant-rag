@@ -46,9 +46,36 @@ START -> LLM 1 -> Route Queries
 
 Do not tune prompts, chunking, Top K, fallback, or reranking without a failing evaluation case and before/after evidence.
 
+## Primary RAG optimization challenge
+
+The main workflow challenge is to satisfy all three goals together:
+
+1. **Accurate and evidence-grounded answers** — answer every requested facet, avoid unsupported inference, and cite only the necessary trusted sources.
+2. **Low response latency** — measure end-to-end p50 and p95 latency, node latency, and provider stalls; do not judge speed from a single run or the mean alone.
+3. **Controlled API cost** — measure model calls, input/output tokens, and estimated price per question; avoid always-on LLM judges or verifiers when deterministic checks or conditional execution are sufficient.
+
+Correctness is the release gate, not a tradeable average. Among candidates that meet the same strict correctness and citation requirements, prefer the workflow with lower latency, lower cost, and less complexity. Provider availability and repeatability are a fourth operational constraint: record 429/503 errors, timeouts, retries, and repeated-run variance separately from semantic RAG failures.
+
+For workflow design and evaluation:
+
+- Keep the verified two-LLM baseline as the control until a candidate proves a better measured balance.
+- Default to the shortest safe path. Extra retrieval, judging, verification, or repair must run conditionally for a demonstrated risk or failure case.
+- Do not add a node, prompt rule, or model call without identifying the failure it addresses and recording before/after correctness, citation, latency, and token evidence.
+- A candidate is not better merely because it scores higher once; require repeatable results and report quality, speed, cost, and provider reliability together.
+- Do not call a workflow production-ready if it achieves accuracy by creating unacceptable latency or cost, or achieves speed by weakening evidence grounding, privacy, or tenant isolation.
+
 ## Current priority
 
-Preserve the working RAG baseline. The next system priority is trusted tenant/project isolation:
+The verified source-routing baseline (`dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`) is the **primary development base and performance control**. Production Core v1/v2 are experimental references, not the main line. Build the next lean adaptive candidate from the baseline and add only conditional mechanisms that address demonstrated failures while preserving the two-LLM fast path.
+
+Immediate workflow sequence:
+
+1. Use the 2026-08-28 baseline recheck as the current before-evidence.
+2. Address the demonstrated `ER-01`, `XDOC-02`, and `EDGE-03` semantic failures without always-on LLM judges/verifiers.
+3. Re-run the same 19 cases and compare strict quality, citation precision, p50/p95 latency, tokens, recorded price, and provider failures.
+4. Keep both the frozen baseline and safety-heavy Production Core artifacts available as controls; promote neither candidate without repeatable evidence.
+
+After the workflow quality/speed/cost balance is verified, continue the trusted tenant/project isolation priority:
 
 1. Resolve authorized tenant/project scope in the backend, not from user text or an untrusted frontend selection.
 2. Attach filterable tenant/project metadata to documents or datasets.

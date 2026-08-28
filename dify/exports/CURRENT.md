@@ -1,6 +1,18 @@
 # AW5-RAG Dify Export Pointer
 
-## Latest local Production Core candidate
+## Primary development base and performance control
+
+- File: `aw5-rag-source-routing-final-2026-08-25.yml`
+- SHA-256: `2c0a5c2abfd4b180c5fcc9d20bf52f610ad496aee8fd4a2566268933ea125aa7`
+- Validated graph: 9 nodes / 10 edges / 2 LLM calls
+- Repository baseline commit: `64418f8`
+- Status: **authoritative verified baseline, rollback reference, and base for the next lean adaptive candidate**
+
+The 2026-08-28 Published Service API trace matched the 9-step baseline architecture. The fresh full regression produced route match `19/19`, eventual citation boundaries `19/19`, strict semantic quality `16/19`, median latency `13.87 s`, and median usage `4,856` tokens per primary case. See `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md`.
+
+Do not continue feature development from Production Core v1/v2 by default. Use them as safety-heavy comparison artifacts and port only mechanisms that prove a better quality/speed/cost balance onto a lean baseline-derived candidate. A fresh owner export is still required before claiming that the live app is byte-identical to this YAML.
+
+## Safety-heavy facet-contract experiment
 
 - File: `aw5-rag-production-core-v2-facet-contract-candidate-2026-08-28.yml`
 - SHA-256: `7bfc598f377a34d06315d9694a1b008bd51a18dcfe66e5b03d5a2c2c97fa8a08`
@@ -11,7 +23,7 @@
 - Local validation: deterministic build hash; 67 selectors reference valid nodes; DAG validation passed; all embedded Code nodes compile; complete, missing-facet, and missing-answer-term fixtures passed; secret-pattern scan passed
 - Status: **locally validated candidate; not imported, Published, or evaluated live**
 
-Use the staged test order in `../../knowledge_base/nature_footprint/evaluation/evaluation-plan-2026-08-28-production-core-v2-facet-contract.md`. Do not promote this file until its Published Service API trace proves the new node executes and the repeated/full suites pass.
+Use the staged test order in `../../knowledge_base/nature_footprint/evaluation/evaluation-plan-2026-08-28-production-core-v2-facet-contract.md` only if this safety-heavy branch is resumed. Do not promote this file until it proves a better measured quality/speed/cost balance than the baseline-derived lean candidate.
 
 ## Latest Production Core experiment
 
@@ -36,7 +48,7 @@ The remaining semantic failure is `SDS-03`: one successful full-suite execution 
 - Validation: YAML/graph/source wiring passed; manual seven-question Preview smoke test passed after correcting the `TOR` token-boundary rule
 - Status: **experimental candidate; full 19-case regression has not been rerun after the final Route Guard and ER Top K 7 changes**
 
-This is the previous Route Guard experiment. Use the Production Core experiment above for current work. Do not treat either experiment as the verified correctness baseline. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
+This is the previous Route Guard experiment. Do not treat it or Production Core as the primary development base. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
 
 ## Current verified draft snapshot
 
