@@ -4,9 +4,9 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 ## Current status
 
-Last verified: **2026-08-27** from repository and owner-supplied Dify Preview evidence. The current Dify Cloud candidate was exported on **2026-08-27**.
+Last verified: **2026-08-28** from repository artifacts and sanitized Dify Service API traces. The current Published Service API exposed the 9-step, two-LLM source-routing baseline.
 
-Current phase: **RAG baseline frozen; conditional-gating candidate under regression; tenant/project isolation pending**.
+Current phase: **the verified source-routing baseline is the primary development base and performance control; the next workflow will be a lean adaptive derivative, while heavier workflows remain isolated experiments**.
 
 Verified:
 
@@ -16,22 +16,35 @@ Verified:
 - The current verified export is `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`; `dify/exports/CURRENT.md` records its hash and frozen settings.
 - The full currently executable evaluation achieved strict pass `19/19`; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`.
 - The final export and its evaluation evidence are committed and available on `origin/main`.
+- A fresh 2026-08-28 Service API regression confirmed the baseline-shaped 9-step graph, two LLM calls, route match `19/19`, and eventual citation boundaries `19/19`. Its current strict semantic score was `16/19`, median latency `13.87 s`, and median usage `4,856` tokens per primary case; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md`.
 - The latest experimental export is `dify/exports/aw5-rag-route-guard-candidate-2026-08-27.yml`. It adds conditional retrieval, a deterministic Route Guard, fail-closed query checks, and ER Top K 7. Its structure and seven-question smoke test are verified, but it has not yet passed a fresh full 19-case regression after these final changes.
 
 Not yet verified or complete:
 
-- The verified `19/19` workflow was last observed as a saved Dify draft, not Published. Recheck Dify Cloud before making a current live-state claim about either app.
+- The current Service API trace structurally matches the baseline architecture, but an exact current live YAML/hash still requires a fresh owner export; Dify Cloud does not synchronize automatically with Git.
+- The historical baseline result was `19/19`, but the fresh regression was `16/19` strict after bounded retry. Treat repeatability as unresolved and do not quote the historical score as a current stability guarantee.
 - The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
 - `ISO-01` remains N/A until a Project B fixture and a trusted backend tenant/project filter exist.
 - Multi-tenant authorization, production deployment, frontend/backend implementation, and conversation-memory behavior are not complete or proven.
 
 Next priorities:
 
-1. Rerun the 19 executable RAG cases against the final Route Guard candidate and record routing, retrieval, answer, and citation precision.
-2. Keep the frozen `19/19` workflow as rollback until the candidate passes the full suite.
-3. Enforce trusted `tenant_id` and `project_id` authorization before retrieval.
-4. Add document metadata filtering, a synthetic Project B fixture, and execute `ISO-01`.
-5. Add deterministic insufficient-evidence handling before introducing retrieval fallback or reranking.
+1. Use the verified two-LLM baseline as the performance control and build a lean adaptive candidate that addresses demonstrated semantic failures without running every judge/verifier on every question.
+2. Compare candidates on strict answer quality, citation precision, p50/p95 latency, model calls, tokens, estimated API cost, and provider failures under the same suite and knowledge-base state.
+3. Keep heavier Route Guard and Production Core work on experimental branches; port only mechanisms that prove a better quality/speed/cost balance.
+4. Enforce trusted `tenant_id` and `project_id` authorization before retrieval.
+5. Add document metadata filtering, a synthetic Project B fixture, and execute `ISO-01`.
+6. Define provider retry/error handling separately from semantic RAG quality.
+
+## Main RAG challenge
+
+The project must optimize three objectives together:
+
+1. answer accurately and only from sufficient evidence;
+2. answer quickly enough for practical interactive use; and
+3. keep model/API cost bounded and observable.
+
+Accuracy and evidence safety are release gates. When two workflows meet the same strict quality bar, prefer the one with lower p50/p95 latency, fewer model calls, fewer tokens, and simpler failure handling. Provider errors and latency spikes must be measured separately from semantic failures so architecture decisions are based on comparable evidence rather than a single aggregate score.
 
 ## Repository structure
 

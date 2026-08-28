@@ -1,5 +1,17 @@
 # AW5-RAG Dify Export Pointer
 
+## Primary development base and performance control
+
+- File: `aw5-rag-source-routing-final-2026-08-25.yml`
+- SHA-256: `2c0a5c2abfd4b180c5fcc9d20bf52f610ad496aee8fd4a2566268933ea125aa7`
+- Validated graph: 9 nodes / 10 edges / 2 LLM calls
+- Repository baseline commit: `64418f8`
+- Status: **authoritative verified baseline, rollback reference, and base for the next lean adaptive candidate**
+
+The 2026-08-28 Published Service API trace matched the 9-step baseline architecture. The fresh full regression produced route match `19/19`, eventual citation boundaries `19/19`, strict semantic quality `16/19`, median latency `13.87 s`, and median usage `4,856` tokens per primary case. See `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md`.
+
+Do not continue feature development from heavier experimental graphs by default. Port only mechanisms that prove a better quality/speed/cost balance onto a lean baseline-derived candidate. A fresh owner export is still required before claiming that the live app is byte-identical to this YAML.
+
 ## Latest experimental candidate
 
 - File: `aw5-rag-route-guard-candidate-2026-08-27.yml`
@@ -10,7 +22,7 @@
 - Validation: YAML/graph/source wiring passed; manual seven-question Preview smoke test passed after correcting the `TOR` token-boundary rule
 - Status: **experimental candidate; full 19-case regression has not been rerun after the final Route Guard and ER Top K 7 changes**
 
-Use this candidate when continuing the current conditional-gating experiment. Do not treat it as the verified correctness baseline or promote it over the snapshot below until the full executable suite passes. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
+Keep this candidate as an experimental reference. Do not use it as the primary development base or promote it until it proves a better measured quality/speed/cost balance than the lean baseline-derived candidate. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
 
 ## Current verified draft snapshot
 
