@@ -4,9 +4,9 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 ## Current status
 
-Last verified: **2026-08-27** from repository and owner-supplied Dify Preview evidence. The current Dify Cloud candidate was exported on **2026-08-27**.
+Last verified: **2026-08-28** from repository artifacts and sanitized Dify Service API traces. The latest Production Core candidate was exported on **2026-08-28**.
 
-Current phase: **RAG baseline frozen; conditional-gating candidate under regression; tenant/project isolation pending**.
+Current phase: **verified RAG baseline frozen; Production Core experiment isolated on `codex/rag-production-core-v1`; tenant/project isolation pending**.
 
 Verified:
 
@@ -16,22 +16,25 @@ Verified:
 - The current verified export is `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`; `dify/exports/CURRENT.md` records its hash and frozen settings.
 - The full currently executable evaluation achieved strict pass `19/19`; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`.
 - The final export and its evaluation evidence are committed and available on `origin/main`.
-- The latest experimental export is `dify/exports/aw5-rag-route-guard-candidate-2026-08-27.yml`. It adds conditional retrieval, a deterministic Route Guard, fail-closed query checks, and ER Top K 7. Its structure and seven-question smoke test are verified, but it has not yet passed a fresh full 19-case regression after these final changes.
+- The latest experimental export is `dify/exports/aw5-rag-production-core-v1-coverage-candidate-2026-08-28.yml`. It contains 27 nodes / 32 edges and adds conditional retrieval, a deterministic Route Guard, evidence sufficiency, answer verification, deterministic final-answer coverage, and safe insufficient-evidence handling.
+- The Production Core candidate completed a targeted repeated test of `SDS-03` and `XDOC-02` with 10/10 successful executions and correct citations after verified visual extraction was added to the SDS knowledge base.
+- The latest full 19-case regression produced authoritative route matches and citation boundaries for 19/19 cases. Eight primary executions failed in Gemini provider/model calls and every case eventually obtained a successful execution through bounded provider retries.
 
 Not yet verified or complete:
 
 - The verified `19/19` workflow was last observed as a saved Dify draft, not Published. Recheck Dify Cloud before making a current live-state claim about either app.
-- The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
+- The Production Core candidate is not promoted as the verified correctness baseline. Its latest full regression achieved strict answer quality `18/19`; `SDS-03` omitted requested Audit Log events while its LLM-generated `required_answer_terms` contract still allowed the final coverage check to pass.
+- The 2026-08-25 source-routing export at commit `64418f8` remains the verified `19/19` correctness and rollback baseline. Later Route Guard and Production Core artifacts are experiments until explicitly promoted.
 - `ISO-01` remains N/A until a Project B fixture and a trusted backend tenant/project filter exist.
 - Multi-tenant authorization, production deployment, frontend/backend implementation, and conversation-memory behavior are not complete or proven.
 
 Next priorities:
 
-1. Rerun the 19 executable RAG cases against the final Route Guard candidate and record routing, retrieval, answer, and citation precision.
-2. Keep the frozen `19/19` workflow as rollback until the candidate passes the full suite.
+1. Replace the fully LLM-generated final-answer term contract with a hybrid deterministic contract for exact identifiers, figures, sections, values, and high-risk security facets.
+2. Rerun the 19 executable cases with repeated controls and retain the frozen `19/19` workflow as rollback until the candidate passes consistently.
 3. Enforce trusted `tenant_id` and `project_id` authorization before retrieval.
 4. Add document metadata filtering, a synthetic Project B fixture, and execute `ISO-01`.
-5. Add deterministic insufficient-evidence handling before introducing retrieval fallback or reranking.
+5. Define provider retry/error handling separately from semantic RAG quality.
 
 ## Repository structure
 

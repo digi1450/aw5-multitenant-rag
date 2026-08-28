@@ -1,5 +1,18 @@
 # AW5-RAG Dify Export Pointer
 
+## Latest Production Core experiment
+
+- File: `aw5-rag-production-core-v1-coverage-candidate-2026-08-28.yml`
+- SHA-256: `92f4a0ae72eafd826c509d27e9dd4b957f3bfcfba3b72008789579c9b7f7b7d9`
+- Source: owner-exported Dify Cloud Production Core candidate on 2026-08-28 Asia/Bangkok
+- Validated graph: 27 nodes / 32 edges
+- Branch: `codex/rag-production-core-v1`
+- Changes: conditional source gates, authoritative Route Guard, evidence sufficiency decision, normalized evidence contract, safe insufficient response, answer verifier, finalization, and deterministic final-answer coverage check
+- Validation: YAML/graph/wiring and secret-pattern checks passed; targeted repeated controls succeeded 10/10; full 19-case run matched authoritative routes and citation boundaries 19/19, but strict answer quality was 18/19 after provider-controlled retries
+- Status: **experimental candidate; not promoted over the verified 2026-08-25 baseline**
+
+The remaining semantic failure is `SDS-03`: one successful full-suite execution omitted the requested Audit Log events while the LLM-generated `required_answer_terms` list was incomplete, so the deterministic coverage node had no missing term to reject. The next design step is a hybrid contract that combines evidence-generated terms with deterministic anchors for high-risk exact facets. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-production-core-coverage.md`.
+
 ## Latest experimental candidate
 
 - File: `aw5-rag-route-guard-candidate-2026-08-27.yml`
@@ -10,7 +23,7 @@
 - Validation: YAML/graph/source wiring passed; manual seven-question Preview smoke test passed after correcting the `TOR` token-boundary rule
 - Status: **experimental candidate; full 19-case regression has not been rerun after the final Route Guard and ER Top K 7 changes**
 
-Use this candidate when continuing the current conditional-gating experiment. Do not treat it as the verified correctness baseline or promote it over the snapshot below until the full executable suite passes. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
+This is the previous Route Guard experiment. Use the Production Core experiment above for current work. Do not treat either experiment as the verified correctness baseline. Evidence: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-27-route-guard-smoke.md`.
 
 ## Current verified draft snapshot
 

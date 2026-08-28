@@ -201,12 +201,15 @@ def summarize_case(case: dict[str, Any], events: list[dict[str, Any]]) -> dict[s
         elif event_name in {"error", "workflow_failed"}:
             api_error = str(event.get("message") or data.get("error") or event)[:2000]
 
-    route = None
-    for node in nodes:
-        if node.get("title") == "Route Queries" and isinstance(node.get("route"), dict):
-            route = node["route"]
-        elif route is None and isinstance(node.get("route"), dict):
-            route = node["route"]
+    routes_by_title = {
+        str(node.get("title")): node["route"]
+        for node in nodes
+        if isinstance(node.get("route"), dict)
+    }
+    planner_route = routes_by_title.get("LLM 1")
+    normalized_route = routes_by_title.get("Route Queries")
+    guard_route = routes_by_title.get("ROUTE GUARD")
+    route = guard_route or normalized_route or planner_route
     expected_route = case.get("expected_route", {})
     route_match = None
     if route is not None:
@@ -222,6 +225,9 @@ def summarize_case(case: dict[str, Any], events: list[dict[str, Any]]) -> dict[s
         "question": case["question"],
         "expected_behavior": case["expected_behavior"],
         "expected_route": expected_route,
+        "planner_route": planner_route,
+        "normalized_route": normalized_route,
+        "guard_route": guard_route,
         "observed_route": route,
         "route_match": route_match,
         "expected_enabled_sources": expected_enabled,
