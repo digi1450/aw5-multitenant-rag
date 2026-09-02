@@ -14,6 +14,7 @@ import re
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime
 from pathlib import Path
@@ -108,6 +109,34 @@ def compact_retrieval(outputs: Any) -> dict[str, Any]:
     return {"count": len(rows), "scores": scores, "documents": documents}
 
 
+def compact_context(outputs: Any) -> dict[str, Any]:
+    """Describe merged evidence without retaining private chunk text or IDs."""
+    rows = result_rows(outputs)
+    documents: list[str] = []
+    item_keys: set[str] = set()
+    metadata_keys: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        item_keys.update(str(key) for key in row)
+        metadata = row.get("metadata") if isinstance(row.get("metadata"), dict) else {}
+        metadata_keys.update(str(key) for key in metadata)
+        name = (
+            row.get("title")
+            or row.get("document_name")
+            or metadata.get("document_name")
+            or metadata.get("title")
+        )
+        if name and str(name) not in documents:
+            documents.append(str(name)[:180])
+    return {
+        "count": len(rows),
+        "documents": documents,
+        "item_keys": sorted(item_keys),
+        "metadata_keys": sorted(metadata_keys),
+    }
+
+
 def compact_node(data: dict[str, Any]) -> dict[str, Any]:
     title = str(data.get("title") or data.get("node_type") or "unknown")
     metadata = data.get("execution_metadata") if isinstance(data.get("execution_metadata"), dict) else {}
@@ -127,6 +156,8 @@ def compact_node(data: dict[str, Any]) -> dict[str, Any]:
         node["route"] = route
     if "retrieve" in title.lower() or data.get("node_type") == "knowledge-retrieval":
         node["retrieval"] = compact_retrieval(outputs)
+    if title == "Merge Context":
+        node["context"] = compact_context(outputs)
     return node
 
 
@@ -161,6 +192,36 @@ def post_stream(url: str, api_key: str, payload: dict[str, Any], timeout: int) -
     return events
 
 
+def get_json(url: str, api_key: str, timeout: int) -> dict[str, Any]:
+    request = urllib.request.Request(
+        url,
+        method="GET",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Accept": "application/json",
+            "User-Agent": "AW5-Dify-Diagnostic/2.0",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        payload = json.loads(response.read().decode("utf-8", errors="replace"))
+    return payload if isinstance(payload, dict) else {}
+
+
+def compact_citations(resources: Any) -> list[dict[str, Any]]:
+    citations: list[dict[str, Any]] = []
+    if not isinstance(resources, list):
+        return citations
+    for resource in resources:
+        if not isinstance(resource, dict):
+            continue
+        citations.append({
+            "document_name": resource.get("document_name"),
+            "segment_position": resource.get("segment_position"),
+            "score": resource.get("score"),
+        })
+    return citations
+
+
 def summarize_case(case: dict[str, Any], events: list[dict[str, Any]]) -> dict[str, Any]:
     answer_parts: list[str] = []
     nodes: list[dict[str, Any]] = []
@@ -188,25 +249,20 @@ def summarize_case(case: dict[str, Any], events: list[dict[str, Any]]) -> dict[s
             }
         elif event_name == "message_end":
             metadata = event.get("metadata") if isinstance(event.get("metadata"), dict) else {}
-            resources = metadata.get("retriever_resources")
-            if isinstance(resources, list):
-                for resource in resources:
-                    if not isinstance(resource, dict):
-                        continue
-                    citations.append({
-                        "document_name": resource.get("document_name"),
-                        "segment_position": resource.get("segment_position"),
-                        "score": resource.get("score"),
-                    })
+            citations.extend(compact_citations(metadata.get("retriever_resources")))
         elif event_name in {"error", "workflow_failed"}:
             api_error = str(event.get("message") or data.get("error") or event)[:2000]
 
     route = None
+    guarded_route = None
     for node in nodes:
-        if node.get("title") == "Route Queries" and isinstance(node.get("route"), dict):
+        if node.get("title") == "LEAN ROUTE GUARD" and isinstance(node.get("route"), dict):
+            guarded_route = node["route"]
+        elif node.get("title") == "Route Queries" and isinstance(node.get("route"), dict):
             route = node["route"]
         elif route is None and isinstance(node.get("route"), dict):
             route = node["route"]
+    route = guarded_route or route
     expected_route = case.get("expected_route", {})
     route_match = None
     if route is not None:
@@ -245,6 +301,11 @@ def main() -> int:
     parser.add_argument("--limit", type=int, help="maximum number of cases")
     parser.add_argument("--timeout", type=int, default=180)
     parser.add_argument("--pause", type=float, default=0.5)
+    parser.add_argument(
+        "--check-history-citations",
+        action="store_true",
+        help="also query stored-message citations after each streaming response",
+    )
     parser.add_argument(
         "--env-prefix",
         default="DIFY_AW5",
@@ -290,6 +351,43 @@ def main() -> int:
         try:
             events = post_stream(endpoint, api_key, payload, args.timeout)
             result = summarize_case(case, events)
+
+            message_end = next(
+                (
+                    event for event in reversed(events)
+                    if event.get("event") == "message_end"
+                ),
+                {},
+            )
+            conversation_id = message_end.get("conversation_id")
+            message_id = message_end.get("message_id") or message_end.get("id")
+            result["historical_citations"] = []
+            result["historical_citation_error"] = None
+            if args.check_history_citations and conversation_id and message_id:
+                history_url = (
+                    f"{base_url}/messages?conversation_id="
+                    f"{urllib.parse.quote(str(conversation_id), safe='')}"
+                    "&limit=100"
+                )
+                try:
+                    history = get_json(history_url, api_key, args.timeout)
+                    messages = history.get("data")
+                    if isinstance(messages, list):
+                        stored = next(
+                            (
+                                item for item in messages
+                                if isinstance(item, dict)
+                                and str(item.get("id")) == str(message_id)
+                            ),
+                            None,
+                        )
+                        if isinstance(stored, dict):
+                            result["historical_citations"] = compact_citations(
+                                stored.get("retriever_resources")
+                            )
+                except (urllib.error.URLError, json.JSONDecodeError, OSError) as exc:
+                    result["historical_citation_error"] = str(exc)[:1000]
+
             for event in events:
                 conversation_id = event.get("conversation_id")
                 if group and conversation_id:
