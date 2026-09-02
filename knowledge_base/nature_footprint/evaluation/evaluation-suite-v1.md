@@ -1,5 +1,13 @@
 # Nature Footprint RAG Evaluation Suite v1 — 20 Cases
 
+> **Legacy suite, preserved on 2026-09-02.** The questions, expected answers, and
+> historical scoring rules below are unchanged. Router flags and source-exclusive
+> expectations belong to the old workflow, not the
+> [new single-retrieval direction](../../../docs/architecture/current-direction-2026-09-02.md).
+> Do not copy these questions/answers into prompts, silently rescore past runs, or
+> use this file as authorization to run tests. A revised evaluation protocol has
+> not yet been agreed with the owner.
+
 ## วิธีใช้และเกณฑ์ผ่าน
 
 ทดสอบกับ `Attach_TOR_1.pdf` (TOR), `System Design Specification.pdf` (SDS) และ `ER_dbdiagram.txt` (ER) โดยบันทึก rewritten query, chunks/คะแนนที่ค้นได้, คำตอบ, citations, latency และ error ทุกครั้ง

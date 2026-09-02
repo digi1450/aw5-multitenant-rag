@@ -61,6 +61,11 @@ These events must be reported separately from workflow semantic quality. The pri
 
 ## Decision
 
+> **Historical decision, superseded on 2026-09-02.** The following development
+> recommendation is retained as part of this run's record, not the current task.
+> Follow the [current direction](../../../docs/architecture/current-direction-2026-09-02.md).
+> The measurements and original scoring in this report are unchanged.
+
 Use `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml` as the primary development base and performance control. Heavier experimental workflows remain comparison artifacts rather than the main line.
 
 The next candidate should be a lean adaptive derivative of the baseline:
