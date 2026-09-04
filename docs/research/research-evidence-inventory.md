@@ -17,7 +17,9 @@ The local machine-readable artifact snapshot is stored at
 `output/research-evidence/research-evidence-artifact-manifest-2026-09-04.json`.
 It catalogs 183 research-related files using repository-relative paths, byte
 sizes, modification times, SHA-256 hashes, Git status, and evidence class.
-The snapshot itself is local-only and ignored by Git.
+The snapshot itself is local-only and ignored by Git. It predates the addition of
+the 2026-09-04 self-hosted main workflow export and record, so its 183-file count
+must not be interpreted as a live count after this update.
 
 | Snapshot property | Value |
 | --- | ---: |
@@ -182,7 +184,7 @@ Status: **verified Git snapshot and owner-confirmed decision**, committed in
   `ef0eb99993cd9dab51e57936d92a9bbd2fe07eed88c427c229cf508ff06096a4`.
 - Backup/restore and long-term stability were not tested.
 
-Status: **verified installation evidence, currently uncommitted**.
+Status: **verified installation evidence**, committed in `f6aee70`.
 
 #### Custom embedding plugin signing and installation
 
@@ -194,7 +196,7 @@ Status: **verified installation evidence, currently uncommitted**.
   `dc916b77b4dff9b1bacd8df1d35327ad45d3ea8edd100101db0fa0daa25a2e3e`.
 - Private key and `.difypkg` files remain local and must never be committed.
 
-Status: **verified installation evidence, currently uncommitted**. The provider
+Status: **verified installation evidence**, committed in `f6aee70`. The provider
 was locally trusted by the owner; this is not Dify Marketplace endorsement.
 
 #### Synthetic multimodal retrieval pilot
@@ -208,8 +210,8 @@ was locally trusted by the owner; this is not Dify Marketplace endorsement.
 - Fixture SHA-256:
   `387165bc7dde9d93273fc5a7eafdc46b7363b9c6a6ed7adbfa3d26f3d4e09a1e`.
 
-Status: **verified synthetic ingestion/retrieval smoke evidence, currently
-uncommitted**. Supporting files remain local under
+Status: **verified synthetic ingestion/retrieval smoke evidence**, with the
+sanitized report committed in `f6aee70`. Supporting files remain local under
 `output/pdf/aw5-local-pilot-2026-09-02/`.
 
 ### 2026-09-03 — project-tenant boundary and self-hosted corpus work
@@ -220,14 +222,16 @@ uncommitted**. Supporting files remain local under
 - Three Knowledge Bases are used for the current tenant, one per primary file:
   TOR, SDS and ER/dbdiagram, connected to the same retrieval node.
 - Owner-provided Dify UI evidence shows local Knowledge Base creation, document
-  ingestion, metadata and chunk inspection. The repository does not yet contain
-  a current target DSL export, database snapshot, or structured evaluation trace.
+  ingestion, metadata and chunk inspection. At that date, the repository did not
+  yet contain a current target DSL export, database snapshot, or structured
+  evaluation trace.
 - SDS figure-related parent chunks around figures 4-20 through 4-24 were manually
   inspected and repaired in the Dify UI. Garbled extracted text was removed and
   image attachments were used where appropriate. Exact before/after chunk bodies
   and saved TOR/SDS ingestion settings are not preserved as durable evidence.
 
-Status: tenant definition is **owner-confirmed and documented but uncommitted**.
+Status: tenant definition is **owner-confirmed and documented**, committed in
+`f6aee70`.
 The Dify corpus/chunk work is **owner-observed current-state evidence** and needs
 a durable sanitized snapshot before publication claims.
 
@@ -259,9 +263,23 @@ a durable sanitized snapshot before publication claims.
   the Docker API socket was absent. This does not invalidate the dated installation
   evidence or owner screenshots; it means live status was **not reverified** at the
   Inventory capture time.
+- Owner supplied `AW5-RAG-2.yml` from the local self-hosted system and identified
+  it as the new main workflow. The byte-identical repository snapshot is
+  `dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml`, SHA-256
+  `b843323262447b25eca4d17304c2b94d521cb53cdc75a18d6f30153e93c25b6d`.
+- Static inspection confirmed 4 nodes/3 edges:
+  `User Input -> Knowledge Retrieval -> LLM -> Answer`. One retrieval node
+  references three Knowledge Bases; weighted search is semantic/vector `0.7` and
+  keyword `0.3`, Top K 10, with reranking and score threshold disabled.
+- The answer model is `gemini-3.5-flash`; the generic prompt is evidence-grounded;
+  conversation memory is enabled with a window of 10.
+- The export was parsed and preserved without executing it. Its main-workflow
+  status is owner-confirmed; live-app equality, Published/draft state, answer
+  quality, citations, latency, cost and project-tenant isolation remain unverified.
 
-Status: **owner-observed/current exploratory work with local artifacts**. No new
-self-hosted RAG quality score is claimed.
+Status: **owner-confirmed current main workflow with verified static export, plus
+owner-observed exploratory corpus work**. No new self-hosted RAG quality score is
+claimed.
 
 ## Evaluation evidence catalog
 
@@ -301,9 +319,9 @@ or direct trace audit establishes its meaning.
 
 | Artifact group | Quantity/status | Evidence boundary |
 | --- | --- | --- |
-| Git-tracked Dify exports | 16 files: 7 YAML and 9 Markdown records | Historical baseline/candidates plus owner-confirmed AW5-RAG 1.2 snapshot. None is a verified export of the new self-hosted single-retrieval target. |
-| Current export pointer | `dify/exports/CURRENT.md` | Separates current snapshot, target direction, frozen baseline and historical candidates. |
-| Local installation evidence | Four untracked Markdown/JSON records from 2026-09-02 | Suitable commit candidates after review; contain no private corpus content by design. |
+| Git-tracked Dify exports after this update | 18 files: 8 YAML and 10 Markdown records | Includes the owner-confirmed self-hosted main export, previous snapshots, frozen baseline and historical candidates. Static export verification is not runtime validation. |
+| Current export pointer | `dify/exports/CURRENT.md` | Separates the current self-hosted main workflow, previous snapshot, frozen baseline and historical candidates. |
+| Local installation evidence | Four Markdown/JSON records from 2026-09-02 | Reviewed, sanitized and committed in `f6aee70`; contain no private corpus content by design. |
 | Runtime state | Sibling `dify-local` directory and Docker volumes | Local-only. Git cannot reproduce admin state, providers, Knowledge Bases, attachments, embeddings or vector indexes. |
 | Custom plugin packages/keys | Ignored `.difypkg` files and local signing keys | Local-only; private key and credentials must never enter Git. |
 
@@ -383,7 +401,8 @@ Push remains a separate explicit action.
    as experiments.
 3. Historical `19/19` results apply only to dated historical workflows and
    rubrics. They do not validate the self-hosted target.
-4. The current self-hosted workflow has no reviewed DSL export in this repository.
+4. The current self-hosted workflow now has a reviewed, byte-identical DSL export,
+   but its equality with the running/Published app and runtime behavior are not verified.
 5. Recent self-hosted ad hoc questions and chunk fixes lack durable structured
    traces, fixed scoring, repeated runs, latency distribution, tokens and cost.
 6. TOR/SDS/ER Knowledge Base creation is owner-observed, but the current database,

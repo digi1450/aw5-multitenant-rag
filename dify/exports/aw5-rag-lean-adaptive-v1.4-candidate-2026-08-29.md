@@ -2,7 +2,7 @@
 
 > **Historical experiment, not the current workflow or next task.** Status and
 > proposed checks below are preserved as dated records. Follow [CURRENT.md](CURRENT.md)
-> for the owner-confirmed AW5-RAG 1.2 snapshot and current target direction. The
+> for the owner-confirmed self-hosted main workflow and current direction. The
 > candidate YAML and rebuild scripts described here remain separate local artifacts;
 > they are not included in this documentation/current-snapshot commit.
 

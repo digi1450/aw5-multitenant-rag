@@ -8,9 +8,12 @@ decision, not a new technical proposal or evidence of implementation.
 
 Later on 2026-09-02, the owner approved a concrete local Docker Compose
 installation. Dify 1.17.0 is installed and its administrator setup page verified;
-see the [installation record](dify-local-installation-2026-09-02.md). This resolves
-the base installation/version/storage-product choices below, but does not
-implement the target workflow or choose models/providers.
+see the [installation record](dify-local-installation-2026-09-02.md). At that date,
+this resolved the base installation/version/storage-product choices below but did
+not yet implement the target workflow or choose models/providers.
+
+The owner-confirmed self-hosted main workflow was subsequently captured on
+2026-09-04; see the current-workflow section below.
 
 This document supersedes the architecture and phase sequence in
 [`local-first-hybrid-rag-roadmap.md`](local-first-hybrid-rag-roadmap.md), including
@@ -32,12 +35,18 @@ filtering implementation open.
 
 ## Current workflow is recorded separately
 
-On the same date, the owner supplied **AW5-RAG 1.2** as the current workflow. See
-the [current export pointer](../../dify/exports/CURRENT.md) and
-[snapshot record](../../dify/exports/aw5-rag-1.2-current-2026-09-02.md).
-It still has LLM 1 routing and separate TOR/SDS/ER retrieval. It has been preserved
-without modification, not converted into the target described below. Recording its
-existing models/settings does not select them for the new architecture.
+On 2026-09-04, the owner supplied the local self-hosted **AW5-RAG** export and
+identified it as the new main workflow. See the
+[current export pointer](../../dify/exports/CURRENT.md) and
+[snapshot record](../../dify/exports/aw5-rag-self-hosted-main-2026-09-04.md).
+Its graph is `User Input -> Knowledge Retrieval -> LLM -> Answer`, with the three
+current Knowledge Bases connected to the one retrieval node. The export is
+preserved without modification and statically inspected. It has not received a
+formal quality, latency, cost, citation, or tenant-isolation evaluation.
+
+The 2026-09-02 AW5-RAG 1.2 export with LLM 1 routing and separate TOR/SDS/ER
+retrieval remains preserved as the previous owner-confirmed snapshot and a
+historical control.
 
 ## Confirmed direction
 
@@ -69,7 +78,8 @@ existing models/settings does not select them for the new architecture.
   overwrite the baseline to implement the new direction.
 
 The agreed simplification is one retrieval step followed by grounded answer
-generation. This is a conceptual outline, **not a validated or final DSL**:
+generation. The 2026-09-04 main export implements this graph, while runtime
+behavior remains to be formally validated:
 
 ```text
 User question -> Knowledge Retrieval -> Answer LLM -> Answer
@@ -77,7 +87,8 @@ User question -> Knowledge Retrieval -> Answer LLM -> Answer
 
 The three Knowledge Bases may use parser and chunking settings appropriate to
 their file formats while remaining searchable through the same retrieval node.
-Any query-rewriting/history step and any reranking configuration remain undecided.
+The current export uses conversation memory and no reranker. Future changes to
+query rewriting, history behavior, or reranking require comparative evidence.
 
 ## Retrieval scope and citations
 
@@ -119,18 +130,18 @@ project documentation and the supplied workflow configuration.
 
 ## Not yet decided
 
-- Model names, providers, pricing choices, or any requirement to match a future
-  local model. BGE-M3, a particular reranker, and earlier proposed vendors are ideas,
-  not approved selections.
-- Whether to use reranking; search/fusion mode, Top K, thresholds, and other tuning.
+- Whether the current exported model/provider and retrieval settings should be
+  retained after evaluation. They record the current workflow, not a proven optimum.
+- Whether to add reranking or change search/fusion mode, Top K, thresholds, and
+  other tuning.
 - Upload/ingestion design, parsers, chunking, and the concrete mechanism that
   enforces the now-defined `tenant_id` boundary. The current corpus layout of one
   Knowledge Base per primary file is decided.
 - Additional infrastructure beyond the subsequently approved Dify 1.17.0
   Docker Compose installation using PostgreSQL and Weaviate. Custom retrieval
   services and External Knowledge API use remain undecided.
-- Conversation history, query rewriting, retries, and detailed answer/citation
-  presentation behavior.
+- Whether to retain the exported conversation-memory window of 10; query rewriting,
+  retries, and detailed answer/citation presentation behavior.
 - The revised evaluation protocol and implementation sequence. Do not reinterpret
   old scores under a new rubric or start new tests without authorization.
 

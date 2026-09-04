@@ -1,37 +1,53 @@
 # AW5-RAG Dify Export Pointer
 
-## Current workflow — owner-confirmed 2026-09-02
+## Current main workflow — owner-confirmed 2026-09-04
 
-- Application: **AW5-RAG 1.2**.
-- File: [aw5-rag-1.2-current-2026-09-02.yml](aw5-rag-1.2-current-2026-09-02.yml).
-- Source: the owner supplied `AW5-RAG 1.2.yml` and identified it as the current workflow.
-- SHA-256: `7e1d7d7e49f711bf0653db38ed6b3923f590cf83d5b4d46538db6ae4fe2f320d`.
-- Status: **owner-confirmed current export, statically inspected and preserved byte-for-byte; not newly runtime-tested**.
-- Graph: 9 nodes / 10 edges / 2 LLM nodes; separate TOR/SDS/ER retrieval.
-- Retrieval settings: weighted semantic/keyword `0.5/0.5`; TOR/SDS Top K **3**;
-  ER Top K **10**; reranking disabled.
+- Application: **AW5-RAG**.
+- File:
+  [aw5-rag-self-hosted-main-2026-09-04.yml](aw5-rag-self-hosted-main-2026-09-04.yml).
+- Source: the owner supplied `AW5-RAG-2.yml` from the local self-hosted system and
+  identified it as the new main workflow.
+- SHA-256: `b843323262447b25eca4d17304c2b94d521cb53cdc75a18d6f30153e93c25b6d`.
+- Status: **owner-confirmed current main export, statically inspected and
+  preserved byte-for-byte; not formally runtime-tested**.
+- Graph: 4 nodes / 3 edges / 1 LLM node:
+  `User Input -> Knowledge Retrieval -> LLM -> Answer`.
+- Retrieval: one node over three dataset references; weighted semantic/keyword
+  `0.7/0.3`; Top K **10**; reranking and score threshold disabled.
 
-See the [snapshot record](aw5-rag-1.2-current-2026-09-02.md) for models, dependencies,
-wiring, and verification limits. Published/draft state and the live instance were
-not inspected. This is not the similarly named Lean Adaptive v1.2 candidate and
-does not inherit the frozen baseline's evaluation scores.
+See the [snapshot record](aw5-rag-self-hosted-main-2026-09-04.md) for models,
+dependencies, prompt characteristics, wiring and verification limits. The export
+matches the confirmed self-hosted architecture direction. Published/draft state,
+live-app equality, answer quality and trusted project-tenant isolation were not
+verified by preserving this file.
 
-## Target direction — confirmed 2026-09-02, implementation evidence incomplete
+## Implemented direction — confirmed 2026-09-04, formal validation incomplete
 
 The owner confirmed [self-hosted Dify, local knowledge storage, cloud models, and
 one Knowledge Retrieval node](../../docs/architecture/current-direction-2026-09-02.md).
-The new workflow must not inherit per-file prompts or TOR/SDS/ER hard-gating flags.
-The owner later began the self-hosted app, provider, Knowledge Base, ingestion and
-chunking work. Those local changes are not represented by a reviewed DSL export or
-formal evaluation in this directory. This section records the evidence boundary;
-it does not promote an unexported local state as a verified workflow.
+The current main export implements the simple single-retrieval graph without
+per-file prompts or TOR/SDS/ER hard-gating flags. It references three Knowledge
+Bases from the one retrieval node. The export and its static configuration are
+reviewed repository evidence; formal quality, latency, cost, citation and isolation
+evaluation remains incomplete.
 
 The baseline below remains the frozen control and rollback artifact, **not the
 required development template**. All earlier candidate notes, proposed next steps,
 and source-router evaluation expectations in this directory are historical unless
-explicitly re-approved. No new single-retrieval candidate is promoted here. A
-filename, local build, or old "next" instruction does not establish current state.
-The current-workflow pointer is the owner-confirmed AW5-RAG 1.2 export above.
+explicitly re-approved. The current-workflow pointer is the owner-confirmed
+self-hosted AW5-RAG export above.
+
+## Previous owner-confirmed snapshot — 2026-09-02
+
+- Application: **AW5-RAG 1.2**.
+- File: [aw5-rag-1.2-current-2026-09-02.yml](aw5-rag-1.2-current-2026-09-02.yml).
+- SHA-256: `7e1d7d7e49f711bf0653db38ed6b3923f590cf83d5b4d46538db6ae4fe2f320d`.
+- Graph: 9 nodes / 10 edges / 2 LLM nodes; separate TOR/SDS/ER retrieval.
+- Status: **superseded current-state snapshot; retained as historical evidence**.
+
+See its [snapshot record](aw5-rag-1.2-current-2026-09-02.md). It is distinct from
+the similarly named Lean Adaptive v1.2 candidate and does not inherit the frozen
+baseline's evaluation scores.
 
 ## Frozen historical baseline and performance control
 

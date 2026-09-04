@@ -4,10 +4,10 @@ The recorded baseline and experiments were run in Dify Cloud. The confirmed targ
 is now **Dify self-hosted on the owner's computer with locally stored knowledge,
 cloud models, and one Knowledge Retrieval node**. See the
 [current direction](../docs/architecture/current-direction-2026-09-02.md).
-The owner subsequently supplied [AW5-RAG 1.2](exports/aw5-rag-1.2-current-2026-09-02.md)
-as the current workflow; its export is preserved without modification. This update
-does not install Dify, migrate knowledge, or modify a live workflow. No running Dify
-application synchronizes automatically with GitHub.
+The owner subsequently supplied the
+[self-hosted AW5-RAG main workflow](exports/aw5-rag-self-hosted-main-2026-09-04.md);
+its export is preserved without modification. No running Dify application
+synchronizes automatically with GitHub.
 
 After an authorized meaningful workflow change:
 
@@ -19,13 +19,11 @@ After an authorized meaningful workflow change:
 
 Do not place provider API keys or private corpus files in this directory.
 
-The owner-confirmed current export, frozen baseline, and dated candidate evidence are recorded in
+The owner-confirmed current main export, previous snapshots, frozen baseline, and dated candidate evidence are recorded in
 [`exports/CURRENT.md`](exports/CURRENT.md). Consult that pointer instead of inferring
-the latest workflow from filenames alone. The current export still uses TOR/SDS/ER
-branches and source-specific prompts; preserve it as current-state evidence, not a
-template for new uploads or the planned single-retrieval workflow.
-Model/provider selection, reranking, knowledge-base organization, and installation
-details remain undecided; ask the owner before selecting them.
+the latest workflow from filenames alone. The current export uses one retrieval
+node over three Knowledge Bases and a generic evidence-grounded prompt. Its static
+configuration is recorded; runtime quality and isolation remain unverified.
 
 ## Custom model plugins
 

@@ -12,7 +12,7 @@ Before planning or changing the project, read these files in order:
 2. `docs/architecture/current-direction-2026-09-02.md` — authoritative owner-confirmed architecture; supersedes the old locked roadmap.
 3. `docs/architecture/tenant-project-boundary-2026-09-03.md` — authoritative definition that one AW5 tenant is one project and the required isolation boundary.
 4. `docs/research/research-evidence-inventory.md` — chronological evidence map, raw-artifact locations, verified/partial/missing boundaries, and Git/local classification.
-5. `dify/exports/CURRENT.md` — owner-confirmed current AW5-RAG 1.2 export, frozen baseline, and historical candidates; none is a deployed implementation of the new direction.
+5. `dify/exports/CURRENT.md` — owner-confirmed self-hosted main workflow, previous snapshots, frozen baseline, and historical candidates.
 6. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md` — historical baseline accuracy/latency/cost evidence and demonstrated failures.
 7. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md` — historical scored `19/19` RAG evidence and its limits.
 8. `knowledge_base/nature_footprint/evaluation/evaluation-suite-v1.md` — legacy evaluation definitions, including the unexecuted `ISO-01` fixture; source-router expectations are not the new architecture contract.
@@ -24,7 +24,11 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 ## Evidence and status rules
 
 - Separate **verified**, **not verified**, and **planned** work. A plan, prompt, README statement, or configuration is not test evidence by itself.
-- The owner identified `dify/exports/aw5-rag-1.2-current-2026-09-02.yml` as the current workflow. Its byte-identical preservation and static configuration are verified, not its runtime behavior or Published/draft state. It is distinct from Lean Adaptive v1.2 and must not inherit old evaluation scores.
+- The owner identified `dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml`
+  as the current main workflow. Its byte-identical preservation and static
+  configuration are verified, not its runtime behavior, Published/draft state,
+  quality, latency, cost, citations, or tenant isolation. It must not inherit old
+  evaluation scores.
 - The historical RAG baseline run has `19/19` strict passes, while the 2026-08-28 regression scored `16/19` strict after bounded retry under the legacy rubric. This does not prove the new architecture, stability, production readiness, multi-tenant isolation, or conversation memory.
 - `ISO-01` is N/A until a synthetic Project B tenant fixture and trusted backend project-tenant filtering exist.
 - The verified DSL/evaluation baseline is committed on `origin/main` at `64418f8`. The working tree may contain newer documentation, so inspect `git status` before making a current repository-state claim. The Dify Cloud app is maintained separately and does not synchronize automatically with Git.
@@ -42,23 +46,33 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 - Current Knowledge Base layout confirmed 2026-09-03: use one Knowledge Base per primary file. Nature Footprint therefore has three Knowledge Bases for `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `ER_dbdiagram.txt`, all connected to the same retrieval node.
 - Do not hard-filter to a document merely because the question names it. Preserve actual source attribution; broader retrieval does not permit claiming that one document says something found only in another.
 - Prompts must be generic: no per-file descriptions, test questions, expected answers, worked examples, or case-specific exceptions to force known tests to pass.
-- Adding a primary file means adding its own Knowledge Base to the same retrieval node; it must not require another routing node or a system-prompt update. Model/provider choice, reranking, ingestion/chunking details, and optional rewriting/history behavior remain undecided.
+- Adding a primary file means adding its own Knowledge Base to the same retrieval node; it must not require another routing node or a system-prompt update. The current export records the current model, retrieval and history settings; future changes require evidence. Ingestion/chunking details and trusted isolation enforcement remain under development.
 - Local storage is not zero disclosure: cloud embedding receives chunk/query text; cloud reranking receives candidates; answer generation receives the selected context. Do not claim that only final Top-K evidence leaves the computer.
-- Preserve old workflows as controls, not as a required design template. The new direction has not been implemented or validated by this documentation update.
+- Preserve old workflows as controls, not as a required design template. The simple workflow graph is now captured in the 2026-09-04 main export, but it has not been formally validated.
 
 Full decisions and open questions: `docs/architecture/current-direction-2026-09-02.md`.
 
-## Current workflow snapshot — distinct from target and baseline
+## Current self-hosted main workflow — owner-confirmed 2026-09-04
 
-`dify/exports/aw5-rag-1.2-current-2026-09-02.yml` is the owner-confirmed current
-AW5-RAG 1.2 export. It still uses LLM 1, Route Queries, three retrieval nodes,
-Merge Context, LLM 2, and Answer: 9 nodes / 10 edges. Its weighted retrieval is
-`0.5/0.5`, TOR/SDS Top K `3`, ER Top K `10`, with reranking disabled.
+`dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml` is the owner-confirmed
+current main export. It uses `User Input -> Knowledge Retrieval -> LLM -> Answer`:
+4 nodes / 3 edges / 1 LLM node. One retrieval node references the three current
+Knowledge Bases. Its weighted retrieval is `0.7` semantic/vector and `0.3`
+keyword, Top K `10`, with reranking and score threshold disabled. The answer model
+is `gemini-3.5-flash`; conversation memory is enabled with a window of 10.
 
-Use `dify/exports/CURRENT.md` and its linked snapshot record for exact current-file
-configuration. Preserve the export without editing its prompts/code. This current
-workflow is not the new single-retrieval target; its existing models are not a
-decision about models for that target. The frozen baseline below remains separate.
+Use `dify/exports/CURRENT.md` and the linked snapshot record for exact current-file
+configuration. Preserve the export without editing its prompt or settings. Static
+inspection does not establish runtime quality, Published/draft state, live-app
+equality, or trusted AW5 `tenant_id` enforcement. Metadata filtering is disabled,
+so this graph alone does not prove project-tenant isolation.
+
+## Previous owner-confirmed snapshot — 2026-09-02
+
+`dify/exports/aw5-rag-1.2-current-2026-09-02.yml` is the previous current-state
+snapshot. It uses LLM 1, Route Queries, three retrieval nodes, Merge Context,
+LLM 2, and Answer: 9 nodes / 10 edges. Retain it as historical evidence, separate
+from the frozen baseline and Lean Adaptive v1.2 candidate.
 
 ## Historical baseline architecture — not the new target
 
@@ -104,13 +118,12 @@ Align project Markdown with the owner-confirmed direction first. Do not resume t
 superseded four-phase Lean Adaptive/local-model roadmap, patch known questions, or
 start another evaluation run just because a historical note says "next".
 
-Keep implementation choices explicitly undecided until the owner resolves them.
-Ask before choosing models/providers, reranking, ingestion/chunking details,
-installation/infrastructure, a new evaluation protocol, or a work sequence. The
-owner authorized preserving the supplied current DSL and committing/pushing this
-documentation/snapshot update to `main`. That bounded authorization does not
-authorize installing Dify, modifying a live workflow/prompt, changing the supplied
-DSL, uploading knowledge to a provider, running evaluations, or publishing Dify.
+Treat the settings in the owner-confirmed current main export as recorded current
+state, not as proven optimal defaults. Ask before changing models/providers,
+reranking, ingestion/chunking details, installation/infrastructure, the evaluation
+protocol, or the work sequence. Preserving and documenting a supplied export does
+not authorize modifying a live workflow/prompt, uploading knowledge to a provider,
+running evaluations, or publishing Dify.
 
 Trusted project-tenant authorization remains required before retrieval. Removing
 document-type routing does not authorize cross-tenant (cross-project) search. Project B and
@@ -129,7 +142,7 @@ update does not choose the isolation mechanism or schedule its implementation.
 ## Repository boundaries
 
 - This repository stores AW5 project documentation, evaluation evidence, and Dify DSL snapshots.
-- Running Dify applications, whether Cloud or self-hosted, are state separate from Git. After authorized meaningful changes, export a dated DSL; promote a verified artifact in `dify/exports/CURRENT.md` only after validation. Direction/status notes may be updated without claiming a new DSL is verified.
+- Running Dify applications, whether Cloud or self-hosted, are state separate from Git. After authorized meaningful changes, export a dated DSL. `dify/exports/CURRENT.md` may record an owner-confirmed current workflow while separately stating its static and runtime validation status; do not infer validation from promotion alone.
 - `dify/plugins/gemini-embedding-2-aw5/` is a separate local Git repository and is ignored by this repository. Treat its commits, branches, releases, secrets, tests, and package artifacts independently.
 - Generated `.difypkg` files under `dify/plugins/` are local deployment artifacts and must remain untracked.
 

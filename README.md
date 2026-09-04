@@ -5,9 +5,9 @@ Senior project repository for a multi-tenant conversational assistant that retri
 ## Current status
 
 **Target direction updated 2026-09-02; local Dify 1.17.0 is installed, and the
-owner has begun the self-hosted application, Knowledge Base, ingestion and
-chunking work. The target workflow is not yet captured in a reviewed DSL or
-formally evaluated.**
+owner confirmed the simple self-hosted workflow as the new main workflow on
+2026-09-04. Its reviewed DSL snapshot is recorded, but it has not yet received a
+formal evaluation.**
 Installation location, checks and operating instructions are recorded in the
 [local installation record](docs/architecture/dify-local-installation-2026-09-02.md).
 The owner's latest clarification after consulting the
@@ -28,13 +28,13 @@ The owner-confirmed business identity is recorded separately in
 - **Current tenant:** `tenant_id = 1`, `tenant_name = Nature Footprint`.
 - **Generic prompts**, without file-specific descriptions, routing rules, examples,
   known questions, expected answers, or exceptions designed to pass particular tests.
-- **Preserve the old workflow as a historical control**; build the new design
-  separately when implementation is authorized.
+- **Preserve old workflows as historical controls**; the self-hosted main workflow
+  is maintained as a separate dated export.
 
 The previous four-phase Lean Adaptive/local-embedding roadmap is superseded, not
-the current task list. Models/providers, reranking, ingestion/chunking details,
-and the remaining implementation/evaluation sequence remain undecided.
-Ask the owner before selecting them.
+the current task list. The current export records the models and retrieval
+settings in use. Future model, reranking, ingestion/chunking, and evaluation
+changes require evidence rather than assumptions inherited from historical flows.
 
 The dated research history, raw-evidence locations, current gaps and Git/local
 classification are maintained in the
@@ -42,19 +42,21 @@ classification are maintained in the
 Historical scores in that inventory remain attached to their original workflows
 and must not be reported as validation of the self-hosted target.
 
-## Current workflow — owner-confirmed 2026-09-02
+## Current main workflow — owner-confirmed 2026-09-04
 
-The owner supplied **AW5-RAG 1.2** as the current workflow. Its
-[DSL snapshot](dify/exports/aw5-rag-1.2-current-2026-09-02.yml) is preserved
-byte-for-byte, with [configuration and status notes](dify/exports/aw5-rag-1.2-current-2026-09-02.md).
-It has **9 nodes / 10 edges**, LLM 1 routing, separate TOR/SDS/ER retrieval, and
-Merge Context before LLM 2. Retrieval uses weighted `0.5/0.5`, TOR/SDS Top K **3**,
-ER Top K **10**, with reranking disabled.
+The owner supplied **AW5-RAG** from the local self-hosted system and identified it
+as the new main workflow. Its
+[DSL snapshot](dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml) is preserved
+byte-for-byte, with [configuration and status notes](dify/exports/aw5-rag-self-hosted-main-2026-09-04.md).
+It has **4 nodes / 3 edges**:
+`User Input -> Knowledge Retrieval -> LLM -> Answer`. The single retrieval node
+references the three current Knowledge Bases and uses weighted semantic/keyword
+search `0.7/0.3`, Top K **10**, with reranking disabled.
 
-This is the current-state record, **not the new single-retrieval implementation**
-and not Lean Adaptive v1.2. The supplied export was inspected locally; no new run,
-evaluation, or Published/draft verification was performed. The baseline's old
-scores must not be attributed to this file.
+The supplied export was parsed and statically inspected. No formal evaluation,
+Published/draft verification, live-app equality check, or tenant-isolation test
+was performed. Historical workflow scores must not be attributed to this file.
+AW5-RAG 1.2 is retained as the previous owner-confirmed snapshot.
 
 ## Historical implementation and evaluation evidence
 
@@ -73,7 +75,10 @@ These are dated records, not proof of the new design or current live application
 
 Not yet verified or complete:
 
-- The owner has identified the historical current-workflow export and its file hash is recorded. Exact agreement with its old live app and Published/draft state has not been independently checked. The self-hosted app and Knowledge Base work has progressed locally, but no reviewed export or structured evaluation captures that current state; Dify does not synchronize automatically with Git.
+- The self-hosted main workflow export and its file hash are recorded. Exact
+  agreement with the running app and Published/draft state has not been independently
+  checked, and no structured evaluation captures its runtime behavior; Dify does
+  not synchronize automatically with Git.
 - The historical baseline result was `19/19`, but the 2026-08-28 regression was `16/19` strict after bounded retry. Treat repeatability as unresolved and do not quote the historical score as a current stability guarantee.
 - The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
 - `ISO-01` remains N/A until a Project B tenant fixture and a trusted backend project-tenant filter exist.
@@ -87,8 +92,9 @@ foundation, created the administrator account, configured model providers,
 installed the signed Gemini Embedding 2 (AW5) plugin, and began the three-Knowledge-
 Base ingestion/chunking work. The synthetic embedding pilot is recorded; recent
 real-corpus checks remain exploratory and have no structured evaluation record.
-The current self-hosted workflow still needs a reviewed DSL export and formal
-validation before it can be described as verified.
+The current self-hosted workflow now has a reviewed DSL export. It still needs
+formal validation before its answer quality, latency, cost, citations, or tenant
+isolation can be described as verified.
 
 Old evaluation questions/results remain historical evidence. Do not copy their
 answers into prompts or enforce their router/source-exclusive expectations on the
@@ -132,6 +138,6 @@ design. Provider selection and new transfers of private material need approval.
 
 ## Dify workflow
 
-Running Dify applications are maintained separately from this repository. After authorized meaningful changes, export DSL/YAML under `dify/exports/`; never commit API keys or provider credentials. [`dify/exports/CURRENT.md`](dify/exports/CURRENT.md) identifies the owner-confirmed current AW5-RAG 1.2 snapshot, historical artifacts, and the frozen control separately. The new single-retrieval self-hosted direction has no approved implementation snapshot recorded by this update.
+Running Dify applications are maintained separately from this repository. After authorized meaningful changes, export DSL/YAML under `dify/exports/`; never commit API keys or provider credentials. [`dify/exports/CURRENT.md`](dify/exports/CURRENT.md) identifies the owner-confirmed self-hosted main workflow, the previous AW5-RAG 1.2 snapshot, historical artifacts, and the frozen control separately.
 
 Custom Dify plugins are maintained in separate Git repositories and are not versioned in this repository.

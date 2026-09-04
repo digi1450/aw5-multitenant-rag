@@ -1,4 +1,4 @@
-# AW5-RAG 1.2 — Owner-confirmed Current Workflow
+# AW5-RAG 1.2 — Previous Owner-confirmed Workflow Snapshot
 
 ## Provenance and status
 
@@ -12,8 +12,9 @@
   dependencies, dataset references, and retrieval settings were not modified.
 - Application name: `AW5-RAG 1.2`; mode: `advanced-chat`; DSL version: `0.7.0`.
 
-**Status: owner-confirmed current workflow; inspected as a local export.** This
-does not verify Published versus draft state, the current live instance, import
+**Status at capture: owner-confirmed current workflow on 2026-09-02; superseded
+as the current pointer by the self-hosted main export on 2026-09-04.** This does
+not verify Published versus draft state, the old live instance, import
 compatibility, answer quality, citation behavior, latency, cost, or isolation.
 No Dify import, execution, or evaluation was performed for this record.
 
@@ -63,14 +64,14 @@ record does not install, modify, or publish either plugin.
 
 ## Relationship to the target architecture
 
-The [owner-confirmed target](../../docs/architecture/current-direction-2026-09-02.md)
-remains self-hosted Dify, locally stored knowledge, cloud models, one retrieval
-node, and generic prompts. **That target has not replaced this current workflow.**
+The [owner-confirmed direction](../../docs/architecture/current-direction-2026-09-02.md)
+is self-hosted Dify, locally stored knowledge, cloud models, one retrieval node,
+and generic prompts. The owner-confirmed 2026-09-04 main export now implements
+that simple graph and replaces this file as the current pointer.
 
 This snapshot still has LLM 1 source descriptions, source flags, and three retrieval
-nodes. Preserve them as the current-state record, not as mandatory rules for the
-new design. Recording existing model names does not select the models/providers
-for the future workflow.
+nodes. Preserve them as historical current-state evidence, not as mandatory rules
+for the self-hosted main workflow.
 
 ## Preservation and security checks
 
