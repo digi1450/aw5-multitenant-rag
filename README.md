@@ -4,25 +4,43 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 ## Current status
 
-**Target direction updated 2026-09-02; the live implementation has not been changed
-by this update.** The owner's latest clarification after consulting the
+**Target direction updated 2026-09-02; local Dify 1.17.0 is installed, and the
+owner has begun the self-hosted application, Knowledge Base, ingestion and
+chunking work. The target workflow is not yet captured in a reviewed DSL or
+formally evaluated.**
+Installation location, checks and operating instructions are recorded in the
+[local installation record](docs/architecture/dify-local-installation-2026-09-02.md).
+The owner's latest clarification after consulting the
 instructor is recorded in
 [`Current architecture direction`](docs/architecture/current-direction-2026-09-02.md).
+The owner-confirmed business identity is recorded separately in
+[`Tenant and project identity`](docs/architecture/tenant-project-boundary-2026-09-03.md).
 
 - **Dify self-hosted and knowledge/files stored on the owner's computer**, acting as
   the project server.
 - **Cloud models** for embeddings and answer generation, and reranking if selected.
 - **One Knowledge Retrieval node**, searching across the authorized corpus rather
   than hard-gating TOR/SDS/ER through source-router flags.
+- **Three Knowledge Bases for the current tenant**, one for each primary file:
+  TOR, SDS, and ER/dbdiagram. All three connect to the same retrieval node.
+- **One tenant is one software project**; `tenant_id` is the sole project-scope
+  identifier and is derived from trusted project membership.
+- **Current tenant:** `tenant_id = 1`, `tenant_name = Nature Footprint`.
 - **Generic prompts**, without file-specific descriptions, routing rules, examples,
   known questions, expected answers, or exceptions designed to pass particular tests.
 - **Preserve the old workflow as a historical control**; build the new design
   separately when implementation is authorized.
 
 The previous four-phase Lean Adaptive/local-embedding roadmap is superseded, not
-the current task list. Models/providers, reranking, knowledge-base organization,
-installation details, and the implementation/evaluation sequence remain undecided.
+the current task list. Models/providers, reranking, ingestion/chunking details,
+and the remaining implementation/evaluation sequence remain undecided.
 Ask the owner before selecting them.
+
+The dated research history, raw-evidence locations, current gaps and Git/local
+classification are maintained in the
+[`Research Evidence Inventory`](docs/research/research-evidence-inventory.md).
+Historical scores in that inventory remain attached to their original workflows
+and must not be reported as validation of the self-hosted target.
 
 ## Current workflow — owner-confirmed 2026-09-02
 
@@ -55,19 +73,22 @@ These are dated records, not proof of the new design or current live application
 
 Not yet verified or complete:
 
-- The owner has identified the current workflow export and its file hash is recorded. Exact agreement with a live app, Published/draft state, and any self-hosted deployment have not been independently checked; Dify does not synchronize automatically with Git.
+- The owner has identified the historical current-workflow export and its file hash is recorded. Exact agreement with its old live app and Published/draft state has not been independently checked. The self-hosted app and Knowledge Base work has progressed locally, but no reviewed export or structured evaluation captures that current state; Dify does not synchronize automatically with Git.
 - The historical baseline result was `19/19`, but the 2026-08-28 regression was `16/19` strict after bounded retry. Treat repeatability as unresolved and do not quote the historical score as a current stability guarantee.
 - The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
-- `ISO-01` remains N/A until a Project B fixture and a trusted backend tenant/project filter exist.
-- Multi-tenant authorization, production deployment, frontend/backend implementation, and conversation-memory behavior are not complete or proven.
+- `ISO-01` remains N/A until a Project B tenant fixture and a trusted backend project-tenant filter exist.
+- The project-tenant identity is defined, but its authorization, production deployment, frontend/backend implementation, and conversation-memory behavior are not complete or proven.
 
 ## Immediate scope
 
-Synchronize Markdown with the confirmed direction and preserve the supplied current
-workflow. The owner has authorized committing and pushing this documentation and
-snapshot update to `main`. This is not authorization to install services, modify a
-live workflow/prompt, choose models, run evaluations, migrate documents, or Publish
-a Dify app. Unresolved implementation decisions still require the owner's input.
+The earlier documentation/current-snapshot update had bounded commit/push
+authorization. The owner subsequently authorized and completed the local Dify
+foundation, created the administrator account, configured model providers,
+installed the signed Gemini Embedding 2 (AW5) plugin, and began the three-Knowledge-
+Base ingestion/chunking work. The synthetic embedding pilot is recorded; recent
+real-corpus checks remain exploratory and have no structured evaluation record.
+The current self-hosted workflow still needs a reviewed DSL export and formal
+validation before it can be described as verified.
 
 Old evaluation questions/results remain historical evidence. Do not copy their
 answers into prompts or enforce their router/source-exclusive expectations on the
@@ -91,6 +112,7 @@ docs/
   architecture/              Current direction and superseded architecture notes
   course-requirements/       Official DS1–DS3 submission requirements
   deliverables/              Submitted and working deliverables
+  research/                  Evidence inventory and publication-oriented records
 dify/                        Dify workflow export instructions/artifacts
 knowledge_base/
   nature_footprint/          Publishable metadata and evaluation material

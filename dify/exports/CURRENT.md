@@ -16,14 +16,15 @@ wiring, and verification limits. Published/draft state and the live instance wer
 not inspected. This is not the similarly named Lean Adaptive v1.2 candidate and
 does not inherit the frozen baseline's evaluation scores.
 
-## Target direction — confirmed 2026-09-02, not yet implemented
+## Target direction — confirmed 2026-09-02, implementation evidence incomplete
 
 The owner confirmed [self-hosted Dify, local knowledge storage, cloud models, and
 one Knowledge Retrieval node](../../docs/architecture/current-direction-2026-09-02.md).
 The new workflow must not inherit per-file prompts or TOR/SDS/ER hard-gating flags.
-Models/providers, reranking, knowledge-base layout, and implementation details are
-undecided. This update records the supplied current DSL without modifying it and
-updates documentation; it does not change a live app or implement the target.
+The owner later began the self-hosted app, provider, Knowledge Base, ingestion and
+chunking work. Those local changes are not represented by a reviewed DSL export or
+formal evaluation in this directory. This section records the evidence boundary;
+it does not promote an unexported local state as a verified workflow.
 
 The baseline below remains the frozen control and rollback artifact, **not the
 required development template**. All earlier candidate notes, proposed next steps,
@@ -144,5 +145,5 @@ Do not treat these historical snapshots as the latest candidate or the verified 
 - Before/after representative evaluation: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-representative-baseline.md`
 - Final live-draft evaluation: `../../knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`; strict pass `19/19` scored cases
 - At the 2026-08-25 capture, the Dify UI showed the improved workflow as an Auto-Saved draft while the Published version remained older
-- `ISO-01` remains N/A until a Project B fixture and trusted tenant/project filter exist; do not call tenant isolation complete
+- `ISO-01` remains N/A until a Project B tenant fixture and trusted project-tenant filter exist; do not call tenant isolation complete
 - Repository handoff for this snapshot and its full-suite evidence was completed on `origin/main` in commit `64418f8` (`feat: finalize AW5 RAG source-routing workflow`). This confirms the Git snapshot, not the current Dify Cloud Published state.

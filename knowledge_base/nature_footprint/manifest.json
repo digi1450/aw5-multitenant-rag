@@ -1,5 +1,7 @@
 {
   "corpus_id": "nature-footprint",
+  "tenant_id": 1,
+  "tenant_name": "Nature Footprint",
   "title": "Nature Footprint Software Project Artifacts",
   "created_for": "AW5 Multi-Tenant RAG-based Conversational AI for Software Development Lifecycle",
   "created_date": "2026-08-14",
@@ -63,4 +65,3 @@
     }
   ]
 }
-

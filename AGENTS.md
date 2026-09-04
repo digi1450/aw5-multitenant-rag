@@ -10,12 +10,14 @@ Before planning or changing the project, read these files in order:
 
 1. `README.md` — current direction, historical evidence, and unresolved decisions.
 2. `docs/architecture/current-direction-2026-09-02.md` — authoritative owner-confirmed architecture; supersedes the old locked roadmap.
-3. `dify/exports/CURRENT.md` — owner-confirmed current AW5-RAG 1.2 export, frozen baseline, and historical candidates; none is a deployed implementation of the new direction.
-4. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md` — historical baseline accuracy/latency/cost evidence and demonstrated failures.
-5. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md` — historical scored `19/19` RAG evidence and its limits.
-6. `knowledge_base/nature_footprint/evaluation/evaluation-suite-v1.md` — legacy evaluation definitions, including the unexecuted `ISO-01` fixture; source-router expectations are not the new architecture contract.
-7. `docs/course-requirements/ds1-ds3-requirements.md` — instructor-supplied deliverable requirements.
-8. `knowledge_base/nature_footprint/README.md` and `manifest.json` — corpus provenance and ingestion boundaries.
+3. `docs/architecture/tenant-project-boundary-2026-09-03.md` — authoritative definition that one AW5 tenant is one project and the required isolation boundary.
+4. `docs/research/research-evidence-inventory.md` — chronological evidence map, raw-artifact locations, verified/partial/missing boundaries, and Git/local classification.
+5. `dify/exports/CURRENT.md` — owner-confirmed current AW5-RAG 1.2 export, frozen baseline, and historical candidates; none is a deployed implementation of the new direction.
+6. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md` — historical baseline accuracy/latency/cost evidence and demonstrated failures.
+7. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md` — historical scored `19/19` RAG evidence and its limits.
+8. `knowledge_base/nature_footprint/evaluation/evaluation-suite-v1.md` — legacy evaluation definitions, including the unexecuted `ISO-01` fixture; source-router expectations are not the new architecture contract.
+9. `docs/course-requirements/ds1-ds3-requirements.md` — instructor-supplied deliverable requirements.
+10. `knowledge_base/nature_footprint/README.md` and `manifest.json` — corpus provenance and ingestion boundaries.
 
 Do not infer the latest workflow from export filenames alone. Follow `dify/exports/CURRENT.md` for artifacts and the current-direction document for design intent. Newer explicit owner instructions supersede older repository plans or agent memory; ask before resolving ambiguity.
 
@@ -24,7 +26,7 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 - Separate **verified**, **not verified**, and **planned** work. A plan, prompt, README statement, or configuration is not test evidence by itself.
 - The owner identified `dify/exports/aw5-rag-1.2-current-2026-09-02.yml` as the current workflow. Its byte-identical preservation and static configuration are verified, not its runtime behavior or Published/draft state. It is distinct from Lean Adaptive v1.2 and must not inherit old evaluation scores.
 - The historical RAG baseline run has `19/19` strict passes, while the 2026-08-28 regression scored `16/19` strict after bounded retry under the legacy rubric. This does not prove the new architecture, stability, production readiness, multi-tenant isolation, or conversation memory.
-- `ISO-01` is N/A until a synthetic Project B fixture and trusted backend `tenant_id`/`project_id` filtering exist.
+- `ISO-01` is N/A until a synthetic Project B tenant fixture and trusted backend project-tenant filtering exist.
 - The verified DSL/evaluation baseline is committed on `origin/main` at `64418f8`. The working tree may contain newer documentation, so inspect `git status` before making a current repository-state claim. The Dify Cloud app is maintained separately and does not synchronize automatically with Git.
 - The baseline export records a saved draft on 2026-08-25; later dated traces and candidate reports are separate evidence. Check the live application before claiming that it is currently Published or unchanged.
 - Do not describe the assistant as doing the whole SDLC. Describe it as retrieving and tracing evidence across selected SDLC artifacts.
@@ -32,10 +34,15 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 ## Current architecture direction — confirmed 2026-09-02
 
 - Dify and persistent knowledge/files run on the owner's computer, acting as the project server. Models use cloud APIs: embeddings, answer LLM, and reranker if one is selected.
-- Use one Knowledge Retrieval node over the authorized corpus; do not split retrieval by TOR/SDS/ER or gate it with `use_tor` / `use_sds` / `use_er`.
+- Business identity revised and locked 2026-09-03: one AW5 tenant is one software project, and `tenant_id` is the sole project-scope identifier. Do not introduce a separate project ID field. The earlier Team -> Projects interpretation is superseded.
+- The first/current tenant is `tenant_id = 1`, with `tenant_name = Nature Footprint`; the name is a display label and is not an authorization key.
+- Dify's internal `tenant_id` means Workspace and is distinct from the AW5 project tenant ID; qualify the identifier in code and documentation.
+- The trusted backend must derive and enforce the project tenant ID from authenticated project membership before retrieval. User text, model output, and untrusted client IDs cannot grant scope.
+- Use one Knowledge Retrieval node over the authorized corpus; do not split retrieval into TOR/SDS/ER branches or gate it with `use_tor` / `use_sds` / `use_er`.
+- Current Knowledge Base layout confirmed 2026-09-03: use one Knowledge Base per primary file. Nature Footprint therefore has three Knowledge Bases for `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `ER_dbdiagram.txt`, all connected to the same retrieval node.
 - Do not hard-filter to a document merely because the question names it. Preserve actual source attribution; broader retrieval does not permit claiming that one document says something found only in another.
 - Prompts must be generic: no per-file descriptions, test questions, expected answers, worked examples, or case-specific exceptions to force known tests to pass.
-- Adding a file must not require another routing node or a system-prompt update. Knowledge-base layout, model/provider choice, reranking, installation details, and optional rewriting/history behavior remain undecided.
+- Adding a primary file means adding its own Knowledge Base to the same retrieval node; it must not require another routing node or a system-prompt update. Model/provider choice, reranking, ingestion/chunking details, and optional rewriting/history behavior remain undecided.
 - Local storage is not zero disclosure: cloud embedding receives chunk/query text; cloud reranking receives candidates; answer generation receives the selected context. Do not claim that only final Top-K evidence leaves the computer.
 - Preserve old workflows as controls, not as a required design template. The new direction has not been implemented or validated by this documentation update.
 
@@ -98,15 +105,15 @@ superseded four-phase Lean Adaptive/local-model roadmap, patch known questions, 
 start another evaluation run just because a historical note says "next".
 
 Keep implementation choices explicitly undecided until the owner resolves them.
-Ask before choosing models/providers, reranking, knowledge-base organization,
+Ask before choosing models/providers, reranking, ingestion/chunking details,
 installation/infrastructure, a new evaluation protocol, or a work sequence. The
 owner authorized preserving the supplied current DSL and committing/pushing this
 documentation/snapshot update to `main`. That bounded authorization does not
 authorize installing Dify, modifying a live workflow/prompt, changing the supplied
 DSL, uploading knowledge to a provider, running evaluations, or publishing Dify.
 
-Trusted tenant/project authorization remains required before retrieval. Removing
-document-type routing does not authorize cross-tenant search. Project B and
+Trusted project-tenant authorization remains required before retrieval. Removing
+document-type routing does not authorize cross-tenant (cross-project) search. Project B and
 `ISO-01` remain unimplemented/unverified until supported by actual evidence; this
 update does not choose the isolation mechanism or schedule its implementation.
 

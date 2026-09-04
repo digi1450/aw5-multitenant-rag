@@ -34,13 +34,13 @@ This is not merely a collection of unrelated PDFs. It is a traceable chain of re
 - Deduplicate repeated TOR material embedded in the System Design Specification.
 - Normalize Thai text carefully and keep the original extraction for auditability.
 - Prefer the dbdiagram text for schema semantics; use the diagram PDF for visual-layout experiments.
-- A metadata filter must include both tenant and project scope when this corpus is ingested into the future multi-tenant system.
+- A metadata filter must enforce the trusted project tenant scope when this corpus is ingested into the future multi-tenant system.
 
 ## Recommended metadata
 
 ```text
 tenant_id
-project_id
+tenant_name
 document_id
 artifact_type
 sdlc_stage
@@ -51,4 +51,3 @@ table_name
 source_sha256
 extraction_method
 ```
-

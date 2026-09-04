@@ -2,14 +2,18 @@
 
 This directory is an ingestion-ready, source-backed corpus for the AW5 Multi-Tenant RAG senior project. It is intentionally independent of any chunking library, embedding model, vector database, or RAG framework.
 
+Its owner-confirmed AW5 tenant identity is `tenant_id = 1`, with the display name
+`Nature Footprint`.
+
 ## Current direction — 2026-09-02
 
 The target is [self-hosted Dify with local knowledge storage and cloud models](../../docs/architecture/current-direction-2026-09-02.md).
 Use one retrieval node across the authorized project corpus. The artifact roles
 below describe this case study; they are not source-router rules or descriptions
-to embed in system prompts. Adding documents must not require per-file nodes or
-prompt changes. Knowledge-base organization and ingestion/chunking methods remain
-undecided, and this update has not migrated or re-indexed any files.
+to embed in system prompts. The owner confirmed one Knowledge Base per primary
+file, all connected to that single retrieval node. Adding documents must not
+require per-file retrieval nodes or prompt changes. Ingestion/chunking methods
+remain undecided, and this update has not migrated or re-indexed any files.
 
 Local storage does not mean document text never leaves the computer: cloud
 embedding receives chunk text during ingestion; reranking, if selected, receives
@@ -50,15 +54,26 @@ nature_footprint/
 
 The local `output/pdf/` directory is generated/private and excluded from Git. The recorded Dify Cloud ingestion files are listed below; this is not a verified inventory of a new self-hosted deployment:
 
-- `output/pdf/Attach_TOR_1.pdf` — cleaned/OCR-ready TOR, renamed to the original user-facing filename so questions and citations match `Attach_TOR_1.pdf`.
-- `output/pdf/System Design Specification.pdf` — cleaned/OCR-ready SDS, renamed to the user-facing filename used in Dify and citations.
-- `knowledge_base/nature_footprint/sources/er-dbdiagram.txt` — structured ER/dbdiagram source used directly as `ER_dbdiagram.txt`; it does not require OCR or PDF noise removal.
+- **TOR Knowledge Base:** `output/pdf/Attach_TOR_1.pdf` — cleaned/OCR-ready TOR, renamed to the original user-facing filename so questions and citations match `Attach_TOR_1.pdf`.
+- **SDS Knowledge Base:** `output/pdf/System Design Specification.pdf` — cleaned/OCR-ready SDS, renamed to the user-facing filename used in Dify and citations.
+- **ER Knowledge Base:** `knowledge_base/nature_footprint/sources/er-dbdiagram.txt` — structured ER/dbdiagram source used directly as `ER_dbdiagram.txt`; it does not require OCR or PDF noise removal.
+
+The visual ER diagram PDF remains a provenance source and visual-layout experiment;
+it is not one of the three primary Dify ingestion files in this layout.
 
 The byte-preserved originals remain under the private `sources/` directory. Do not replace provenance sources with cleaned outputs or commit either private directory without explicit publication permission.
 
 The original TOR is `sources/nature-footprint-tor.pdf`; its user-facing document
 name is `Attach_TOR_1.pdf`. These refer to the same TOR artifact, not different
 source categories. Preserve the original file and its manifest checksum.
+
+## Deferred retrieval contingencies
+
+- [ER exhaustive column lookup contingency](notes/er-exhaustive-column-lookup-contingency.md)
+  records possible responses if a future requirement demands a complete list of
+  every table containing a column. It is a discoverable fallback only, not a
+  current requirement, approved implementation, or instruction to change the
+  existing parent-child ingestion and workflow.
 
 ## Corpus use cases, not a routing or execution plan
 
