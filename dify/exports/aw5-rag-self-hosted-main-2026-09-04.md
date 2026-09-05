@@ -1,5 +1,10 @@
 # AW5-RAG — Self-hosted Main Workflow
 
+> **Historical status update — 2026-09-06:** this was the owner-confirmed main
+> snapshot on 2026-09-04. It was superseded by
+> [`aw5-rag-self-hosted-main-2026-09-06.yml`](aw5-rag-self-hosted-main-2026-09-06.yml)
+> and is retained as the immediate four-node control.
+
 ## Provenance and status
 
 - The owner supplied `AW5-RAG-2.yml` and explicitly identified it as the new
@@ -13,8 +18,9 @@
   dependencies, dataset references and retrieval settings were not modified.
 - Application name: `AW5-RAG`; mode: `advanced-chat`; DSL version: `0.7.0`.
 
-**Status: owner-confirmed current main workflow for the self-hosted system;
-statically inspected as a local export.** This does not verify Published versus
+**Status at capture: owner-confirmed main workflow for the self-hosted system;
+now superseded and retained as a control; statically inspected as a local
+export.** This does not verify Published versus
 draft state, byte equality with the currently running app, import compatibility,
 answer quality, citation behavior, latency, cost, backup/restore, or tenant
 isolation. No Dify import or formal evaluation was performed for this record.
@@ -59,10 +65,10 @@ snapshot. This record does not install, modify, or publish either plugin.
 
 ## Architecture fit and remaining boundary
 
-The graph implements the owner-confirmed simple path and connects three Knowledge
-Bases through one retrieval node. This makes it the repository's current main
-workflow snapshot and replaces AW5-RAG 1.2 as the current pointer. AW5-RAG 1.2 and
-the 2026-08-25 source-routing baseline remain historical controls.
+The graph implemented the owner-confirmed simple path and connected three
+Knowledge Bases through one retrieval node. It replaced AW5-RAG 1.2 as the
+current pointer on 2026-09-04 and was itself superseded on 2026-09-06. AW5-RAG
+1.2 and the 2026-08-25 source-routing baseline remain historical controls.
 
 Metadata filtering is disabled in this export. The workflow itself therefore does
 not demonstrate trusted enforcement of the AW5 project `tenant_id`. The required

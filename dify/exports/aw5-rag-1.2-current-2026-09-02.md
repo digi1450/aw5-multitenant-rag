@@ -66,7 +66,7 @@ record does not install, modify, or publish either plugin.
 
 The [owner-confirmed direction](../../docs/architecture/current-direction-2026-09-02.md)
 is self-hosted Dify, locally stored knowledge, cloud models, one retrieval node,
-and generic prompts. The owner-confirmed 2026-09-04 main export now implements
+and generic prompts. The owner-confirmed 2026-09-06 main export now implements
 that simple graph and replaces this file as the current pointer.
 
 This snapshot still has LLM 1 source descriptions, source flags, and three retrieval

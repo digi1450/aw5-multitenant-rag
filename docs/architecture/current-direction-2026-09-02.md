@@ -12,8 +12,9 @@ see the [installation record](dify-local-installation-2026-09-02.md). At that da
 this resolved the base installation/version/storage-product choices below but did
 not yet implement the target workflow or choose models/providers.
 
-The owner-confirmed self-hosted main workflow was subsequently captured on
-2026-09-04; see the current-workflow section below.
+The first owner-confirmed self-hosted main workflow was captured on 2026-09-04.
+The owner promoted the Published five-node successor on 2026-09-06; see the
+current-workflow section below.
 
 This document supersedes the architecture and phase sequence in
 [`local-first-hybrid-rag-roadmap.md`](local-first-hybrid-rag-roadmap.md), including
@@ -35,18 +36,19 @@ filtering implementation open.
 
 ## Current workflow is recorded separately
 
-On 2026-09-04, the owner supplied the local self-hosted **AW5-RAG** export and
-identified it as the new main workflow. See the
+On 2026-09-06, the owner supplied the Published **AW5-RAG Test** export and
+promoted it to the project's current main development workflow. See the
 [current export pointer](../../dify/exports/CURRENT.md) and
-[snapshot record](../../dify/exports/aw5-rag-self-hosted-main-2026-09-04.md).
-Its graph is `User Input -> Knowledge Retrieval -> LLM -> Answer`, with the three
-current Knowledge Bases connected to the one retrieval node. The export is
-preserved without modification and statically inspected. It has not received a
-formal quality, latency, cost, citation, or tenant-isolation evaluation.
+[snapshot record](../../dify/exports/aw5-rag-self-hosted-main-2026-09-06.md).
+Its graph is `User Input -> Knowledge Retrieval -> Code -> LLM -> Answer`, with
+the three current Knowledge Bases connected to one retrieval node. The Code node
+adds generic source metadata to retrieved content; it does not route or filter
+documents. The export is preserved without modification, and the Published path
+has targeted runtime evidence. It has not received a formal quality,
+repeatability, citation, or tenant-isolation evaluation.
 
-The 2026-09-02 AW5-RAG 1.2 export with LLM 1 routing and separate TOR/SDS/ER
-retrieval remains preserved as the previous owner-confirmed snapshot and a
-historical control.
+The 2026-09-04 four-node main and 2026-09-02 AW5-RAG 1.2 export remain preserved
+as previous snapshots and historical controls.
 
 ## Confirmed direction
 
@@ -63,7 +65,7 @@ historical control.
   rather than document-specific TOR/SDS/ER retrieval branches.
 - For the current Nature Footprint tenant, connect that one retrieval node to
   **three Knowledge Bases separated by primary file**:
-  `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `ER_dbdiagram.txt`.
+  `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `er-dbdiagram.txt`.
   Each future primary file receives its own Knowledge Base and is added to the
   same retrieval node; it does not receive another routing/retrieval branch.
 - Do not use `use_tor`, `use_sds`, or `use_er` as a model-selected hard gate in the
@@ -77,12 +79,12 @@ historical control.
 - Keep the old workflow and its evidence separate from the new design. Do not
   overwrite the baseline to implement the new direction.
 
-The agreed simplification is one retrieval step followed by grounded answer
-generation. The 2026-09-04 main export implements this graph, while runtime
-behavior remains to be formally validated:
+The agreed design uses one retrieval step, deterministic source enrichment and
+grounded answer generation. The 2026-09-06 main export implements this graph,
+while general runtime behavior remains to be formally validated:
 
 ```text
-User question -> Knowledge Retrieval -> Answer LLM -> Answer
+User question -> Knowledge Retrieval -> Source enrichment -> Answer LLM -> Answer
 ```
 
 The three Knowledge Bases may use parser and chunking settings appropriate to

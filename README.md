@@ -5,9 +5,9 @@ Senior project repository for a multi-tenant conversational assistant that retri
 ## Current status
 
 **Target direction updated 2026-09-02; local Dify 1.17.0 is installed, and the
-owner confirmed the simple self-hosted workflow as the new main workflow on
-2026-09-04. Its reviewed DSL snapshot is recorded, but it has not yet received a
-formal evaluation.**
+owner promoted the Published five-node self-hosted workflow as the current main
+workflow on 2026-09-06. Its reviewed DSL snapshot and targeted diagnostic are
+recorded, but it has not received a formal evaluation.**
 Installation location, checks and operating instructions are recorded in the
 [local installation record](docs/architecture/dify-local-installation-2026-09-02.md).
 The owner's latest clarification after consulting the
@@ -42,21 +42,24 @@ classification are maintained in the
 Historical scores in that inventory remain attached to their original workflows
 and must not be reported as validation of the self-hosted target.
 
-## Current main workflow — owner-confirmed 2026-09-04
+## Current main workflow — owner-confirmed 2026-09-06
 
-The owner supplied **AW5-RAG** from the local self-hosted system and identified it
-as the new main workflow. Its
-[DSL snapshot](dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml) is preserved
-byte-for-byte, with [configuration and status notes](dify/exports/aw5-rag-self-hosted-main-2026-09-04.md).
-It has **4 nodes / 3 edges**:
-`User Input -> Knowledge Retrieval -> LLM -> Answer`. The single retrieval node
-references the three current Knowledge Bases and uses weighted semantic/keyword
-search `0.7/0.3`, Top K **10**, with reranking disabled.
+The owner supplied the Published **AW5-RAG Test** export and promoted it to the
+project's current main development workflow. Its
+[DSL snapshot](dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml) is preserved
+byte-for-byte, with [configuration and status notes](dify/exports/aw5-rag-self-hosted-main-2026-09-06.md).
+It has **5 nodes / 4 edges**:
+`User Input -> Knowledge Retrieval -> Code -> LLM -> Answer`. The single
+retrieval node searches the three current Knowledge Bases. The deterministic
+Code node adds retrieved `document_name` and `dataset_name` values to the content
+seen by the LLM; it does not route or filter by document.
 
-The supplied export was parsed and statically inspected. No formal evaluation,
-Published/draft verification, live-app equality check, or tenant-isolation test
-was performed. Historical workflow scores must not be attributed to this file.
-AW5-RAG 1.2 is retained as the previous owner-confirmed snapshot.
+The Published five-node path and source prefixes in the rendered LLM prompts were
+verified. A [targeted five-case diagnostic](docs/research/self-hosted-source-prefix-diagnostic-2026-09-06.md)
+produced 4 pass, 1 partial and 0 fail without timeout or retry. This is
+exploratory evidence, not a formal evaluation, repeatability result, production
+readiness claim or tenant-isolation test. The 2026-09-04 four-node workflow and
+AW5-RAG 1.2 remain previous snapshots.
 
 ## Historical implementation and evaluation evidence
 
@@ -75,10 +78,10 @@ These are dated records, not proof of the new design or current live application
 
 Not yet verified or complete:
 
-- The self-hosted main workflow export and its file hash are recorded. Exact
-  agreement with the running app and Published/draft state has not been independently
-  checked, and no structured evaluation captures its runtime behavior; Dify does
-  not synchronize automatically with Git.
+- The current main workflow export and its file hash are recorded, and the
+  Published five-node runtime path was independently checked. Only a targeted
+  five-case diagnostic exists; general correctness and repeatability remain
+  unverified, and Dify does not synchronize automatically with Git.
 - The historical baseline result was `19/19`, but the 2026-08-28 regression was `16/19` strict after bounded retry. Treat repeatability as unresolved and do not quote the historical score as a current stability guarantee.
 - The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
 - `ISO-01` remains N/A until a Project B tenant fixture and a trusted backend project-tenant filter exist.
@@ -89,12 +92,12 @@ Not yet verified or complete:
 The earlier documentation/current-snapshot update had bounded commit/push
 authorization. The owner subsequently authorized and completed the local Dify
 foundation, created the administrator account, configured model providers,
-installed the signed Gemini Embedding 2 (AW5) plugin, and began the three-Knowledge-
-Base ingestion/chunking work. The synthetic embedding pilot is recorded; recent
-real-corpus checks remain exploratory and have no structured evaluation record.
-The current self-hosted workflow now has a reviewed DSL export. It still needs
-formal validation before its answer quality, latency, cost, citations, or tenant
-isolation can be described as verified.
+installed the signed Gemini Embedding 2 (AW5) plugin, and created the three
+Knowledge Bases. The synthetic embedding pilot and a targeted real-corpus
+diagnostic are recorded. The current self-hosted workflow has a reviewed DSL
+export and verified Published path. It still needs formal validation before its
+general answer quality, repeatability, citations, or tenant isolation can be
+described as verified.
 
 Old evaluation questions/results remain historical evidence. Do not copy their
 answers into prompts or enforce their router/source-exclusive expectations on the

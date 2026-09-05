@@ -3,6 +3,7 @@
 ## Inventory status
 
 - Inventory baseline date: **2026-09-04 (Asia/Bangkok)**
+- Latest material status update: **2026-09-06 (Asia/Bangkok)**
 - Repository: `AW5Project`
 - Branch at capture: `feature/dify-self-hosted`
 - HEAD at capture: `a742a4d2695f119cffb224da65691f4652f4961e`
@@ -18,8 +19,9 @@ The local machine-readable artifact snapshot is stored at
 It catalogs 183 research-related files using repository-relative paths, byte
 sizes, modification times, SHA-256 hashes, Git status, and evidence class.
 The snapshot itself is local-only and ignored by Git. It predates the addition of
-the 2026-09-04 self-hosted main workflow export and record, so its 183-file count
-must not be interpreted as a live count after this update.
+the 2026-09-04 and 2026-09-06 self-hosted workflow exports, records and
+diagnostics, so its 183-file count must not be interpreted as a live count after
+these updates.
 
 | Snapshot property | Value |
 | --- | ---: |
@@ -277,9 +279,63 @@ a durable sanitized snapshot before publication claims.
   status is owner-confirmed; live-app equality, Published/draft state, answer
   quality, citations, latency, cost and project-tenant isolation remain unverified.
 
-Status: **owner-confirmed current main workflow with verified static export, plus
-owner-observed exploratory corpus work**. No new self-hosted RAG quality score is
-claimed.
+Status at capture: **owner-confirmed then-current main workflow with verified
+static export, plus owner-observed exploratory corpus work**. It was superseded
+on 2026-09-06. No self-hosted RAG quality score was claimed for this snapshot.
+
+### 2026-09-05 — named-source diagnosis and evidence handoff rules
+
+- Bounded read-only runtime inspection demonstrated that Knowledge Retrieval
+  results contained `document_name` and `dataset_name`, while the LLM Context
+  rendering exposed retrieved content without those source identifiers.
+- A generic prompt alone could therefore not enforce named-document attribution
+  reliably. The owner added a deterministic Code node that prefixes retrieved
+  content with those two metadata values while retaining result order and the
+  other fields. It does not add a source router or metadata filter.
+- Exploratory filename retrieval and metadata-filtering attempts remain failures,
+  not proof of a ranking, filter, configuration or indexing remedy. Filename
+  search remains outside the current priority.
+- `AGENTS.md` now defines runtime evidence checkpoints, the boundary between test
+  tasks and the scheduled collector, and the owner-directed 20-second cutoff with
+  one fresh-conversation retry for local diagnostics.
+- Raw reports, answers and retrieval details remain local-only under
+  `output/research-evidence/experiments/`.
+
+Status: **verified diagnostic finding and owner-directed workflow change; local
+evidence only at this date**. No formal evaluation was run.
+
+### 2026-09-06 — TOR chunk repair and current-main promotion
+
+- TOR section 4.7.5 was split between consecutive parent chunks after item (5).
+  The owner moved items (6)–(9) into the parent containing the section heading
+  and regenerated child chunks. A bounded retest returned all nine items. This is
+  a targeted runtime repair, not a proven corpus-wide chunking method.
+- The first five-case Published API diagnostic exercised the earlier four-node
+  graph because Code had not yet been Published. It produced 2 pass, 2 partial
+  and 1 fail; the LLM prompts contained no source prefixes.
+- After the owner Published Code, the same five questions exercised
+  `User Input -> Knowledge Retrieval -> Code -> LLM -> Answer`. Read-only runtime
+  inspection confirmed source prefixes in every rendered LLM prompt.
+- The after-state produced 4 pass, 1 partial and 0 fail, with no timeout or retry.
+  Wall time was 3.614–5.610 seconds (median 4.207); Code took
+  0.030–0.048 seconds; answer-model usage totaled 21,634 tokens and USD 0.048096,
+  excluding embedding cost.
+- The partial result correctly identified the same four indicator categories in
+  TOR and SDS but overstated them as `เหมือนกันทุกประการ` despite differences in
+  wording and cited sections.
+- The owner promoted the Published workflow to current main and supplied
+  `AW5-RAG Test-2.yml`. The byte-identical repository snapshot is
+  `dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml`, SHA-256
+  `8ad21cbfbebc7fd87f0f6ac193098623db0bb43acf994745b74716ca77668cea`.
+- Static inspection confirmed 5 nodes/4 edges, one LLM call, one retrieval node,
+  weighted search `0.7/0.3`, Top K 10, reranking/threshold/metadata filtering
+  disabled, and LLM Context wired to `Code.result` with `{{#context#}}` present.
+
+Status: **owner-confirmed current main with verified static export, Published
+five-node path and positive targeted exploratory evidence**. Formal-suite
+accuracy, repeatability, production readiness and tenant isolation remain
+unverified. See
+`docs/research/self-hosted-source-prefix-diagnostic-2026-09-06.md`.
 
 ## Evaluation evidence catalog
 
@@ -401,13 +457,15 @@ Push remains a separate explicit action.
    as experiments.
 3. Historical `19/19` results apply only to dated historical workflows and
    rubrics. They do not validate the self-hosted target.
-4. The current self-hosted workflow now has a reviewed, byte-identical DSL export,
-   but its equality with the running/Published app and runtime behavior are not verified.
-5. Recent self-hosted ad hoc questions and chunk fixes lack durable structured
-   traces, fixed scoring, repeated runs, latency distribution, tokens and cost.
-6. TOR/SDS/ER Knowledge Base creation is owner-observed, but the current database,
-   document, chunk and retrieval configuration has not been exported into a
-   sanitized durable snapshot.
+4. The current self-hosted workflow has a reviewed, byte-identical DSL export and
+   a verified Published five-node runtime path. Only a targeted five-case
+   diagnostic exists; formal-suite accuracy and repeatability remain unverified.
+5. The TOR 4.7.5 chunk repair has structured local evidence and a sanitized
+   summary, but cross-page chunk quality across the rest of the corpus is not
+   established.
+6. TOR/SDS/ER Knowledge Base creation and selected chunk settings are observed,
+   but the complete current database, document, chunk and vector-index state is
+   not portable or reproducible from Git.
 7. Backup/restore, long-term service stability and disaster recovery are untested.
 8. Trusted backend enforcement of the AW5 `tenant_id` and cross-tenant isolation
    remain unimplemented/unverified. `ISO-01` remains N/A.
@@ -437,9 +495,9 @@ Each future material experiment should record:
 
 ## Schedule handoff boundary
 
-This baseline should be reviewed before enabling a recurring task. A future daily
-task should update a local machine-readable manifest, detect new material evidence,
-classify files, and prepare a concise report. It should initially run without
-committing. Auto-commit should be enabled only after several dry runs show that it
-stages only automation-owned, sanitized allowlisted files and never mixes in the
-owner's existing work.
+The local `AW5 Daily Research Evidence` scheduled collector inventories, hashes,
+classifies and summarizes evidence that test tasks have already captured. It is
+not an evaluation runner and must not reconstruct transient runtime evidence,
+change Dify/Docker, reclassify results, or commit/push local-only artifacts. Its
+default remains report-only; any future auto-commit requires separate owner
+authorization and a sanitized allowlist proven not to mix in unrelated changes.

@@ -1,41 +1,57 @@
 # AW5-RAG Dify Export Pointer
 
-## Current main workflow — owner-confirmed 2026-09-04
+## Current main workflow — owner-confirmed 2026-09-06
 
-- Application: **AW5-RAG**.
+- Application label in the preserved export: **AW5-RAG Test**; owner-promoted
+  project status: **current main workflow**.
 - File:
-  [aw5-rag-self-hosted-main-2026-09-04.yml](aw5-rag-self-hosted-main-2026-09-04.yml).
-- Source: the owner supplied `AW5-RAG-2.yml` from the local self-hosted system and
-  identified it as the new main workflow.
-- SHA-256: `b843323262447b25eca4d17304c2b94d521cb53cdc75a18d6f30153e93c25b6d`.
-- Status: **owner-confirmed current main export, statically inspected and
-  preserved byte-for-byte; not formally runtime-tested**.
-- Graph: 4 nodes / 3 edges / 1 LLM node:
-  `User Input -> Knowledge Retrieval -> LLM -> Answer`.
+  [aw5-rag-self-hosted-main-2026-09-06.yml](aw5-rag-self-hosted-main-2026-09-06.yml).
+- Source: the owner supplied `AW5-RAG Test-2.yml` after publishing the tested
+  local workflow and promoted it to current main.
+- SHA-256: `8ad21cbfbebc7fd87f0f6ac193098623db0bb43acf994745b74716ca77668cea`.
+- Status: **owner-confirmed current main export, preserved byte-for-byte;
+  Published five-node path and targeted runtime behavior verified; formal
+  validation incomplete**.
+- Graph: 5 nodes / 4 edges / 1 LLM node:
+  `User Input -> Knowledge Retrieval -> Code -> LLM -> Answer`.
 - Retrieval: one node over three dataset references; weighted semantic/keyword
-  `0.7/0.3`; Top K **10**; reranking and score threshold disabled.
+  `0.7/0.3`; Top K **10**; reranking, score threshold and metadata filtering
+  disabled.
+- Code: generic source enrichment using retrieved `document_name` and
+  `dataset_name`; no routing or document filtering.
 
-See the [snapshot record](aw5-rag-self-hosted-main-2026-09-04.md) for models,
-dependencies, prompt characteristics, wiring and verification limits. The export
-matches the confirmed self-hosted architecture direction. Published/draft state,
-live-app equality, answer quality and trusted project-tenant isolation were not
-verified by preserving this file.
+See the [snapshot record](aw5-rag-self-hosted-main-2026-09-06.md) for models,
+dependencies, prompt characteristics, wiring, runtime evidence and limits. The
+five-case exploratory retest produced 4 pass, 1 partial and 0 fail. It does not
+establish formal quality, repeatability, production readiness or trusted
+project-tenant isolation.
 
-## Implemented direction — confirmed 2026-09-04, formal validation incomplete
+## Implemented direction — confirmed 2026-09-06, formal validation incomplete
 
 The owner confirmed [self-hosted Dify, local knowledge storage, cloud models, and
 one Knowledge Retrieval node](../../docs/architecture/current-direction-2026-09-02.md).
-The current main export implements the simple single-retrieval graph without
-per-file prompts or TOR/SDS/ER hard-gating flags. It references three Knowledge
-Bases from the one retrieval node. The export and its static configuration are
-reviewed repository evidence; formal quality, latency, cost, citation and isolation
-evaluation remains incomplete.
+The current main export implements one retrieval node without per-file prompts or
+TOR/SDS/ER hard-gating flags. It references three Knowledge Bases and uses one
+deterministic Code node to expose retrieved source metadata to the LLM. The export,
+Published path and targeted diagnostic are reviewed evidence; formal quality,
+repeatability, citation and isolation evaluation remains incomplete.
 
 The baseline below remains the frozen control and rollback artifact, **not the
 required development template**. All earlier candidate notes, proposed next steps,
 and source-router evaluation expectations in this directory are historical unless
 explicitly re-approved. The current-workflow pointer is the owner-confirmed
-self-hosted AW5-RAG export above.
+self-hosted main export above.
+
+## Previous owner-confirmed snapshot — 2026-09-04
+
+- Application: **AW5-RAG**.
+- File:
+  [aw5-rag-self-hosted-main-2026-09-04.yml](aw5-rag-self-hosted-main-2026-09-04.yml).
+- SHA-256: `b843323262447b25eca4d17304c2b94d521cb53cdc75a18d6f30153e93c25b6d`.
+- Graph: 4 nodes / 3 edges:
+  `User Input -> Knowledge Retrieval -> LLM -> Answer`.
+- Status: **superseded current-main snapshot; retained as the immediate
+  four-node control**.
 
 ## Previous owner-confirmed snapshot — 2026-09-02
 

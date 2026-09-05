@@ -12,8 +12,10 @@ Use one retrieval node across the authorized project corpus. The artifact roles
 below describe this case study; they are not source-router rules or descriptions
 to embed in system prompts. The owner confirmed one Knowledge Base per primary
 file, all connected to that single retrieval node. Adding documents must not
-require per-file retrieval nodes or prompt changes. Ingestion/chunking methods
-remain undecided, and this update has not migrated or re-indexed any files.
+require per-file retrieval nodes or prompt changes. The current main workflow
+adds generic source metadata after retrieval without routing or filtering by
+document. Ingestion settings remain file-specific runtime state and are not
+fully reproducible from Git alone.
 
 Local storage does not mean document text never leaves the computer: cloud
 embedding receives chunk text during ingestion; reranking, if selected, receives
@@ -56,7 +58,7 @@ The local `output/pdf/` directory is generated/private and excluded from Git. Th
 
 - **TOR Knowledge Base:** `output/pdf/Attach_TOR_1.pdf` — cleaned/OCR-ready TOR, renamed to the original user-facing filename so questions and citations match `Attach_TOR_1.pdf`.
 - **SDS Knowledge Base:** `output/pdf/System Design Specification.pdf` — cleaned/OCR-ready SDS, renamed to the user-facing filename used in Dify and citations.
-- **ER Knowledge Base:** `knowledge_base/nature_footprint/sources/er-dbdiagram.txt` — structured ER/dbdiagram source used directly as `ER_dbdiagram.txt`; it does not require OCR or PDF noise removal.
+- **ER Knowledge Base:** `knowledge_base/nature_footprint/sources/er-dbdiagram.txt` — structured ER/dbdiagram source used directly as `er-dbdiagram.txt`; it does not require OCR or PDF noise removal.
 
 The visual ER diagram PDF remains a provenance source and visual-layout experiment;
 it is not one of the three primary Dify ingestion files in this layout.
@@ -66,6 +68,19 @@ The byte-preserved originals remain under the private `sources/` directory. Do n
 The original TOR is `sources/nature-footprint-tor.pdf`; its user-facing document
 name is `Attach_TOR_1.pdf`. These refer to the same TOR artifact, not different
 source categories. Preserve the original file and its manifest checksum.
+
+## Current local TOR chunk checkpoint — 2026-09-06
+
+The self-hosted TOR Knowledge Base uses Parent-child paragraph chunks. A targeted
+diagnostic found section 4.7.5 divided at a page boundary: the parent containing
+the heading ended after item (5), while items (6)–(9) began the next parent. The
+owner moved items (6)–(9) into the heading parent and regenerated child chunks.
+The resulting Published diagnostic retrieved a complete parent and answered all
+nine items in the bounded test.
+
+This is a documented runtime repair, not a general chunking rule or proof that
+all cross-page sections are correctly grouped. The edited chunks and vector index
+remain local-only; the Dify workflow export does not contain them.
 
 ## Deferred retrieval contingencies
 

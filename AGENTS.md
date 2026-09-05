@@ -24,11 +24,12 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 ## Evidence and status rules
 
 - Separate **verified**, **not verified**, and **planned** work. A plan, prompt, README statement, or configuration is not test evidence by itself.
-- The owner identified `dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml`
-  as the current main workflow. Its byte-identical preservation and static
-  configuration are verified, not its runtime behavior, Published/draft state,
-  quality, latency, cost, citations, or tenant isolation. It must not inherit old
-  evaluation scores.
+- The owner promoted `dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml`
+  as the current main workflow. Its byte-identical preservation, Published
+  five-node runtime path, and one targeted five-case diagnostic are verified.
+  The diagnostic is positive exploratory evidence, not a formal evaluation,
+  repeatability result, production-readiness claim, or tenant-isolation test. It
+  must not inherit old evaluation scores.
 - The historical RAG baseline run has `19/19` strict passes, while the 2026-08-28 regression scored `16/19` strict after bounded retry under the legacy rubric. This does not prove the new architecture, stability, production readiness, multi-tenant isolation, or conversation memory.
 - `ISO-01` is N/A until a synthetic Project B tenant fixture and trusted backend project-tenant filtering exist.
 - The verified DSL/evaluation baseline is committed on `origin/main` at `64418f8`. The working tree may contain newer documentation, so inspect `git status` before making a current repository-state claim. The Dify Cloud app is maintained separately and does not synchronize automatically with Git.
@@ -43,31 +44,48 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 - Dify's internal `tenant_id` means Workspace and is distinct from the AW5 project tenant ID; qualify the identifier in code and documentation.
 - The trusted backend must derive and enforce the project tenant ID from authenticated project membership before retrieval. User text, model output, and untrusted client IDs cannot grant scope.
 - Use one Knowledge Retrieval node over the authorized corpus; do not split retrieval into TOR/SDS/ER branches or gate it with `use_tor` / `use_sds` / `use_er`.
-- Current Knowledge Base layout confirmed 2026-09-03: use one Knowledge Base per primary file. Nature Footprint therefore has three Knowledge Bases for `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `ER_dbdiagram.txt`, all connected to the same retrieval node.
+- Current Knowledge Base layout confirmed 2026-09-03: use one Knowledge Base per primary file. Nature Footprint therefore has three Knowledge Bases for `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `er-dbdiagram.txt`, all connected to the same retrieval node.
 - Do not hard-filter to a document merely because the question names it. Preserve actual source attribution; broader retrieval does not permit claiming that one document says something found only in another.
 - Prompts must be generic: no per-file descriptions, test questions, expected answers, worked examples, or case-specific exceptions to force known tests to pass.
 - Adding a primary file means adding its own Knowledge Base to the same retrieval node; it must not require another routing node or a system-prompt update. The current export records the current model, retrieval and history settings; future changes require evidence. Ingestion/chunking details and trusted isolation enforcement remain under development.
 - Local storage is not zero disclosure: cloud embedding receives chunk/query text; cloud reranking receives candidates; answer generation receives the selected context. Do not claim that only final Top-K evidence leaves the computer.
-- Preserve old workflows as controls, not as a required design template. The simple workflow graph is now captured in the 2026-09-04 main export, but it has not been formally validated.
+- Preserve old workflows as controls, not as a required design template. The
+  current five-node graph is captured in the 2026-09-06 main export. Its bounded
+  diagnostic does not constitute formal validation.
 
 Full decisions and open questions: `docs/architecture/current-direction-2026-09-02.md`.
 
-## Current self-hosted main workflow — owner-confirmed 2026-09-04
+## Current self-hosted main workflow — owner-confirmed 2026-09-06
 
-`dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml` is the owner-confirmed
-current main export. It uses `User Input -> Knowledge Retrieval -> LLM -> Answer`:
-4 nodes / 3 edges / 1 LLM node. One retrieval node references the three current
-Knowledge Bases. Its weighted retrieval is `0.7` semantic/vector and `0.3`
-keyword, Top K `10`, with reranking and score threshold disabled. The answer model
-is `gemini-3.5-flash`; conversation memory is enabled with a window of 10.
+`dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml` is the owner-confirmed
+current main export. It uses
+`User Input -> Knowledge Retrieval -> Code -> LLM -> Answer`: 5 nodes / 4 edges /
+1 LLM node. One retrieval node references the three current Knowledge Bases. The
+Code node generically prefixes retrieved content with `document_name` and
+`dataset_name`; it is not a source router or document filter. LLM Context reads
+`Code.result`, and the system prompt includes `{{#context#}}`.
+
+Weighted retrieval is `0.7` semantic/vector and `0.3` keyword, Top K `10`, with
+reranking, score threshold, and metadata filtering disabled. The answer model is
+`gemini-3.5-flash`; conversation memory is enabled with a window of 10. A
+Published five-case exploratory retest produced 4 pass, 1 partial, and 0 fail,
+with no timeout or retry. This is targeted evidence only; formal quality,
+repeatability and trusted tenant isolation remain unverified.
 
 Use `dify/exports/CURRENT.md` and the linked snapshot record for exact current-file
-configuration. Preserve the export without editing its prompt or settings. Static
-inspection does not establish runtime quality, Published/draft state, live-app
-equality, or trusted AW5 `tenant_id` enforcement. Metadata filtering is disabled,
-so this graph alone does not prove project-tenant isolation.
+configuration and the linked sanitized diagnostic for its evidence limits.
+Preserve the export without editing its prompt or settings. Metadata filtering is
+disabled, so this graph does not prove trusted AW5 `tenant_id` enforcement.
 
-## Previous owner-confirmed snapshot — 2026-09-02
+## Previous owner-confirmed snapshot — 2026-09-04
+
+`dify/exports/aw5-rag-self-hosted-main-2026-09-04.yml` is the immediate
+four-node control. It uses
+`User Input -> Knowledge Retrieval -> LLM -> Answer`: 4 nodes / 3 edges / 1 LLM
+node. It was the owner-confirmed main snapshot before source enrichment was added
+and is now superseded.
+
+## Earlier owner-confirmed snapshot — 2026-09-02
 
 `dify/exports/aw5-rag-1.2-current-2026-09-02.yml` is the previous current-state
 snapshot. It uses LLM 1, Route Queries, three retrieval nodes, Merge Context,
