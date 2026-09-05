@@ -157,6 +157,66 @@ Before changing files:
 5. Record evaluation questions, routing, retrieved sources, answer correctness, citation precision, and limitations after a meaningful RAG change.
 6. Update status documents when repository evidence changes; retain historical evaluation results instead of rewriting them as if they were newly rerun.
 
+## Research-evidence handoff checkpoints
+
+Runtime-testing tasks produce the experiment evidence; the scheduled
+`AW5 Daily Research Evidence` heartbeat inventories and summarizes evidence that
+already exists. The schedule is a collector, not an evaluation runner, and must
+not be relied on to reconstruct transient runtime evidence after a test has
+finished. Capture the smallest consistent evidence set that is sufficient to
+reproduce the run, verify its conclusions, and explain material anomalies; do not
+collect runtime data merely because it is available.
+
+- Before an authorized meaningful Dify change, preserve a read-only pre-change
+  state or identify the exact existing evidence package that the owner accepts
+  as the comparison state. Record the app, Draft/Published status, workflow or
+  export identifier, prompt hash, model, retrieval configuration, Knowledge Base
+  identifiers, corpus/version references, Dify version, timestamp, and intended
+  change to the extent they are available.
+- After the change, capture a post-change state before changing another variable.
+  State exactly what changed and retain the previous state for comparison.
+- After every authorized bounded runtime diagnostic, create or update an atomic
+  local evidence package under
+  `output/research-evidence/experiments/<dated-experiment>/` with `report.md`,
+  `evidence.json`, and `manifest.json`.
+- The minimum evidence set for a candidate or formal run is: evidence
+  classification; exact configuration/version identity; corpus version or safe
+  checksum references; exact questions and rubric when applicable; answers;
+  retrieved-source identifiers, ranks, and scores when available; correctness
+  and citation results; end-to-end and material node-latency summaries; reported
+  token/cost scope; provider failures; and limitations. Use a consistent schema
+  across comparable runs.
+- Preserve detailed runtime evidence such as full SSE events, node
+  inputs/outputs, generated context, Docker/plugin logs, and retry traces only
+  when needed for an authorized diagnostic, a failed case, an anomalous latency
+  or cost result, or a formal methodology that explicitly requires it. Keep only
+  the relevant time window and fields.
+- For owner-directed diagnostics against the local Dify runtime, use a 20-second
+  per-attempt cutoff unless an explicitly approved protocol sets another limit.
+  If an attempt exceeds the cutoff, stop the Dify task when its task identifier
+  is available, record it as a stalled operational attempt, and retry once with
+  a fresh conversation. If the retry also exceeds the cutoff, stop and report
+  the repeated stall instead of continuing. Do not use a stalled or aborted
+  attempt as representative latency or as the semantic result when a completed
+  retry exists; retain it separately as reliability/incident evidence.
+- Do not collect unrelated logs, full database dumps, vector indexes, secrets, or
+  duplicate private corpus content as publication evidence.
+- Classify each package as `exploratory diagnostic`, `formal evaluation`,
+  `incident evidence`, or `release evidence`. Do not promote manual observations
+  or exploratory results to formal evaluation evidence.
+- Run a formal evaluation only with explicit owner authorization and against a
+  frozen workflow, prompt, corpus version, question suite, rubric, and recorded
+  environment.
+- Keep experiment packages local-only by default. Do not copy private corpus
+  text, raw retrieved chunks, credentials, API keys, `.env` contents, Dify
+  databases, or vector-index contents into Git. Publication-facing artifacts
+  must be separately sanitized and reviewed while retaining local provenance and
+  checksums.
+- The scheduled collector may hash, classify, compare, and summarize completed
+  evidence packages. It must not run tests, modify Dify or Docker, change an
+  evidence classification, or commit local-only evidence unless the owner has
+  separately authorized that action and the schedule has been updated for it.
+
 ## Future code directories
 
 When frontend and backend implementation begins, add scoped `AGENTS.md` files inside those directories for framework-specific commands, tests, style, and security rules. The root rules in this file continue to apply unless a more specific nested rule adds stricter guidance.
