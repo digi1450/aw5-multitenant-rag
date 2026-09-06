@@ -375,7 +375,7 @@ or direct trace audit establishes its meaning.
 
 | Artifact group | Quantity/status | Evidence boundary |
 | --- | --- | --- |
-| Git-tracked Dify exports after this update | 18 files: 8 YAML and 10 Markdown records | Includes the owner-confirmed self-hosted main export, previous snapshots, frozen baseline and historical candidates. Static export verification is not runtime validation. |
+| Git-tracked Dify exports after this update | 20 files: 9 YAML and 11 Markdown records | Includes the owner-confirmed self-hosted main export, previous snapshots, frozen baseline and historical candidates. Static export verification is not runtime validation. |
 | Current export pointer | `dify/exports/CURRENT.md` | Separates the current self-hosted main workflow, previous snapshot, frozen baseline and historical candidates. |
 | Local installation evidence | Four Markdown/JSON records from 2026-09-02 | Reviewed, sanitized and committed in `f6aee70`; contain no private corpus content by design. |
 | Runtime state | Sibling `dify-local` directory and Docker volumes | Local-only. Git cannot reproduce admin state, providers, Knowledge Bases, attachments, embeddings or vector indexes. |
