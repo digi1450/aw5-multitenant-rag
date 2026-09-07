@@ -8,6 +8,16 @@ Senior project repository for a multi-tenant conversational assistant that retri
 owner promoted the Published five-node self-hosted workflow as the current main
 workflow on 2026-09-06. Its reviewed DSL snapshot and targeted diagnostic are
 recorded, but it has not received a formal evaluation.**
+
+A separate, newer six-node live Published state received an owner-authorized
+20-case real-use-case evaluation on 2026-09-07. It produced 13 pass, 4 partial
+and 3 fail after repeated operational retries, with 11 timeouts across 39
+attempts. The owner then supplied its exact export, now preserved as an
+[evaluated snapshot](dify/exports/aw5-rag-real-use-case-evaluated-2026-09-07.yml).
+It differs from the current-main export, so the result does not validate or
+promote the current main. See the sanitized
+[evaluation summary](docs/research/self-hosted-real-use-case-evaluation-2026-09-07.md).
+
 Installation location, checks and operating instructions are recorded in the
 [local installation record](docs/architecture/dify-local-installation-2026-09-02.md).
 The owner's latest clarification after consulting the

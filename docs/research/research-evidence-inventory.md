@@ -337,6 +337,52 @@ accuracy, repeatability, production readiness and tenant isolation remain
 unverified. See
 `docs/research/self-hosted-source-prefix-diagnostic-2026-09-06.md`.
 
+### 2026-09-07 — live Published real-use-case evaluation
+
+- The owner authorized a 20-case formal evaluation using realistic project-use
+  questions across TOR, SDS and ER/dbdiagram evidence.
+- Read-only runtime inspection froze a newer live Published graph with 6 nodes / 5
+  edges: `User Input -> Code 1 -> Knowledge Retrieval -> Code 2 -> LLM -> Answer`.
+  Its graph SHA-256 was
+  `0e59ff7964d24d6bffa4db767c8755b59ae9b3ff8228fc4ca94c348017dce66d`.
+- After the run, the owner supplied `AW5-RAG Test2.yml`. It is preserved
+  byte-for-byte as
+  `dify/exports/aw5-rag-real-use-case-evaluated-2026-09-07.yml`, SHA-256
+  `3d3e588a93d56bc35c4176365939009995936fcd133aeda0c104747aa4992f93`.
+- The export and runtime graph were equal after normalizing the three portable
+  Knowledge Base references and UI-only canvas/selection fields; both normalized
+  to SHA-256
+  `72c100b664c15aaad40bd188d5676340f250bde2e93361876ade782a98389393`.
+  The evaluated snapshot remains different from the 2026-09-06 current-main
+  export and the five-node automatic-metadata temperature-zero candidate; neither
+  file inherits this result or changes status.
+- Each case began in a fresh conversation. The primary protocol used a 20-second
+  cutoff and bounded retry. After local Retrieval stalls, the owner directed
+  repeated attempts of the same question until completion. The latest completed
+  answer was used for semantic scoring; all stalled attempts remained reliability
+  evidence.
+- Semantic results were 13 pass, 4 partial and 3 fail: strict pass 65%, pass or
+  partial 85%, and required-source coverage 85%.
+- All 20 cases obtained a completed answer after retries. The run used 39 attempts;
+  11 timed out (28.2%). Ten stopped inside Knowledge Retrieval, while one completed
+  Retrieval in 18.294 seconds and then reached the task cutoff in the LLM.
+- Selected-answer latency was p50 4.186 seconds, p95 14.287 seconds and maximum
+  14.351 seconds. Reported selected-answer usage was 103,537 tokens and USD
+  0.234393, a lower bound that excludes unreported usage from stopped attempts.
+- All three failed cases lacked a required source. Partial cases omitted requested
+  facets or made an over-broad authorization statement. SDS and ER also differed
+  at field level for several tables, so schema authority remains unresolved.
+- The detailed evidence package and English PDF report remain ignored and
+  local-only under `output/`. Their hashes and the sanitized evidence boundary are
+  recorded in
+  `docs/research/self-hosted-real-use-case-evaluation-2026-09-07.md`.
+
+Status: **formal semantic and reliability evidence for the preserved six-node
+evaluated snapshot, with a disclosed supplementary retry deviation**. The
+snapshot is tested but unpromoted. This is not current-main export validation,
+repeatability evidence, production-readiness evidence, tenant-isolation evidence,
+or proof of the Retrieval-stall root cause.
+
 ## Evaluation evidence catalog
 
 The versioned evaluation directory contains 18 Git-tracked artifacts: 16 Markdown
@@ -457,9 +503,12 @@ Push remains a separate explicit action.
    as experiments.
 3. Historical `19/19` results apply only to dated historical workflows and
    rubrics. They do not validate the self-hosted target.
-4. The current self-hosted workflow has a reviewed, byte-identical DSL export and
-   a verified Published five-node runtime path. Only a targeted five-case
-   diagnostic exists; formal-suite accuracy and repeatability remain unverified.
+4. The current-main self-hosted workflow has a reviewed, byte-identical DSL export
+   and a verified Published five-node runtime path. Only a targeted five-case
+   diagnostic applies to that export. A separate newer six-node live Published
+   state received the 2026-09-07 formal evaluation and its exact export was
+   preserved afterward. It remains an unpromoted evaluated snapshot; the
+   current-main export's formal accuracy and repeatability remain unverified.
 5. The TOR 4.7.5 chunk repair has structured local evidence and a sanitized
    summary, but cross-page chunk quality across the rest of the corpus is not
    established.

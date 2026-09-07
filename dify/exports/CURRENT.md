@@ -26,6 +26,48 @@ five-case exploratory retest produced 4 pass, 1 partial and 0 fail. It does not
 establish formal quality, repeatability, production readiness or trusted
 project-tenant isolation.
 
+## Unpublished automatic-metadata candidate — 2026-09-07
+
+- File:
+  [aw5-rag-automatic-metadata-temp0-candidate-2026-09-07.yml](aw5-rag-automatic-metadata-temp0-candidate-2026-09-07.yml)
+- Source: owner-supplied `AW5-RAG Test-4.yml`, SHA-256
+  `2869269da327e4ee90a51726af45dd1016bf1e93e6a353194c1dafc02ddcf88f`.
+- Candidate SHA-256:
+  `cc2e8ac7961e157ab020b1dc167dd1e81e118de3c10c7b52e2a5aeaed673af61`.
+- Change: only the Automatic Metadata Filtering model's temperature changes
+  from `0.7` to `0`; the answer LLM configuration is unchanged.
+- Status: **saved and statically validated; not imported, run, Published,
+  promoted, or formally evaluated**. See the
+  [candidate record](aw5-rag-automatic-metadata-temp0-candidate-2026-09-07.md).
+
+The owner-confirmed 2026-09-06 workflow above remains current main until a later
+candidate is explicitly tested and promoted.
+
+## Live Published formal evaluation — 2026-09-07 (not a promotion)
+
+An owner-authorized 20-case real-use-case evaluation exercised a newer live
+Published state with 6 nodes / 5 edges:
+`User Input -> Code 1 -> Knowledge Retrieval -> Code 2 -> LLM -> Answer`.
+The owner subsequently supplied the exact export, preserved byte-for-byte as
+[aw5-rag-real-use-case-evaluated-2026-09-07.yml](aw5-rag-real-use-case-evaluated-2026-09-07.yml),
+SHA-256
+`3d3e588a93d56bc35c4176365939009995936fcd133aeda0c104747aa4992f93`.
+After normalizing portable Knowledge Base references and UI-only canvas fields,
+the export matched the graph retained by the evaluated runtime runs. See the
+[evaluated snapshot record](aw5-rag-real-use-case-evaluated-2026-09-07.md).
+
+It produced 13 pass, 4 partial and 3 fail after every case obtained a completed
+answer. Across 39 attempts, 11 timed out; 10 stopped inside Knowledge Retrieval
+and one reached the LLM only after Retrieval used 18.294 seconds.
+
+The evaluated six-node snapshot remains different from both the 2026-09-06
+current-main export and the five-node automatic-metadata temperature-zero
+candidate. The result changes neither file's status and does not promote the
+evaluated snapshot. See the sanitized
+[evaluation summary](../../docs/research/self-hosted-real-use-case-evaluation-2026-09-07.md)
+for the frozen live identity, protocol deviation, latency, usage, findings and
+local-only evidence hashes.
+
 ## Implemented direction — confirmed 2026-09-06, formal validation incomplete
 
 The owner confirmed [self-hosted Dify, local knowledge storage, cloud models, and
