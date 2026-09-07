@@ -3,7 +3,7 @@
 ## Inventory status
 
 - Inventory baseline date: **2026-09-04 (Asia/Bangkok)**
-- Latest material status update: **2026-09-06 (Asia/Bangkok)**
+- Latest material status update: **2026-09-07 (Asia/Bangkok)**
 - Repository: `AW5Project`
 - Branch at capture: `feature/dify-self-hosted`
 - HEAD at capture: `a742a4d2695f119cffb224da65691f4652f4961e`
@@ -421,7 +421,7 @@ or direct trace audit establishes its meaning.
 
 | Artifact group | Quantity/status | Evidence boundary |
 | --- | --- | --- |
-| Git-tracked Dify exports after this update | 20 files: 9 YAML and 11 Markdown records | Includes the owner-confirmed self-hosted main export, previous snapshots, frozen baseline and historical candidates. Static export verification is not runtime validation. |
+| Git-tracked Dify exports after this update | 24 files: 11 YAML and 13 Markdown records | Includes the owner-confirmed self-hosted main export, evaluated snapshot, previous snapshots, frozen baseline and historical candidates. Static export verification is not runtime validation. |
 | Current export pointer | `dify/exports/CURRENT.md` | Separates the current self-hosted main workflow, previous snapshot, frozen baseline and historical candidates. |
 | Local installation evidence | Four Markdown/JSON records from 2026-09-02 | Reviewed, sanitized and committed in `f6aee70`; contain no private corpus content by design. |
 | Runtime state | Sibling `dify-local` directory and Docker volumes | Local-only. Git cannot reproduce admin state, providers, Knowledge Bases, attachments, embeddings or vector indexes. |
