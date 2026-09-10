@@ -26,6 +26,30 @@ five-case exploratory retest produced 4 pass, 1 partial and 0 fail. It does not
 establish formal quality, repeatability, production readiness or trusted
 project-tenant isolation.
 
+## Unpromoted self-hosted candidates — 2026-09-10
+
+The following exports preserve distinct experimental states. They do not replace
+the owner-confirmed current main above and must retain their own evidence status:
+
+- [Source-diversity and completeness candidate](aw5-rag-source-diversity-completeness-candidate-2026-09-10.yml),
+  SHA-256 `e5f079b82328cd30c165321cae818e65334d3187650a52c81662598bee4942c2`:
+  8 nodes / 7 edges / 1 LLM node. It was Published and tested on a targeted
+  seven-case gate that produced 2 pass, 3 partial and 2 fail; the gate failed
+  and the candidate was not promoted.
+- [Structured Evidence V8.1 candidate](aw5-rag-structured-evidence-v8-1-candidate-2026-09-10.yml),
+  SHA-256 `160bb820bb551b5b3e2ebeaf2ae9f36044ca7f649e5857d762c67471ac93c0c8`:
+  10 nodes / 9 edges / 2 LLM nodes. Its isolated Draft evidence contains five
+  passes, one partial and one operational stall across seven exploratory
+  attempts. It was not Published and has no formal frozen-suite evaluation.
+- [Natural Answer V9 candidate](aw5-rag-natural-answer-v9-candidate-2026-09-10.yml),
+  SHA-256 `6a975a7677d50fb16df4d33c24fa68a247f1825319b76f19e3b0444f6ef388fc`:
+  10 nodes / 9 edges / 2 LLM nodes. It changes final presentation to a normal
+  concise response after exact-evidence validation. It is an untested Draft
+  snapshot and has no runtime correctness, citation, latency or cost evidence.
+
+See each adjacent Markdown record for its configuration, evidence and limits.
+No score or promotion status transfers between these exports.
+
 ## Unpublished automatic-metadata candidate — 2026-09-07
 
 - File:

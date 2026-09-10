@@ -3,7 +3,7 @@
 ## Inventory status
 
 - Inventory baseline date: **2026-09-04 (Asia/Bangkok)**
-- Latest material status update: **2026-09-07 (Asia/Bangkok)**
+- Latest material status update: **2026-09-10 (Asia/Bangkok)**
 - Repository: `AW5Project`
 - Branch at capture: `feature/dify-self-hosted`
 - HEAD at capture: `a742a4d2695f119cffb224da65691f4652f4961e`
@@ -382,6 +382,120 @@ evaluated snapshot, with a disclosed supplementary retry deviation**. The
 snapshot is tested but unpromoted. This is not current-main export validation,
 repeatability evidence, production-readiness evidence, tenant-isolation evidence,
 or proof of the Retrieval-stall root cause.
+
+### 2026-09-09 — isolated layer-separation diagnostic
+
+- The owner authorized a bounded diagnostic using an isolated workflow copy and
+  local-only detailed traces, while deferring timeout-root-cause investigation.
+- The source app had a newer Published workflow identity at capture than the
+  September 7 evaluation. The secret-free export and before/after graph hashes
+  are retained locally; the system prompt matched the archived evaluated prompt.
+- Six end-to-end Draft-debugger calls and six frozen/golden-evidence replays
+  completed without timeout. Reported answer-model usage was 45,807 tokens and
+  USD 0.0856305 across 12 calls. Query embeddings and unreported retries are
+  outside those usage totals.
+- Full-filename TOR controls and two frozen-context replays answered correctly
+  with identical rendered prompts. An alias query returned only SDS. An English
+  filename query triggered Regex overcapture and empty retrieval, after which
+  the LLM fabricated an identifier. Identical-prompt empty-context replay
+  fabricated a different identifier.
+- The factor-history case again missed ER. Verbatim relevant DBML table fixtures
+  recovered the core fields in two replays but still allowed unsupported schema
+  interpretation. No general accuracy improvement or deployed fix is claimed.
+- A registry-backed resolver candidate passed ten synthetic offline checks.
+  It is undeployed. The isolated Draft was restored and remains unpublished;
+  source Published ID and graph were unchanged during the diagnostic.
+- The atomic local package is
+  `output/research-evidence/experiments/2026-09-09-layer-diagnostic/`.
+  Its 38-file manifest was verified with no missing files or hash mismatches.
+  See [the sanitized diagnostic](rag-layer-diagnostic-2026-09-09.md) and
+  [the proposed improvement plan](rag-improvement-plan-2026-09-09.md).
+
+Status: **exploratory layer-level evidence**, not formal evaluation, promotion,
+Published Service API validation, multi-turn repeatability, or tenant-isolation
+evidence. The original 13/20 score remains attached to its historical snapshot.
+
+### 2026-09-09 — Test3 Published API and guard diagnostic
+
+The owner-authorized [Test3 diagnostic](test3-prefilter-guard-diagnostic-2026-09-09.md)
+completed 12 Published API requests, six frozen-text replays and one empty guard
+execution. Two API requests fully completed their tasks; the deliberately selected
+sample is not a new formal accuracy score. Missing TOR passages and ER evidence
+remain unresolved. The empty guard bypassed the LLM successfully.
+
+Published p50/p95: 3.816/7.955 seconds (n=12), no timeout/retry. All 18 answer calls
+reported 110,238 tokens / USD 0.185547, excluding embeddings and unreported costs.
+Two replays differed from their API seed in rendered image attachments; only four
+were full rendered-prompt matches. Published and Draft Test3 were unchanged; the
+isolated replay copy was restored and remains unpublished.
+
+The **local-only exploratory** package is
+`output/research-evidence/experiments/2026-09-09-test3-prefilter-guard/`.
+Its manifest catalogs 58 files, excluding the manifest itself, including
+`report.md`, `evidence.json`, before/after snapshots, plan, traces and checksum
+references. Private evidence remains ignored by Git. No workflow promotion,
+formal evaluation, tenant-isolation claim, commit or push accompanied this run.
+
+### 2026-09-09 — Test3 read-only attachment and chunk inspection
+
+The [read-only follow-up](test3-readonly-followup-2026-09-09.md) traced the three
+replay images to pre-existing SDS attachments and verified all 538 captured
+parent text hashes/statuses against the prior Test3 snapshot. The LLM loads
+attachments by segment ID with caller-dependent access checks; exact prior API
+grant state remains unavailable. Relevant TOR/SDS project-code parents are enabled.
+ER factor/history parents are whole tables but split into 41/43 line-sized children.
+Per-KB candidates were not retained, so the precise retrieval loss stage remains
+unverified. No new inference, retrieval rerun, workflow or corpus changes occurred.
+
+Local-only **incident evidence**:
+`output/research-evidence/experiments/2026-09-09-test3-readonly-followup/`;
+manifest catalogs 4 files excluding itself. The next proposed two-query
+retrieval-only trace is not executed or implicitly authorized by this record.
+
+### 2026-09-09 — Test3 candidate-stage trace
+
+The subsequently owner-authorized [candidate trace](test3-candidate-trace-2026-09-09.md)
+completed one retrieval-only query: relevant TOR evidence ranked 13th in the
+30-candidate merged pool and was cut by Top K 10, leaving seven SDS parents.
+UC-11 collection failed twice; no semantic outcome is assigned. A mapping audit
+also failed collection, so index inconsistency remains unverified. No answer LLM,
+workflow or corpus change occurred. Direct-service tracing is not an exact API replay.
+
+Local-only **exploratory diagnostic**:
+`output/research-evidence/experiments/2026-09-09-test3-candidate-trace/`.
+The manifest catalogs the retained files; failed collections and protocol limits
+are explicit in the report. Current main and historical evaluation scores are unchanged.
+
+### 2026-09-10 — targeted retrieval and structured-evidence candidates
+
+- The then-Published Test4 targeted seven-case regression produced 1 pass,
+  4 partial and 2 fail, with one stopped operational attempt. The failed gate
+  did not justify a full 20-case run.
+- A source-diversity/completeness candidate preserved one result from each
+  retrieved document before filling the remaining context positions. Its
+  targeted gate produced 2 pass, 3 partial and 2 fail, with one stopped attempt.
+  Source-name diversity improved, but relevant-passage coverage and answer
+  grounding remained insufficient. This Published test state was not promoted.
+- Frozen and live UC-20 diagnostics separated retrieval coverage from answer
+  grounding. Five early structured-ledger iterations are retained as local-only,
+  unscored intermediate packages. Later V6/V7 and V8/V8.1 work introduced exact
+  quote selection, deterministic validation and citation attachment limited to
+  evidence supporting accepted quotes.
+- The preserved Structured Evidence V8.1 isolated Draft candidate has five
+  passes, one partial and one operational stall across seven exploratory
+  attempts. It lacks a formal frozen-suite evaluation, repeatability, complete
+  cost validation and trusted tenant-isolation testing.
+- Natural Answer V9 retains evidence validation but delegates final prose to a
+  grounded writer so internal facet labels are not exposed. The stored V9 export
+  is an unexecuted Draft snapshot; runtime correctness, citations, latency, cost
+  and reliability remain unverified.
+
+Reviewed Git-safe candidate records and secret-free exports are under
+`dify/exports/` and cataloged in `dify/exports/CURRENT.md`. Detailed questions,
+answers, contexts, traces, graphs and runtime packages remain ignored/local-only
+under `output/research-evidence/experiments/`. The current main remains the
+owner-confirmed 2026-09-06 export; none of the September 10 candidates is promoted
+or inherits a historical score.
 
 ## Evaluation evidence catalog
 

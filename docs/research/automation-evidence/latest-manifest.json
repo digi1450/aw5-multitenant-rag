@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-09-10T23:34:28+07:00",
+  "timezone": "Asia/Bangkok",
+  "automation_id": "aw5-daily-research-evidence",
+  "mode": "automatic-commit-rehearsal-baseline",
+  "classification": "sanitized-git-safe",
+  "allowlist": [
+    "docs/research/automation-evidence/latest-report.md",
+    "docs/research/automation-evidence/latest-manifest.json"
+  ],
+  "source_daily_report": "output/research-evidence/daily/2026-09-10T23-34-28+07-00-report.md",
+  "source_daily_report_sha256": "bf2d7f049a50ce87d40c7c8d37e2295475ce82412fa9fae792ed0042cd123ba6",
+  "artifacts": [
+    {
+      "path": "docs/research/automation-evidence/latest-report.md",
+      "bytes": 1142,
+      "sha256": "40944325569a48bd1404a89516aa8821da1474bf8bd849871457298dd9e62492",
+      "classification": "sanitized-git-safe",
+      "status": "verified"
+    },
+    {
+      "path": "dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml",
+      "bytes": 15491,
+      "sha256": "8ad21cbfbebc7fd87f0f6ac193098623db0bb43acf994745b74716ca77668cea",
+      "classification": "git-safe",
+      "status": "owner-confirmed-current-main"
+    },
+    {
+      "path": "dify/exports/aw5-rag-source-diversity-completeness-candidate-2026-09-10.yml",
+      "bytes": 25321,
+      "sha256": "e5f079b82328cd30c165321cae818e65334d3187650a52c81662598bee4942c2",
+      "classification": "git-safe",
+      "status": "failed-targeted-gate-not-promoted"
+    },
+    {
+      "path": "dify/exports/aw5-rag-structured-evidence-v8-1-candidate-2026-09-10.yml",
+      "bytes": 26029,
+      "sha256": "160bb820bb551b5b3e2ebeaf2ae9f36044ca7f649e5857d762c67471ac93c0c8",
+      "classification": "git-safe",
+      "status": "exploratory-draft-not-promoted"
+    },
+    {
+      "path": "dify/exports/aw5-rag-natural-answer-v9-candidate-2026-09-10.yml",
+      "bytes": 27508,
+      "sha256": "6a975a7677d50fb16df4d33c24fa68a247f1825319b76f19e3b0444f6ef388fc",
+      "classification": "git-safe",
+      "status": "untested-draft-not-promoted"
+    }
+  ],
+  "excluded_local_only": [
+    "output/research-evidence/daily/",
+    "output/research-evidence/experiments/"
+  ],
+  "notes": [
+    "Manifest excludes its own hash to avoid self-reference.",
+    "Automatic commit may stage only the two exact allowlist paths."
+  ]
+}

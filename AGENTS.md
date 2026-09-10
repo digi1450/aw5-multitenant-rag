@@ -47,6 +47,13 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
 - Current Knowledge Base layout confirmed 2026-09-03: use one Knowledge Base per primary file. Nature Footprint therefore has three Knowledge Bases for `Attach_TOR_1.pdf`, `System Design Specification.pdf`, and `er-dbdiagram.txt`, all connected to the same retrieval node.
 - Do not hard-filter to a document merely because the question names it. Preserve actual source attribution; broader retrieval does not permit claiming that one document says something found only in another.
 - Prompts must be generic: no per-file descriptions, test questions, expected answers, worked examples, or case-specific exceptions to force known tests to pass.
+- Production and candidate workflows must not contain corpus-specific document
+  names, aliases, document IDs, dataset IDs, expected facts, or source mappings
+  in code, prompts, default input values, metadata filters, or branches. Values
+  of this kind are permitted only in isolated diagnostic fixtures that cannot be
+  promoted or published as application workflow logic. A document registry must
+  be populated dynamically from trusted ingestion/runtime data and scoped by
+  authenticated project-tenant membership.
 - Adding a primary file means adding its own Knowledge Base to the same retrieval node; it must not require another routing node or a system-prompt update. The current export records the current model, retrieval and history settings; future changes require evidence. Ingestion/chunking details and trusted isolation enforcement remain under development.
 - Local storage is not zero disclosure: cloud embedding receives chunk/query text; cloud reranking receives candidates; answer generation receives the selected context. Do not claim that only final Top-K evidence leaves the computer.
 - Preserve old workflows as controls, not as a required design template. The
@@ -234,6 +241,15 @@ collect runtime data merely because it is available.
   evidence packages. It must not run tests, modify Dify or Docker, change an
   evidence classification, or commit local-only evidence unless the owner has
   separately authorized that action and the schedule has been updated for it.
+- When the owner enables automatic evidence commits, the collector owns exactly
+  `docs/research/automation-evidence/latest-report.md` and
+  `docs/research/automation-evidence/latest-manifest.json`. It may overwrite,
+  stage and commit only those two sanitized files after verifying their diff,
+  hashes, privacy classification and secret scan. All dated reports and detailed
+  experiment packages under `output/` remain ignored/local-only. Candidate
+  exports, `CURRENT.md`, inventory documents, plans, `AGENTS.md`, source files and
+  all other paths remain outside the automation allowlist and require separate
+  human-reviewed commits.
 
 ## Future code directories
 
