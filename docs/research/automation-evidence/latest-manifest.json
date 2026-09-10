@@ -1,59 +1,77 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-10T23:34:28+07:00",
+  "generated_at": "2026-09-11T00:03:20+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
-  "mode": "automatic-commit-rehearsal-baseline",
+  "mode": "automatic-commit-rehearsal",
   "classification": "sanitized-git-safe",
+  "rehearsal_result": "pass",
+  "repository": {
+    "branch": "feature/dify-self-hosted",
+    "head": "78f0af865ae2e2c437771a8518b70a123dfff790",
+    "upstream": "origin/feature/dify-self-hosted",
+    "ahead": 1,
+    "behind": 0
+  },
+  "comparison": {
+    "report": "output/research-evidence/daily/2026-09-10T23-34-28+07-00-report.md",
+    "report_sha256": "bf2d7f049a50ce87d40c7c8d37e2295475ce82412fa9fae792ed0042cd123ba6",
+    "head": "927a9eb34ec9dd372eac765fd690e0ab11ea91cc"
+  },
+  "source_daily_report": {
+    "path": "output/research-evidence/daily/2026-09-11T00-03-20+07-00-report.md",
+    "bytes": 4032,
+    "sha256": "0f780566dbdb5e224a98b3a27506c4023b6bda053becabed6734dbf25fcbca43",
+    "classification": "local-only-sanitized-daily-report"
+  },
+  "tracked_report": {
+    "path": "docs/research/automation-evidence/latest-report.md",
+    "bytes": 1431,
+    "sha256": "b51337bbc9b36cd574a8b343cc7cb4572779249afa835099aca015e00e4e49c3",
+    "classification": "sanitized-git-safe"
+  },
+  "material_research_movement_today": false,
+  "change_since_comparison": {
+    "commit": "78f0af865ae2e2c437771a8518b70a123dfff790",
+    "subject": "docs: preserve September RAG candidate evidence",
+    "classification": "bookkeeping-and-evidence-preservation",
+    "new_research_result": false
+  },
+  "classifications": {
+    "current_main": "owner-confirmed-2026-09-06-partially-validated-not-formally-evaluated",
+    "source_diversity_candidate": "failed-targeted-gate-not-promoted",
+    "structured_evidence_v8_1_candidate": "exploratory-draft-not-promoted",
+    "natural_answer_v9_candidate": "unexecuted-draft-not-promoted",
+    "historical_scores": "retained-with-original-workflow-only",
+    "trusted_tenant_isolation": "unimplemented-unverified"
+  },
   "allowlist": [
     "docs/research/automation-evidence/latest-report.md",
     "docs/research/automation-evidence/latest-manifest.json"
   ],
-  "source_daily_report": "output/research-evidence/daily/2026-09-10T23-34-28+07-00-report.md",
-  "source_daily_report_sha256": "bf2d7f049a50ce87d40c7c8d37e2295475ce82412fa9fae792ed0042cd123ba6",
-  "artifacts": [
-    {
-      "path": "docs/research/automation-evidence/latest-report.md",
-      "bytes": 1142,
-      "sha256": "40944325569a48bd1404a89516aa8821da1474bf8bd849871457298dd9e62492",
-      "classification": "sanitized-git-safe",
-      "status": "verified"
-    },
-    {
-      "path": "dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml",
-      "bytes": 15491,
-      "sha256": "8ad21cbfbebc7fd87f0f6ac193098623db0bb43acf994745b74716ca77668cea",
-      "classification": "git-safe",
-      "status": "owner-confirmed-current-main"
-    },
-    {
-      "path": "dify/exports/aw5-rag-source-diversity-completeness-candidate-2026-09-10.yml",
-      "bytes": 25321,
-      "sha256": "e5f079b82328cd30c165321cae818e65334d3187650a52c81662598bee4942c2",
-      "classification": "git-safe",
-      "status": "failed-targeted-gate-not-promoted"
-    },
-    {
-      "path": "dify/exports/aw5-rag-structured-evidence-v8-1-candidate-2026-09-10.yml",
-      "bytes": 26029,
-      "sha256": "160bb820bb551b5b3e2ebeaf2ae9f36044ca7f649e5857d762c67471ac93c0c8",
-      "classification": "git-safe",
-      "status": "exploratory-draft-not-promoted"
-    },
-    {
-      "path": "dify/exports/aw5-rag-natural-answer-v9-candidate-2026-09-10.yml",
-      "bytes": 27508,
-      "sha256": "6a975a7677d50fb16df4d33c24fa68a247f1825319b76f19e3b0444f6ef388fc",
-      "classification": "git-safe",
-      "status": "untested-draft-not-promoted"
-    }
+  "simulated_staged_set": [
+    "docs/research/automation-evidence/latest-report.md",
+    "docs/research/automation-evidence/latest-manifest.json"
   ],
-  "excluded_local_only": [
-    "output/research-evidence/daily/",
+  "excluded_local_only_paths": [
+    "output/research-evidence/daily/2026-09-11T00-03-20+07-00-report.md",
+    "output/research-evidence/daily/2026-09-11T00-03-20+07-00-manifest.json",
     "output/research-evidence/experiments/"
   ],
+  "pre_existing_unrelated_worktree_changes": [],
+  "checks": {
+    "source_daily_manifest_parses": true,
+    "changed_experiment_manifests_verified": 7,
+    "credential_or_private_content_hits": [],
+    "claims_match_source_report_and_repository": true,
+    "allowlist_only_diff": true,
+    "git_diff_check": true,
+    "staging_area_unchanged": true
+  },
   "notes": [
     "Manifest excludes its own hash to avoid self-reference.",
-    "Automatic commit may stage only the two exact allowlist paths."
-  ]
+    "Rehearsal must not stage or commit any file.",
+    "Automatic commits remain disabled pending explicit owner direction."
+  ],
+  "manifest_excludes_its_own_hash": true
 }
