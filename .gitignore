@@ -34,3 +34,9 @@ build/
 # Publication permission has not been established.
 knowledge_base/nature_footprint/sources/
 knowledge_base/nature_footprint/derived/
+
+# Private benchmark gold/evidence excerpts; keep local until privacy review.
+knowledge_base/nature_footprint/evaluation/development-36.csv
+knowledge_base/nature_footprint/evaluation/development-36.json
+knowledge_base/nature_footprint/evaluation/development-36-human-review.csv
+knowledge_base/nature_footprint/evaluation/development-36-human-review.md
