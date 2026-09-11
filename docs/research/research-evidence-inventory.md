@@ -3,10 +3,10 @@
 ## Inventory status
 
 - Inventory baseline date: **2026-09-04 (Asia/Bangkok)**
-- Latest material status update: **2026-09-10 (Asia/Bangkok)**
+- Latest material status update: **2026-09-12 (Asia/Bangkok)**
 - Repository: `AW5Project`
 - Branch at capture: `feature/dify-self-hosted`
-- HEAD at capture: `a742a4d2695f119cffb224da65691f4652f4961e`
+- HEAD at capture: `f3ca266c7ac81029287c900f58525b57f584e320`
 - Purpose: preserve a publication-ready map of what evidence exists, where it is
   stored, what it proves, and what remains unverified.
 - This inventory does not convert historical experiments into evidence for the
@@ -490,12 +490,118 @@ are explicit in the report. Current main and historical evaluation scores are un
   is an unexecuted Draft snapshot; runtime correctness, citations, latency, cost
   and reliability remain unverified.
 
+### 2026-09-11 — V9.1 correctness cleanup smoke diagnostic
+
+- Natural Answer V9.1 removes the redundant query-copy node, removes the unused
+  selector `language` field, and places the existing deterministic branch after
+  quote validation. The Final Answer LLM runs only when
+  `accepted_quote_count > 0`.
+- Three owner-authorized isolated-Draft smoke cases passed the functional gate.
+  The answerable case accepted one quote and invoked the final writer. The two
+  zero-evidence cases retrieved 18 and 21 chunks respectively, accepted no
+  quotes, skipped the final writer, and returned the deterministic fallback.
+- The irrelevant case had one stopped attempt at the 20-second cutoff before a
+  fresh-conversation retry passed. This remains a provider/runtime reliability
+  observation, not representative semantic latency.
+- The source V9 export remained byte-identical. V9.1 is the frozen research
+  comparator; it is unpromoted and has no formal frozen-suite, repeatability or
+  trusted tenant-isolation evidence.
+
+The detailed package is local-only at
+`output/research-evidence/experiments/2026-09-11-v9-1-correctness-cleanup-smoke/`.
+
+### 2026-09-11 — Test4.1 runtime-state synchronization
+
+- The owner supplied the then-current production-oriented Test4.1 export. It is
+  preserved byte-for-byte at
+  `dify/exports/aw5-rag-test4-1-er-table-chunk-candidate-2026-09-11.yml`,
+  SHA-256
+  `842fd57728d4c2b173ebdc594ea3728a83f8d69d7436cd32a2871de79fe2bcef`.
+- Static review verifies 7 nodes / 6 edges / 1 LLM node, direct `sys.query`
+  propagation, no Code1 or stale `original_query`, preserved Top K 30 weighted
+  retrieval, and the normal-path retrieval-order Top10 selection.
+- Code 2 reads physical identity from `metadata.document_name` and canonical
+  identity from nested `metadata.doc_metadata.document_type`. This preserves
+  the runtime root-cause finding that Dify custom document metadata is nested,
+  rather than absent.
+- Code1 removal is classified as cleanup. Replacing document balancing with
+  relevance-preserving Top10 is an experimental context-selection change with
+  a provisional keep decision. Nested metadata lookup and canonical source
+  restriction are classified as a source-resolution bug fix/architecture
+  improvement. Broad natural-language aliases remain unimplemented.
+- Owner-reported rank traces and targeted diagnostics are retained as
+  engineering evidence only. This synchronization did not run a model,
+  benchmark or Dify workflow and does not convert those diagnostics into formal
+  evaluation evidence.
+- Static limits include a mismatch between deterministic and prompt restriction
+  vocabulary (`เท่านั้น` is absent from Code 2), non-fail-closed canonical
+  restriction when the requested type is absent from retrieved items, and
+  `has_evidence` meaning nonempty prepared context rather than semantic
+  sufficiency.
+
+See [the synchronization report](test4-1-runtime-state-sync-2026-09-11.md) and
+the adjacent Dify export record for the exact configuration and evidence
+boundary. Test4.1 remains separate from frozen V9.1, Development-36 and future
+A/B/C/D variants. On 2026-09-12, the owner designated Test4.1 as the previous
+candidate, Test4.2 as the primary candidate, and V9.1 as the frozen research
+comparator; the preserved Test4.1 export itself was not changed.
+
+### 2026-09-11 — Test4.2 Scope Resolver candidate qualification
+
+- The architecture history has three separate states. Frozen Test4.1 used
+  metadata filtering disabled and post-filtered source restrictions in Code 2.
+  Dify stock Automatic Metadata Filtering was a wording-sensitive intermediate
+  experiment that was rejected, after which Test4.1 was restored. Test4.2 then
+  introduced Scope Resolver-controlled Dynamic Manual Metadata Filtering. The
+  owner recalls an approximately `1/10` transition trial, but no raw rejection
+  log is present in the retained package, so that value is owner/conversation
+  history rather than a raw-log-backed result.
+- Test4.2 adds one Gemini 3.5 Flash Scope Resolver before retrieval. Its generic
+  contract is `scope`, `strict`, and `retrieval_query`; the scope drives Dynamic
+  Manual Metadata Filtering before the unchanged downstream retrieval,
+  evidence-presence guard, and answer/fallback path.
+- Static inspection shows that `retrieval_query` supplies the retrieval query
+  and `scope` drives the filter. `strict` is classification/protocol output only:
+  no downstream selector, filter, Code 2 logic, branch or writer behavior
+  consumes it. The measured strictness results therefore verify resolver output
+  and observed source behavior, not a distinct strictness-controlled path.
+- Gate A's raw checker result is `23/24`, while scope and strictness were both
+  `24/24`. EN04 was a checker false negative caused by matching `ER` inside
+  `Whether`, so the corrected semantic result is `24/24` without rewriting the
+  raw log.
+- Gate B produced `7/8` structural passes. B06 is retained as a real observed
+  anomaly: the resolver returned `ALL` instead of `ER`, so retrieval included
+  all three sources. The answer remained evidence-bounded. Ten unchanged-config
+  resolver retests did not reproduce the routing failure (`10/10`).
+- Gate C passed both unknown-source cases (`2/2`): zero evidence, false branch,
+  deterministic fallback, no answer-writer execution, and no tested-source
+  leakage. This resulted from the unknown resolved scope producing no metadata
+  match, not from downstream enforcement of `strict`.
+- The final ten-case regression passed `10/10`, with zero critical safety or
+  routing/STRICT failures. End-to-end latency was mean `5140.22 ms`, p50
+  `5005.32 ms`, minimum `2813.39 ms`, and maximum `7713.25 ms`.
+- On 2026-09-12, the owner designated Test4.2 as the primary candidate. It
+  remains qualified and frozen for this experiment stage, is not promoted to
+  current main, and does not prove zero error, production readiness, universal
+  fail-closed behavior, or trusted tenant isolation. V9.1 remains the frozen
+  research comparator and Test4.1 is the previous candidate.
+
+The detailed [Test4.2 evidence handoff](test4-2-scope-resolver-candidate-2026-09-11.md) records
+all five raw-log identities and separates architecture facts, observations, the rejected
+Automatic Metadata Filtering approach, debugging incidents, limitations,
+future experiments, and the freeze decision. Later architecture work must use a
+duplicate/new candidate; this update did not copy or modify the frozen export.
+The raw `.txt` logs contain private retrieved excerpts and runtime identifiers;
+they remain local-only in the ignored package
+`output/research-evidence/experiments/2026-09-11-test4-2-scope-resolver-qualification/`.
+
 Reviewed Git-safe candidate records and secret-free exports are under
 `dify/exports/` and cataloged in `dify/exports/CURRENT.md`. Detailed questions,
 answers, contexts, traces, graphs and runtime packages remain ignored/local-only
 under `output/research-evidence/experiments/`. The current main remains the
-owner-confirmed 2026-09-06 export; none of the September 10 candidates is promoted
-or inherits a historical score.
+owner-confirmed 2026-09-06 export until Test4.2 is explicitly promoted. Primary
+candidate status does not transfer a historical score or constitute current-main
+promotion.
 
 ## Evaluation evidence catalog
 
@@ -535,7 +641,7 @@ or direct trace audit establishes its meaning.
 
 | Artifact group | Quantity/status | Evidence boundary |
 | --- | --- | --- |
-| Git-tracked Dify exports after this update | 24 files: 11 YAML and 13 Markdown records | Includes the owner-confirmed self-hosted main export, evaluated snapshot, previous snapshots, frozen baseline and historical candidates. Static export verification is not runtime validation. |
+| Dify export records present after this update | 34 files: 16 YAML and 18 Markdown records | Includes 30 existing Git-tracked records plus the new V9.1 and Test4.1 YAML/Markdown records in the working tree. Static export verification is not runtime validation. |
 | Current export pointer | `dify/exports/CURRENT.md` | Separates the current self-hosted main workflow, previous snapshot, frozen baseline and historical candidates. |
 | Local installation evidence | Four Markdown/JSON records from 2026-09-02 | Reviewed, sanitized and committed in `f6aee70`; contain no private corpus content by design. |
 | Runtime state | Sibling `dify-local` directory and Docker volumes | Local-only. Git cannot reproduce admin state, providers, Knowledge Bases, attachments, embeddings or vector indexes. |

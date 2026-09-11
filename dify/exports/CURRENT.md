@@ -26,7 +26,69 @@ five-case exploratory retest produced 4 pass, 1 partial and 0 fail. It does not
 establish formal quality, repeatability, production readiness or trusted
 project-tenant isolation.
 
-## Unpromoted self-hosted candidates — 2026-09-10
+## Previous production-oriented candidate — Test4.1, owner-supplied 2026-09-11
+
+- Application label: **AW5-RAG Test4.1 - ER Table Chunk Candidate**.
+- File:
+  [aw5-rag-test4-1-er-table-chunk-candidate-2026-09-11.yml](aw5-rag-test4-1-er-table-chunk-candidate-2026-09-11.yml).
+- SHA-256: `842fd57728d4c2b173ebdc594ea3728a83f8d69d7436cd32a2871de79fe2bcef`.
+- Status: **previous production-oriented candidate, preserved byte-for-byte and
+  statically reviewed; not a formal benchmark result or current-main
+  promotion**.
+- Graph: 7 nodes / 6 edges / 1 LLM node:
+  `User Input -> Knowledge Retrieval -> Code 2 -> IF/ELSE`, then true to
+  `LLM -> Answer` and false to deterministic `Answer 2`.
+- Retrieval: multiple retrieval over three Knowledge Bases, weighted
+  semantic/keyword `0.7/0.3`, Top K `30`, reranking and metadata filtering
+  disabled.
+- Code 2: reads `sys.query` directly, keeps normal-path retrieval order with
+  the first ten valid items, resolves exact filename/stem and canonical
+  `metadata.doc_metadata.document_type` restrictions, and adds
+  `SOURCE_METADATA` provenance.
+- `has_evidence` is a nonempty prepared-context guard, not semantic evidence
+  validation.
+
+See the [snapshot record](aw5-rag-test4-1-er-table-chunk-candidate-2026-09-11.md)
+and [runtime-state synchronization report](../../docs/research/test4-1-runtime-state-sync-2026-09-11.md)
+for exact settings, change classification, owner-reported engineering evidence
+and static discrepancies. V9.1 remains the frozen research comparator.
+The 2026-09-06 current-main pointer above remains unchanged because this task
+did not promote Test4.1 to current main.
+
+## Primary candidate — frozen Test4.2, owner-confirmed 2026-09-12
+
+- Application label: **AW5-RAG Test4.2 - Scope Resolver Candidate**.
+- Status: **owner-confirmed primary candidate, qualified and frozen for the
+  Test4.2 experiment stage; not copied into this directory, not promoted to
+  current main, and not a production-readiness claim**.
+- Static graph: `User Input -> Scope Resolver -> Knowledge Retrieval -> Code 2
+  -> IF/ELSE`, then the existing answer or deterministic-fallback path.
+- Controlled change from the preserved Test4.1 architecture: Gemini 3.5 Flash
+  resolves `scope`, `strict`, and `retrieval_query` before resolver-controlled
+  Dynamic Manual Metadata Filtering.
+- Architecture history: frozen Test4.1 had metadata filtering disabled and
+  applied source restriction in Code 2 after retrieval. Dify stock Automatic
+  Metadata Filtering was a separate wording-sensitive transition experiment
+  that was rejected before Test4.2 introduced the resolver-controlled manual
+  filter; its raw rejection log is not in the retained Test4.2 package.
+- `retrieval_query` supplies the retrieval query and `scope` drives the manual
+  filter. `strict` is classification/protocol output only in this frozen graph:
+  no downstream node consumes it, so `STRICT` and `NON_STRICT` do not create
+  different execution paths in Test4.2.
+- Evidence: Gate A raw `23/24` and corrected semantic `24/24`; Gate B `7/8`
+  with one retained B06 routing anomaly; B06 targeted retest `10/10`; Gate C
+  `2/2`; final regression `10/10` with zero critical safety and routing/STRICT
+  failures in that matrix.
+
+See the [Test4.2 evidence handoff](../../docs/research/test4-2-scope-resolver-candidate-2026-09-11.md) for
+the causal record, raw-evidence identities, rejected approach, incidents, limitations and
+freeze boundary. Any later architecture experiment must use a duplicate/new
+candidate rather than modify Test4.2 in place. The current-main pointer remains
+the owner-confirmed 2026-09-06 export above until Test4.2 is explicitly
+promoted. V9.1 is retained as the frozen research comparator, and Test4.1 is
+retained as the previous candidate.
+
+## Unpromoted self-hosted candidates — 2026-09-10 to 2026-09-11
 
 The following exports preserve distinct experimental states. They do not replace
 the owner-confirmed current main above and must retain their own evidence status:
@@ -46,6 +108,14 @@ the owner-confirmed current main above and must retain their own evidence status
   10 nodes / 9 edges / 2 LLM nodes. It changes final presentation to a normal
   concise response after exact-evidence validation. It is an untested Draft
   snapshot and has no runtime correctness, citation, latency or cost evidence.
+- [Natural Answer V9.1 correctness-cleanup candidate](aw5-rag-natural-answer-v9-1-correctness-cleanup-candidate-2026-09-11.yml),
+  SHA-256 `0d72301d424f4c2166b7587b399c722c441e73ff33bc60a7b2d1440a8ec41e35`:
+  9 nodes / 8 edges / 2 LLM nodes. It removes the redundant query-copy node and
+  gates the Final Answer LLM on validated evidence. A bounded three-case Draft
+  smoke diagnostic passed the fail-closed invariant; the irrelevant case needed
+  one retry after a stopped 20-second operational stall. It was not Published,
+  formally evaluated or promoted. Its current role is the frozen research
+  comparator rather than the primary candidate.
 
 See each adjacent Markdown record for its configuration, evidence and limits.
 No score or promotion status transfers between these exports.
