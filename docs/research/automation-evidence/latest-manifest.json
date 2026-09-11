@@ -1,77 +1,98 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-11T00:03:20+07:00",
+  "generated_at": "2026-09-11T23:33:10+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
-  "mode": "automatic-commit-rehearsal",
+  "mode": "automatic-evidence-commit",
   "classification": "sanitized-git-safe",
-  "rehearsal_result": "pass",
+  "status": "verified-for-automatic-commit",
   "repository": {
     "branch": "feature/dify-self-hosted",
-    "head": "78f0af865ae2e2c437771a8518b70a123dfff790",
+    "head": "f3ca266c7ac81029287c900f58525b57f584e320",
     "upstream": "origin/feature/dify-self-hosted",
-    "ahead": 1,
-    "behind": 0
+    "ahead": 2,
+    "behind": 0,
+    "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-10T23-34-28+07-00-report.md",
-    "report_sha256": "bf2d7f049a50ce87d40c7c8d37e2295475ce82412fa9fae792ed0042cd123ba6",
-    "head": "927a9eb34ec9dd372eac765fd690e0ab11ea91cc"
+    "report": "output/research-evidence/daily/2026-09-11T00-14-40+07-00-report.md",
+    "report_bytes": 3598,
+    "report_sha256": "648aacc745297eeb703978b7074c9f1852bcd681cb02ef6dbb9e02c0df649287",
+    "tracked_checkpoint_commit": "f3ca266c7ac81029287c900f58525b57f584e320"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-11T00-03-20+07-00-report.md",
-    "bytes": 4032,
-    "sha256": "0f780566dbdb5e224a98b3a27506c4023b6bda053becabed6734dbf25fcbca43",
+    "path": "output/research-evidence/daily/2026-09-11T23-33-10+07-00-report.md",
+    "bytes": 5977,
+    "sha256": "77a857b1ae31a3b2f378b42178bc6f0b61cd107baab7abb0355c57335db9491a",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 1431,
-    "sha256": "b51337bbc9b36cd574a8b343cc7cb4572779249afa835099aca015e00e4e49c3",
+    "bytes": 2088,
+    "sha256": "1423873fa185bbb02a28f1c9f1f91b08e9b664f6ecd7245d1b2ce373144fc9dd",
     "classification": "sanitized-git-safe"
   },
-  "material_research_movement_today": false,
-  "change_since_comparison": {
-    "commit": "78f0af865ae2e2c437771a8518b70a123dfff790",
-    "subject": "docs: preserve September RAG candidate evidence",
-    "classification": "bookkeeping-and-evidence-preservation",
-    "new_research_result": false
-  },
+  "material_research_movement": true,
+  "material_items": [
+    {
+      "path": "dify/exports/aw5-rag-natural-answer-v9-1-correctness-cleanup-candidate-2026-09-11.yml",
+      "sha256": "0d72301d424f4c2166b7587b399c722c441e73ff33bc60a7b2d1440a8ec41e35",
+      "classification": "exploratory-draft-not-promoted",
+      "evidence_status": "three-case-smoke-with-one-operational-retry-not-formal-evaluation"
+    },
+    {
+      "path": "dify/exports/aw5-rag-test4-1-er-table-chunk-candidate-2026-09-11.yml",
+      "sha256": "842fd57728d4c2b173ebdc594ea3728a83f8d69d7436cd32a2871de79fe2bcef",
+      "classification": "production-oriented-candidate-not-current-main",
+      "evidence_status": "owner-supplied-static-and-engineering-evidence-not-formal-benchmark"
+    },
+    {
+      "path": "knowledge_base/nature_footprint/evaluation/development-36.json",
+      "sha256": "b72c79ea27cd6ee30f3dffe592a2965d63b7cd1c1a232713a8c140c95465c172",
+      "classification": "local-only-needs-privacy-review",
+      "evidence_status": "draft-unreviewed-36-of-36"
+    }
+  ],
   "classifications": {
     "current_main": "owner-confirmed-2026-09-06-partially-validated-not-formally-evaluated",
-    "source_diversity_candidate": "failed-targeted-gate-not-promoted",
-    "structured_evidence_v8_1_candidate": "exploratory-draft-not-promoted",
-    "natural_answer_v9_candidate": "unexecuted-draft-not-promoted",
+    "v9_1": "exploratory-draft-not-promoted",
+    "test4_1": "production-oriented-candidate-not-current-main-not-formally-benchmarked",
+    "development_36": "draft-unreviewed-not-formal-evaluation",
+    "held_out_72": "planned-not-completed",
     "historical_scores": "retained-with-original-workflow-only",
     "trusted_tenant_isolation": "unimplemented-unverified"
   },
+  "private_evidence_paths_excluded": [
+    "knowledge_base/nature_footprint/evaluation/development-36.csv",
+    "knowledge_base/nature_footprint/evaluation/development-36.json",
+    "knowledge_base/nature_footprint/evaluation/development-36-human-review.csv",
+    "knowledge_base/nature_footprint/evaluation/development-36-human-review.md"
+  ],
   "allowlist": [
     "docs/research/automation-evidence/latest-report.md",
     "docs/research/automation-evidence/latest-manifest.json"
   ],
-  "simulated_staged_set": [
-    "docs/research/automation-evidence/latest-report.md",
-    "docs/research/automation-evidence/latest-manifest.json"
-  ],
   "excluded_local_only_paths": [
-    "output/research-evidence/daily/2026-09-11T00-03-20+07-00-report.md",
-    "output/research-evidence/daily/2026-09-11T00-03-20+07-00-manifest.json",
+    "output/research-evidence/daily/",
     "output/research-evidence/experiments/"
   ],
-  "pre_existing_unrelated_worktree_changes": [],
+  "pre_existing_outside_allowlist": {
+    "modified_tracked_paths": 2,
+    "untracked_project_paths": 20,
+    "handling": "excluded-and-unstaged"
+  },
   "checks": {
     "source_daily_manifest_parses": true,
-    "changed_experiment_manifests_verified": 7,
-    "credential_or_private_content_hits": [],
+    "v9_1_local_manifest_integrity": "verified",
+    "credential_pattern_hit_paths": [],
     "claims_match_source_report_and_repository": true,
-    "allowlist_only_diff": true,
-    "git_diff_check": true,
-    "staging_area_unchanged": true
+    "allowlist_only_staged_set": true,
+    "git_diff_cached_check": true
   },
   "notes": [
     "Manifest excludes its own hash to avoid self-reference.",
-    "Rehearsal must not stage or commit any file.",
-    "Automatic commits remain disabled pending explicit owner direction."
+    "Only the exact two allowlisted checkpoint files may be committed.",
+    "No push is authorized."
   ],
   "manifest_excludes_its_own_hash": true
 }
