@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-11T23:33:10+07:00",
+  "generated_at": "2026-09-12T23:32:41+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
@@ -8,55 +8,69 @@
   "status": "verified-for-automatic-commit",
   "repository": {
     "branch": "feature/dify-self-hosted",
-    "head": "f3ca266c7ac81029287c900f58525b57f584e320",
+    "head": "0f9adeda8d5df7b4cf5235850b0fe64d23999103",
     "upstream": "origin/feature/dify-self-hosted",
-    "ahead": 2,
+    "ahead": 0,
     "behind": 0,
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-11T00-14-40+07-00-report.md",
-    "report_bytes": 3598,
-    "report_sha256": "648aacc745297eeb703978b7074c9f1852bcd681cb02ef6dbb9e02c0df649287",
-    "tracked_checkpoint_commit": "f3ca266c7ac81029287c900f58525b57f584e320"
+    "report": "output/research-evidence/daily/2026-09-11T23-33-10+07-00-report.md",
+    "report_bytes": 5977,
+    "report_sha256": "77a857b1ae31a3b2f378b42178bc6f0b61cd107baab7abb0355c57335db9491a",
+    "tracked_checkpoint_commit": "14134cf8ff5f33f03b2b8ddd4750374c62d7addb"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-11T23-33-10+07-00-report.md",
-    "bytes": 5977,
-    "sha256": "77a857b1ae31a3b2f378b42178bc6f0b61cd107baab7abb0355c57335db9491a",
+    "path": "output/research-evidence/daily/2026-09-12T23-32-41+07-00-report.md",
+    "bytes": 6317,
+    "sha256": "911be970972bbb1707daa2ace67babbf7e1118f0bb7ca07f76b1d3a3e5afafc8",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 2088,
-    "sha256": "1423873fa185bbb02a28f1c9f1f91b08e9b664f6ecd7245d1b2ce373144fc9dd",
+    "bytes": 1971,
+    "sha256": "6d3a2ed66f738c58830064517c16b5f3fd4f1fe5a7bdff7314381480cca5a700",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "dify/exports/aw5-rag-natural-answer-v9-1-correctness-cleanup-candidate-2026-09-11.yml",
-      "sha256": "0d72301d424f4c2166b7587b399c722c441e73ff33bc60a7b2d1440a8ec41e35",
-      "classification": "exploratory-draft-not-promoted",
-      "evidence_status": "three-case-smoke-with-one-operational-retry-not-formal-evaluation"
+      "path": "docs/research/test4-2-scope-resolver-candidate-2026-09-11.md",
+      "sha256": "06253a7188053632dcc68c16067e7125b37fa7145b07b6a2efbaa4f5d0e2e60e",
+      "classification": "primary-frozen-candidate-handoff-not-current-main",
+      "evidence_status": "exploratory-diagnostic-not-formal-evaluation"
     },
     {
-      "path": "dify/exports/aw5-rag-test4-1-er-table-chunk-candidate-2026-09-11.yml",
-      "sha256": "842fd57728d4c2b173ebdc594ea3728a83f8d69d7436cd32a2871de79fe2bcef",
-      "classification": "production-oriented-candidate-not-current-main",
-      "evidence_status": "owner-supplied-static-and-engineering-evidence-not-formal-benchmark"
+      "path": "output/research-evidence/experiments/2026-09-11-test4-2-scope-resolver-qualification/manifest.json",
+      "sha256": "780fa7caca94045a2948059feb138f8667f31cb7fbeaa4a3766b5514f67d4fd9",
+      "classification": "local-only-private-evidence-package",
+      "evidence_status": "manifest-integrity-verified"
     },
     {
-      "path": "knowledge_base/nature_footprint/evaluation/development-36.json",
-      "sha256": "b72c79ea27cd6ee30f3dffe592a2965d63b7cd1c1a232713a8c140c95465c172",
-      "classification": "local-only-needs-privacy-review",
-      "evidence_status": "draft-unreviewed-36-of-36"
+      "path": "knowledge_base/nature_footprint/evaluation/evaluation-protocol.md",
+      "classification": "phase-0-methodology-committed",
+      "evidence_status": "planned-not-executed-benchmark"
+    },
+    {
+      "path": "dify/exports/aw5-rag-test4-4-multi-source-scope-candidate-2026-09-12.yml",
+      "sha256": "89e94535eb4050c1d1b13ba4fe51a2d4b22164a6edee9c95c0beb3dc47505ebc",
+      "classification": "needs-review-untracked",
+      "evidence_status": "planned-untested-static-snapshot"
+    },
+    {
+      "path": "dify/exports/aw5-rag-test4-5-code2-routing-cleanup-candidate-2026-09-12.yml",
+      "sha256": "e8a90aa62aa9808e34724a3f560e33c716f736bee525891ce1acba936f7f37a9",
+      "classification": "needs-review-untracked",
+      "evidence_status": "planned-untested-static-snapshot"
     }
   ],
   "classifications": {
     "current_main": "owner-confirmed-2026-09-06-partially-validated-not-formally-evaluated",
-    "v9_1": "exploratory-draft-not-promoted",
-    "test4_1": "production-oriented-candidate-not-current-main-not-formally-benchmarked",
+    "test4_2": "owner-confirmed-primary-frozen-candidate-not-current-main",
+    "v9_1": "frozen-research-comparator-not-primary-candidate",
+    "test4_1": "previous-candidate-not-current-main",
+    "test4_4": "needs-review-planned-untested",
+    "test4_5": "needs-review-planned-untested",
     "development_36": "draft-unreviewed-not-formal-evaluation",
     "held_out_72": "planned-not-completed",
     "historical_scores": "retained-with-original-workflow-only",
@@ -77,13 +91,14 @@
     "output/research-evidence/experiments/"
   ],
   "pre_existing_outside_allowlist": {
-    "modified_tracked_paths": 2,
-    "untracked_project_paths": 20,
+    "modified_tracked_paths": 0,
+    "untracked_project_paths": 2,
     "handling": "excluded-and-unstaged"
   },
   "checks": {
     "source_daily_manifest_parses": true,
-    "v9_1_local_manifest_integrity": "verified",
+    "test4_2_local_manifest_integrity": "verified",
+    "candidate_yaml_parse": "verified",
     "credential_pattern_hit_paths": [],
     "claims_match_source_report_and_repository": true,
     "allowlist_only_staged_set": true,
