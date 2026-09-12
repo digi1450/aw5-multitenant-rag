@@ -88,6 +88,41 @@ the owner-confirmed 2026-09-06 export above until Test4.2 is explicitly
 promoted. V9.1 is retained as the frozen research comparator, and Test4.1 is
 retained as the previous candidate.
 
+## Latest development candidates — Test4.4 and Test4.5, owner-supplied 2026-09-12
+
+- [Test4.4 Multi-source Scope Candidate](aw5-rag-test4-4-multi-source-scope-candidate-2026-09-12.yml),
+  SHA-256 `89e94535eb4050c1d1b13ba4fe51a2d4b22164a6edee9c95c0beb3dc47505ebc`.
+- [Test4.5 Code 2 Routing Cleanup Candidate](aw5-rag-test4-5-code2-routing-cleanup-candidate-2026-09-12.yml),
+  SHA-256 `e8a90aa62aa9808e34724a3f560e33c716f736bee525891ce1acba936f7f37a9`.
+
+Both exports have 9 nodes / 8 edges and preserve this path:
+
+```text
+User Input -> Get File Registry -> Scope Resolver -> Knowledge Retrieval
+  -> Code 2 -> IF/ELSE -> LLM/Answer or deterministic Answer 2
+```
+
+Test4.4 introduces registry-backed multi-source scope using exact built-in
+`document_name` values and a manual `document_name in document_names_csv`
+retrieval filter. Test4.5 is the latest development candidate and removes the
+now-duplicated source-intent parsing from Code 2. Code 2 retains relevance-order
+Top 10 preparation, `SOURCE_METADATA` enrichment, and the nonempty-context
+`has_evidence` guard.
+
+The Runtime Registry SQL in both exports is currently fixed to AW5
+`tenant_id = 1`; trusted tenant authorization and cross-tenant isolation are not
+implemented or verified. `strict` is present in resolver output but has no
+downstream consumer. See the adjacent
+[Test4.4 record](aw5-rag-test4-4-multi-source-scope-candidate-2026-09-12.md),
+[Test4.5 record](aw5-rag-test4-5-code2-routing-cleanup-candidate-2026-09-12.md),
+and the [Registry/database policy](../../docs/architecture/runtime-registry-and-database-policy-2026-09-13.md).
+
+The owner reported that the requested Test4.5 smoke questions passed. Exact
+run artifacts are not present in this repository, so this remains an engineering
+observation rather than a formal benchmark or promotion. Neither export replaces
+the owner-confirmed 2026-09-06 current main, and Test4.2 remains frozen as its
+earlier experiment-stage candidate.
+
 ## Unpromoted self-hosted candidates — 2026-09-10 to 2026-09-11
 
 The following exports preserve distinct experimental states. They do not replace

@@ -663,6 +663,37 @@ text, cleaned PDFs, images and generated outputs remain private by default.
 
 ## Current uncommitted work snapshot
 
+### 2026-09-12 to 2026-09-13 — Test4.4/Test4.5 and provisional delivery boundary
+
+- The owner supplied preserved Test4.4 and Test4.5 exports. Static review records
+  9 nodes / 8 edges in both and confirms that Test4.5 removes query/source-intent
+  parsing from Code 2 while leaving the registry, resolver, retrieval, writer,
+  memory, branch, and fallback configuration unchanged.
+- Test4.4 SHA-256 is
+  `89e94535eb4050c1d1b13ba4fe51a2d4b22164a6edee9c95c0beb3dc47505ebc`;
+  Test4.5 SHA-256 is
+  `e8a90aa62aa9808e34724a3f560e33c716f736bee525891ce1acba936f7f37a9`.
+- The owner reported that all requested Test4.5 smoke questions passed. Exact
+  questions and runtime traces were not present at synchronization, so this is
+  an owner-run engineering observation, not a formal benchmark, repeatability
+  result, tenant-isolation test, or current-main promotion.
+- The Registry implementation queries Dify's internal `documents` table for
+  AW5 `tenant_id = 1`. Its dedicated read-only role and SQL filter reduce
+  exposure but do not provide database-enforced tenant isolation.
+- Microsoft Teams or Discord is a provisional chatbot direction. The platform,
+  per-project versus shared Dify-app pattern, hosting, and final identity flow
+  remain undecided. The intended frontend behavior gives each user a personal
+  bot conversation while authorized administrators retain operational-log
+  access outside the ordinary chat frontend.
+- Detailed static and architecture records:
+  [Test4.4](../../dify/exports/aw5-rag-test4-4-multi-source-scope-candidate-2026-09-12.md),
+  [Test4.5](../../dify/exports/aw5-rag-test4-5-code2-routing-cleanup-candidate-2026-09-12.md),
+  [Registry/database policy](../architecture/runtime-registry-and-database-policy-2026-09-13.md),
+  and [chatbot delivery options](../architecture/chatbot-delivery-options-2026-09-13.md).
+
+These records add no new runtime test evidence. Trusted membership-derived
+tenant enforcement and a Project B cross-leakage test remain required.
+
 At the beginning of the 2026-09-04 inventory pass, Git CLI reported:
 
 - branch `feature/dify-self-hosted` at `a742a4d`;

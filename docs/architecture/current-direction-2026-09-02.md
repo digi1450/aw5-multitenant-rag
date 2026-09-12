@@ -50,6 +50,13 @@ repeatability, citation, or tenant-isolation evaluation.
 The 2026-09-04 four-node main and 2026-09-02 AW5-RAG 1.2 export remain preserved
 as previous snapshots and historical controls.
 
+Later registry-backed development candidates and their unresolved deployment
+boundaries are recorded separately. See
+[`Runtime File Registry and Database Policy`](runtime-registry-and-database-policy-2026-09-13.md)
+and [`Chatbot Delivery Options`](chatbot-delivery-options-2026-09-13.md). These
+records do not supersede the current-main pointer or turn an undecided delivery
+option into an implementation decision.
+
 ## Confirmed direction
 
 - Run **Dify self-hosted on the owner's computer**, which serves as the project
