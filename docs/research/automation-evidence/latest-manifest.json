@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-12T23:32:41+07:00",
+  "generated_at": "2026-09-13T23:31:37+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
@@ -8,60 +8,55 @@
   "status": "verified-for-automatic-commit",
   "repository": {
     "branch": "feature/dify-self-hosted",
-    "head": "0f9adeda8d5df7b4cf5235850b0fe64d23999103",
+    "head": "278f8475c96ded267ff6d99c5a33b64bb296be88",
     "upstream": "origin/feature/dify-self-hosted",
     "ahead": 0,
     "behind": 0,
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-11T23-33-10+07-00-report.md",
-    "report_bytes": 5977,
-    "report_sha256": "77a857b1ae31a3b2f378b42178bc6f0b61cd107baab7abb0355c57335db9491a",
-    "tracked_checkpoint_commit": "14134cf8ff5f33f03b2b8ddd4750374c62d7addb"
+    "report": "output/research-evidence/daily/2026-09-12T23-32-41+07-00-report.md",
+    "report_bytes": 6317,
+    "report_sha256": "911be970972bbb1707daa2ace67babbf7e1118f0bb7ca07f76b1d3a3e5afafc8",
+    "tracked_checkpoint_commit": "c5b73c758a89963e88f142ed507a1ef7d96da7f3"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-12T23-32-41+07-00-report.md",
-    "bytes": 6317,
-    "sha256": "911be970972bbb1707daa2ace67babbf7e1118f0bb7ca07f76b1d3a3e5afafc8",
+    "path": "output/research-evidence/daily/2026-09-13T23-31-37+07-00-report.md",
+    "bytes": 6835,
+    "sha256": "5b5a203884e340f431babdc47d0efb45c997ba78df9009865eea7ff18c9724a6",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 1971,
-    "sha256": "6d3a2ed66f738c58830064517c16b5f3fd4f1fe5a7bdff7314381480cca5a700",
+    "bytes": 2099,
+    "sha256": "3e246b2e4c40689c9cc4fd11ea0eecb506f1a55cf158887fb790279b1bbc1ff6",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "docs/research/test4-2-scope-resolver-candidate-2026-09-11.md",
-      "sha256": "06253a7188053632dcc68c16067e7125b37fa7145b07b6a2efbaa4f5d0e2e60e",
-      "classification": "primary-frozen-candidate-handoff-not-current-main",
-      "evidence_status": "exploratory-diagnostic-not-formal-evaluation"
-    },
-    {
-      "path": "output/research-evidence/experiments/2026-09-11-test4-2-scope-resolver-qualification/manifest.json",
-      "sha256": "780fa7caca94045a2948059feb138f8667f31cb7fbeaa4a3766b5514f67d4fd9",
-      "classification": "local-only-private-evidence-package",
-      "evidence_status": "manifest-integrity-verified"
-    },
-    {
-      "path": "knowledge_base/nature_footprint/evaluation/evaluation-protocol.md",
-      "classification": "phase-0-methodology-committed",
-      "evidence_status": "planned-not-executed-benchmark"
-    },
-    {
       "path": "dify/exports/aw5-rag-test4-4-multi-source-scope-candidate-2026-09-12.yml",
       "sha256": "89e94535eb4050c1d1b13ba4fe51a2d4b22164a6edee9c95c0beb3dc47505ebc",
-      "classification": "needs-review-untracked",
-      "evidence_status": "planned-untested-static-snapshot"
+      "classification": "git-safe-committed-development-candidate-not-current-main",
+      "evidence_status": "verified-static-snapshot-not-formally-evaluated"
     },
     {
       "path": "dify/exports/aw5-rag-test4-5-code2-routing-cleanup-candidate-2026-09-12.yml",
       "sha256": "e8a90aa62aa9808e34724a3f560e33c716f736bee525891ce1acba936f7f37a9",
-      "classification": "needs-review-untracked",
-      "evidence_status": "planned-untested-static-snapshot"
+      "classification": "git-safe-committed-latest-development-candidate-not-current-main",
+      "evidence_status": "verified-static-delta-owner-observed-smoke-formal-evidence-missing"
+    },
+    {
+      "path": "docs/architecture/runtime-registry-and-database-policy-2026-09-13.md",
+      "sha256": "f9ae5f1c489cc8e025559ecbf42503eac9156e63af569a3a918c187b378ea769",
+      "classification": "git-safe-committed-architecture-record",
+      "evidence_status": "current-development-mechanism-and-planned-security-policy"
+    },
+    {
+      "path": "docs/architecture/chatbot-delivery-options-2026-09-13.md",
+      "sha256": "eb30a02df7d7ec04ee87ebd5a2b564d1487d298d23f58265f30a9f1e81862803",
+      "classification": "git-safe-committed-architecture-record",
+      "evidence_status": "planned-provisional-direction-not-implemented"
     }
   ],
   "classifications": {
@@ -69,8 +64,10 @@
     "test4_2": "owner-confirmed-primary-frozen-candidate-not-current-main",
     "v9_1": "frozen-research-comparator-not-primary-candidate",
     "test4_1": "previous-candidate-not-current-main",
-    "test4_4": "needs-review-planned-untested",
-    "test4_5": "needs-review-planned-untested",
+    "test4_4": "preserved-development-candidate-static-only-not-current-main",
+    "test4_5": "latest-development-candidate-owner-observed-smoke-not-current-main",
+    "runtime_registry": "development-mechanism-fixed-tenant-not-trusted-authorization",
+    "chatbot_delivery": "planned-platform-and-deployment-undecided",
     "development_36": "draft-unreviewed-not-formal-evaluation",
     "held_out_72": "planned-not-completed",
     "historical_scores": "retained-with-original-workflow-only",
@@ -92,13 +89,13 @@
   ],
   "pre_existing_outside_allowlist": {
     "modified_tracked_paths": 0,
-    "untracked_project_paths": 2,
+    "untracked_project_paths": 0,
     "handling": "excluded-and-unstaged"
   },
   "checks": {
     "source_daily_manifest_parses": true,
-    "test4_2_local_manifest_integrity": "verified",
-    "candidate_yaml_parse": "verified",
+    "candidate_hashes_match_records": true,
+    "new_runtime_evidence_package_found": false,
     "credential_pattern_hit_paths": [],
     "claims_match_source_report_and_repository": true,
     "allowlist_only_staged_set": true,
