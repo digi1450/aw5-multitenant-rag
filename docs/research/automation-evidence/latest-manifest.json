@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T23:32:34+07:00",
+  "generated_at": "2026-09-24T23:32:42+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
@@ -8,46 +8,46 @@
   "status": "verified-for-automatic-commit",
   "repository": {
     "branch": "feature/dify-self-hosted",
-    "head": "cbe770426e4dbffb925d44045a62aac343e95161",
+    "head": "ca490a9982a143c1e0cea554739fbfb22a725d80",
     "upstream": "origin/feature/dify-self-hosted",
-    "ahead": 2,
+    "ahead": 3,
     "behind": 0,
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-22T23-32-18+07-00-report.md",
-    "report_bytes": 3371,
-    "report_sha256": "50e4a664d48b8f2e33030845408812ad83fe834e59714cd530c7188aacad979a",
-    "tracked_checkpoint_commit": "cbe770426e4dbffb925d44045a62aac343e95161"
+    "report": "output/research-evidence/daily/2026-09-23T23-32-34+07-00-report.md",
+    "report_bytes": 5214,
+    "report_sha256": "af975555f49d31c1abdf558beb2571a44e0405829329197f036d6237cf9c3b56",
+    "tracked_checkpoint_commit": "ca490a9982a143c1e0cea554739fbfb22a725d80"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-23T23-32-34+07-00-report.md",
-    "bytes": 5214,
-    "sha256": "af975555f49d31c1abdf558beb2571a44e0405829329197f036d6237cf9c3b56",
+    "path": "output/research-evidence/daily/2026-09-24T23-32-42+07-00-report.md",
+    "bytes": 3563,
+    "sha256": "cc0424d6b90b28c752b9c8f5ad58cdbc4a76b7a1a12d245df1818283a1b09dda",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 2248,
-    "sha256": "950a0dfda7ee7e9146975add0656cb92c0158049dc29e1573e9e936f82da369a",
+    "bytes": 1965,
+    "sha256": "344ce83e3c1526e6ac1b73a27285307cc9dea49ef211bee9b6f08892c1e40b56",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "output/research-evidence/experiments/2026-09-23-test4-7-shortlist-six-run-review/",
-      "classification": "local-only-private-exploratory-evidence",
-      "evidence_status": "six-of-six-expected-structural-paths-observed-not-formal-scoring"
+      "path": "AGENTS.md",
+      "sha256": "f650198fb3ec1d25ebec87293e197caa8d5287553162dce17f7e24787efdd2c4",
+      "classification": "git-safe-candidate-outside-automation-allowlist",
+      "evidence_status": "owner-directed-repository-guidance-not-runtime-evidence"
     }
   ],
   "classifications": {
     "current_main": "owner-confirmed-2026-09-06-unchanged",
     "test4_2": "primary-frozen-candidate-not-current-main-unchanged",
-    "test4_5": "prior-development-candidate-owner-observed-partial",
     "test4_6": "static-comparison-for-test4_7-no-status-transfer",
-    "test4_7": "exploratory-six-run-structural-evidence-not-current-main-not-formal-evaluation",
-    "large_registry_behavior": "missing-not-tested",
-    "controlled_latency_and_cost_comparison": "missing-not-tested",
+    "test4_7": "exploratory-six-run-structural-evidence-unchanged-not-formal-evaluation",
+    "ds2_architecture": "proposed-not-implemented-unchanged",
+    "ds2_requirements": "working-draft-needs-human-review-unchanged",
     "trusted_tenant_isolation": "unimplemented-unverified"
   },
   "private_evidence_paths_excluded": [
@@ -72,8 +72,7 @@
     "handling": "excluded-and-unstaged"
   },
   "checks": {
-    "source_package_manifest_parses": true,
-    "source_package_hashes_match": true,
+    "new_local_experiment_evidence": false,
     "initial_staging_area_empty": true,
     "tracked_allowlist_files_clean_before_run": true,
     "credential_pattern_hit_paths": [],
