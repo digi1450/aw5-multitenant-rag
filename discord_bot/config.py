@@ -14,6 +14,7 @@ class Tenant:
     dify_api_base_url: str
     dify_api_key: str
     tenant_name: str = ""
+    dify_knowledge_api_key: str = ""
 
 
 @dataclass(frozen=True)
@@ -79,18 +80,22 @@ def load_config(env: dict[str, str] | None = None) -> Config:
             raise ValueError(f"{key_name} is required")
         if tenant_id in tenants or role_id in role_ids:
             raise ValueError("tenant IDs and Discord role IDs must be unique")
+        knowledge_key_name = entry.get("dify_knowledge_api_key_env", f"AW5_DIFY_KNOWLEDGE_API_KEY_{tenant_id}")
+        if not isinstance(knowledge_key_name, str) or not knowledge_key_name.startswith("AW5_DIFY_KNOWLEDGE_API_KEY_"):
+            raise ValueError("dify_knowledge_api_key_env must name an AW5_DIFY_KNOWLEDGE_API_KEY_* variable")
         tenants[tenant_id] = Tenant(
             tenant_id=tenant_id,
             discord_role_id=role_id,
             dify_api_base_url=_safe_api_base(entry.get("dify_api_base_url")),
             dify_api_key=key,
             tenant_name=tenant_name.strip(),
+            dify_knowledge_api_key=env.get(knowledge_key_name, "").strip(),
         )
         role_ids.add(role_id)
     return Config(
         discord_token=token,
         guild_id=_positive_id(env.get("AW5_DISCORD_GUILD_ID"), "AW5_DISCORD_GUILD_ID"),
         start_channel_id=_positive_id(env.get("AW5_DISCORD_START_CHANNEL_ID"), "AW5_DISCORD_START_CHANNEL_ID"),
-        database_path=Path(env.get("AW5_MEMBERSHIP_DB", "output/discord-bot/aw5.sqlite3")),
+        database_path=Path(env.get("AW5_STATE_DB") or env.get("AW5_MEMBERSHIP_DB", "output/discord-bot/aw5.sqlite3")),
         tenants=tenants,
     )

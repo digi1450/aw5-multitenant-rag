@@ -1,4 +1,4 @@
-"""Backend-owned project membership and ticket state."""
+"""Bot-owned ticket and conversation state."""
 
 from dataclasses import dataclass
 from contextlib import closing
@@ -29,13 +29,6 @@ class Store:
     def _initialize(self) -> None:
         with closing(self._connect()) as db, db:
             db.executescript("""
-                CREATE TABLE IF NOT EXISTS memberships (
-                    guild_id INTEGER NOT NULL,
-                    discord_user_id INTEGER NOT NULL,
-                    tenant_id INTEGER NOT NULL,
-                    active INTEGER NOT NULL CHECK (active IN (0, 1)),
-                    PRIMARY KEY (guild_id, discord_user_id, tenant_id)
-                );
                 CREATE TABLE IF NOT EXISTS sessions (
                     thread_id INTEGER PRIMARY KEY,
                     guild_id INTEGER NOT NULL,
@@ -50,23 +43,6 @@ class Store:
                     PRIMARY KEY (guild_id, channel_id)
                 );
             """)
-
-    def set_membership(self, guild_id: int, user_id: int, tenant_id: int, active: bool) -> None:
-        with closing(self._connect()) as db, db:
-            db.execute("""
-                INSERT INTO memberships (guild_id, discord_user_id, tenant_id, active)
-                VALUES (?, ?, ?, ?)
-                ON CONFLICT (guild_id, discord_user_id, tenant_id)
-                DO UPDATE SET active = excluded.active
-            """, (guild_id, user_id, tenant_id, int(active)))
-
-    def active_tenants(self, guild_id: int, user_id: int) -> list[int]:
-        with closing(self._connect()) as db, db:
-            rows = db.execute("""
-                SELECT tenant_id FROM memberships
-                WHERE guild_id = ? AND discord_user_id = ? AND active = 1
-            """, (guild_id, user_id)).fetchall()
-        return [int(row["tenant_id"]) for row in rows]
 
     def create_session(self, session: Session) -> None:
         with closing(self._connect()) as db, db:

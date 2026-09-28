@@ -5,7 +5,8 @@
       "tenant_name": "Nature Footprint",
       "discord_role_id": "1553806139739607152",
       "dify_api_base_url": "http://127.0.0.1:8080/v1",
-      "dify_api_key_env": "AW5_DIFY_API_KEY_1"
+      "dify_api_key_env": "AW5_DIFY_API_KEY_1",
+      "dify_knowledge_api_key_env": "AW5_DIFY_KNOWLEDGE_API_KEY_1"
     }
   ]
 }

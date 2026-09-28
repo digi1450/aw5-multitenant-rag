@@ -12,6 +12,7 @@ from discord import app_commands
 from .auth import AccessDenied, authorize_session, authorized_tenants
 from .config import Config, Tenant, load_config
 from .dify import DifyError, ask_dify
+from .knowledge import KnowledgeError, list_project_files
 from .store import Session, Store
 
 
@@ -19,10 +20,14 @@ LOG = logging.getLogger(__name__)
 START_BUTTON_ID = "aw5:start:v1"
 
 
-def _role_ids(interaction: discord.Interaction) -> set[int]:
-    if not isinstance(interaction.user, discord.Member):
-        raise AccessDenied("Discord member identity is unavailable")
-    return {role.id for role in interaction.user.roles}
+async def _current_role_ids(guild: discord.Guild | None, user_id: int) -> set[int]:
+    if guild is None:
+        raise AccessDenied("Discord server identity is unavailable")
+    try:
+        member = await guild.fetch_member(user_id)
+    except discord.NotFound as exc:
+        raise AccessDenied("Discord member is unavailable") from exc
+    return {role.id for role in member.roles}
 
 
 def _ticket_thread(config: Config, guild_id: int | None, channel: object) -> bool:
@@ -192,10 +197,8 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("กรุณากด Start ในห้อง #aw5-start ใหม่", ephemeral=True)
             return
         try:
-            member = await interaction.guild.fetch_member(interaction.user.id)
-            eligible = authorized_tenants(
-                config, bot.store, interaction.guild_id, member.id, {role.id for role in member.roles}
-            )
+            role_ids = await _current_role_ids(interaction.guild, interaction.user.id)
+            eligible = authorized_tenants(config, interaction.guild_id, role_ids)
         except (AccessDenied, discord.DiscordException, OSError, sqlite3.Error):
             LOG.exception("Could not recheck project access")
             await interaction.followup.send("ตรวจสิทธิ์โปรเจกต์ไม่สำเร็จ กรุณากด Start ใหม่", ephemeral=True)
@@ -212,10 +215,9 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("ใช้ /start ในห้อง #aw5-start เท่านั้น", ephemeral=True)
             return
         try:
-            eligible = authorized_tenants(
-                config, bot.store, interaction.guild_id, interaction.user.id, _role_ids(interaction)
-            )
-        except (AccessDenied, OSError, sqlite3.Error):
+            role_ids = await _current_role_ids(interaction.guild, interaction.user.id)
+            eligible = authorized_tenants(config, interaction.guild_id, role_ids)
+        except (AccessDenied, discord.DiscordException, OSError):
             await interaction.followup.send("ไม่พบสิทธิ์สมาชิกโปรเจกต์ที่ใช้งานได้", ephemeral=True)
             return
         if not eligible:
@@ -300,7 +302,7 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("คำถามต้องมีความยาว 1–2000 ตัวอักษร", ephemeral=True)
             return
         try:
-            await answer_ticket(thread, interaction.guild_id, interaction.user.id, _role_ids(interaction), question)
+            await answer_ticket(thread, interaction.guild, interaction.user.id, question)
             await interaction.followup.send("ส่งคำตอบใน ticket แล้ว", ephemeral=True)
         except AccessDenied:
             await interaction.followup.send("ไม่มีสิทธิ์ใช้งาน ticket นี้หรือสมาชิกถูกเพิกถอน", ephemeral=True)
@@ -311,10 +313,44 @@ def create_bot(config: Config) -> AW5Bot:
             LOG.exception("Could not deliver Dify answer")
             await interaction.followup.send("ส่งคำตอบไม่สำเร็จ กรุณาติดต่อผู้ดูแล", ephemeral=True)
 
-    async def answer_ticket(thread: discord.Thread, guild_id: int, user_id: int, role_ids: set[int], question: str) -> None:
+    @bot.tree.command(name="list", description="ดูรายการไฟล์ของโปรเจกต์ใน ticket ส่วนตัว")
+    async def list_files(interaction: discord.Interaction) -> None:
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        thread = interaction.channel
+        if not _ticket_thread(config, interaction.guild_id, thread):
+            await interaction.followup.send("ใช้ /list ใน private ticket ที่ bot สร้างเท่านั้น", ephemeral=True)
+            return
+        try:
+            role_ids = await _current_role_ids(interaction.guild, interaction.user.id)
+            tenant, _ = authorize_session(
+                config, bot.store, interaction.guild_id, interaction.user.id, role_ids, thread.id
+            )
+            files = await asyncio.to_thread(list_project_files, tenant)
+            if not files:
+                await interaction.followup.send("ไม่พบไฟล์ที่ติด tenant_id ของโปรเจกต์นี้", ephemeral=True)
+                return
+            lines = [f"ไฟล์ที่ติด tenant_id = {tenant.tenant_id} ({len(files)} รายการ):"]
+            for item in files:
+                name = discord.utils.escape_markdown(item.name.replace("\n", " ").replace("\r", " "))
+                dataset = discord.utils.escape_markdown(item.dataset_name.replace("\n", " ").replace("\r", " "))
+                label = {"available": "พร้อมใช้งาน", "disabled": "ปิดใช้งาน", "archived": "เก็บถาวร", "indexing": "ยังไม่พร้อม"}[item.status]
+                lines.append(f"• {name} — {dataset} ({label})")
+            for chunk in _chunks("\n".join(lines)):
+                await interaction.followup.send(chunk, ephemeral=True, allowed_mentions=discord.AllowedMentions.none())
+        except AccessDenied:
+            await interaction.followup.send("ไม่มีสิทธิ์ใช้งาน ticket นี้หรือสมาชิกถูกเพิกถอน", ephemeral=True)
+        except KnowledgeError as exc:
+            LOG.warning("Knowledge inventory failed: %s", exc)
+            await interaction.followup.send("ดึงรายการไฟล์ไม่สำเร็จ กรุณาตรวจการตั้งค่า Knowledge API", ephemeral=True)
+        except (discord.DiscordException, OSError, sqlite3.Error):
+            LOG.exception("Could not list project files")
+            await interaction.followup.send("ดึงรายการไฟล์ไม่สำเร็จ กรุณาติดต่อผู้ดูแล", ephemeral=True)
+
+    async def answer_ticket(thread: discord.Thread, guild: discord.Guild | None, user_id: int, question: str) -> None:
         lock = bot.ticket_locks.setdefault(thread.id, asyncio.Lock())
         async with lock:
-            tenant, session = authorize_session(config, bot.store, guild_id, user_id, role_ids, thread.id)
+            role_ids = await _current_role_ids(guild, user_id)
+            tenant, session = authorize_session(config, bot.store, guild.id, user_id, role_ids, thread.id)
             user_key = f"aw5:{tenant.tenant_id}:{user_id}:{thread.id}"
             async with thread.typing():
                 result = await asyncio.to_thread(
@@ -348,9 +384,8 @@ def create_bot(config: Config) -> AW5Bot:
             if len(question) > 2000:
                 await thread.send("คำถามต้องมีความยาว 1–2000 ตัวอักษร")
                 return
-            member = await message.guild.fetch_member(message.author.id)
-            await answer_ticket(thread, message.guild.id, member.id, {role.id for role in member.roles}, question)
-        except (AccessDenied, discord.NotFound):
+            await answer_ticket(thread, message.guild, message.author.id, question)
+        except AccessDenied:
             await thread.send("ไม่มีสิทธิ์ใช้งาน ticket นี้หรือสมาชิกถูกเพิกถอน")
         except DifyError as exc:
             LOG.warning("Dify request failed: %s", exc)

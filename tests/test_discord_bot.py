@@ -11,6 +11,7 @@ from discord_bot.auth import AccessDenied, authorize_session, authorize_start, a
 from discord_bot.bot import create_bot
 from discord_bot.config import Config, Tenant, load_config
 from discord_bot.dify import DifyAnswer, ask_dify
+from discord_bot.knowledge import KnowledgeError, list_project_files
 from discord_bot.store import Session, Store
 
 
@@ -24,24 +25,18 @@ class AuthTests(unittest.TestCase):
             2: Tenant(2, 202, "http://127.0.0.1/v1", "fake-key"),
         })
 
-    def test_membership_and_role_are_both_required(self):
+    def test_role_alone_grants_configured_project(self):
         with self.assertRaises(AccessDenied):
-            authorize_start(self.config, self.store, 10, 30, {101})
-        self.store.set_membership(10, 30, 1, True)
+            authorize_start(self.config, 10, set())
+        self.assertEqual(authorize_start(self.config, 10, {101}).tenant_id, 1)
         with self.assertRaises(AccessDenied):
-            authorize_start(self.config, self.store, 10, 30, set())
-        self.assertEqual(authorize_start(self.config, self.store, 10, 30, {101}).tenant_id, 1)
-        self.store.set_membership(10, 30, 1, False)
-        with self.assertRaises(AccessDenied):
-            authorize_start(self.config, self.store, 10, 30, {101})
+            authorize_start(self.config, 11, {101})
 
     def test_ambiguous_tenant_and_foreign_ticket_fail_closed(self):
-        self.store.set_membership(10, 30, 1, True)
-        self.store.set_membership(10, 30, 2, True)
         with self.assertRaises(AccessDenied):
-            authorize_start(self.config, self.store, 10, 30, {101, 202})
+            authorize_start(self.config, 10, {101, 202})
         self.assertEqual(
-            {tenant.tenant_id for tenant in authorized_tenants(self.config, self.store, 10, 30, {101, 202})},
+            {tenant.tenant_id for tenant in authorized_tenants(self.config, 10, {101, 202})},
             {1, 2},
         )
         self.store.create_session(Session(40, 10, 30, 1, None))
@@ -50,9 +45,8 @@ class AuthTests(unittest.TestCase):
         with self.assertRaises(AccessDenied):
             authorize_session(self.config, self.store, 11, 30, {101}, 40)
         self.assertEqual(authorize_session(self.config, self.store, 10, 30, {101}, 40)[0].tenant_id, 1)
-        self.store.set_membership(10, 30, 1, False)
         with self.assertRaises(AccessDenied):
-            authorize_session(self.config, self.store, 10, 30, {101}, 40)
+            authorize_session(self.config, self.store, 10, 30, set(), 40)
 
     def test_start_panel_id_survives_store_reopen(self):
         self.assertIsNone(self.store.get_start_panel_id(10, 20))
@@ -65,6 +59,25 @@ class AuthTests(unittest.TestCase):
 
 
 class ConfigTests(unittest.TestCase):
+    def test_knowledge_key_defaults_to_tenant_environment_name(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "tenants.json"
+            path.write_text(json.dumps({"tenants": [{
+                "tenant_id": 1,
+                "discord_role_id": 101,
+                "dify_api_base_url": "http://127.0.0.1/v1",
+                "dify_api_key_env": "AW5_DIFY_API_KEY_1",
+            }]}), encoding="utf-8")
+            config = load_config({
+                "AW5_DISCORD_BOT_TOKEN": "fake-token",
+                "AW5_DISCORD_GUILD_ID": "10",
+                "AW5_DISCORD_START_CHANNEL_ID": "20",
+                "AW5_TENANTS_FILE": str(path),
+                "AW5_DIFY_API_KEY_1": "chat-key",
+                "AW5_DIFY_KNOWLEDGE_API_KEY_1": "knowledge-key",
+            })
+            self.assertEqual(config.tenants[1].dify_knowledge_api_key, "knowledge-key")
+
     def test_insecure_remote_dify_url_rejected(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "tenants.json"
@@ -113,6 +126,36 @@ class DifyTests(unittest.TestCase):
         self.assertEqual(result.conversation_id, "conversation-1")
 
 
+class KnowledgeTests(unittest.TestCase):
+    def test_lists_all_pages_and_only_exact_project_metadata(self):
+        tenant = Tenant(1, 101, "http://127.0.0.1/v1", "chat-key", "Nature Footprint", "knowledge-key")
+
+        def page(path, number):
+            if path == "/datasets":
+                return {"data": [{"id": "1f4b4f33-c29b-431a-ac21-416c6f3806fc", "name": "SDS"}], "has_more": False}
+            if number == 1:
+                return {"data": [
+                    {"name": "SDS.pdf", "doc_metadata": [{"name": "tenant_id", "value": "1"}],
+                     "enabled": True, "archived": False, "indexing_status": "completed"},
+                    {"name": "other.pdf", "doc_metadata": [{"name": "tenant_id", "value": "2"}],
+                     "enabled": True, "archived": False, "indexing_status": "completed"},
+                ], "has_more": True}
+            return {"data": [
+                {"name": "old.pdf", "doc_metadata": {"tenant_id": "1"},
+                 "enabled": False, "archived": False, "indexing_status": "completed"},
+                {"name": "untagged.pdf", "doc_metadata": [], "enabled": True},
+            ], "has_more": False}
+
+        with patch("discord_bot.knowledge._get_page", side_effect=lambda t, p, n, timeout: page(p, n)) as fetch:
+            files = list_project_files(tenant)
+        self.assertEqual([(f.name, f.status) for f in files], [("old.pdf", "disabled"), ("SDS.pdf", "available")])
+        self.assertEqual(fetch.call_count, 3)
+
+    def test_missing_knowledge_key_fails_closed(self):
+        with self.assertRaises(KnowledgeError):
+            list_project_files(Tenant(1, 101, "http://127.0.0.1/v1", "chat-key"))
+
+
 class ButtonTests(unittest.TestCase):
     def test_start_view_dispatches_when_created_during_setup(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -144,7 +187,6 @@ class PlainMessageTests(unittest.TestCase):
             async def check():
                 bot = create_bot(config)
                 self.assertTrue(bot.intents.message_content)
-                bot.store.set_membership(10, 30, 1, True)
                 bot.store.create_session(Session(40, 10, 30, 1, None))
                 thread = MagicMock(spec=discord.Thread)
                 thread.id = 40
@@ -191,6 +233,84 @@ class PlainMessageTests(unittest.TestCase):
 
             asyncio.run(check())
 
+class SlashAskTests(unittest.TestCase):
+    def test_ask_uses_fresh_roles_even_when_interaction_has_old_role(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
+                1: Tenant(1, 101, "http://127.0.0.1/v1", "fake-key"),
+            })
+
+            async def check():
+                bot = create_bot(config)
+                bot.store.create_session(Session(40, 10, 30, 1, None))
+                thread = MagicMock(spec=discord.Thread)
+                thread.id = 40
+                thread.parent_id = 20
+                thread.type = discord.ChannelType.private_thread
+                guild = MagicMock(spec=discord.Guild)
+                guild.id = 10
+                member = MagicMock(spec=discord.Member)
+                member.id = 30
+                member.roles = []
+                guild.fetch_member = AsyncMock(return_value=member)
+                interaction = MagicMock(spec=discord.Interaction)
+                interaction.guild = guild
+                interaction.guild_id = 10
+                interaction.channel = thread
+                interaction.user = MagicMock(spec=discord.Member)
+                interaction.user.id = 30
+                interaction.user.roles = [MagicMock(id=101)]  # stale interaction data
+                interaction.response.defer = AsyncMock()
+                interaction.followup.send = AsyncMock()
+
+                with patch("discord_bot.bot.ask_dify") as dify:
+                    await bot.tree.get_command("ask").callback(interaction, "Question")
+                    dify.assert_not_called()
+                self.assertIn("ไม่มีสิทธิ์", interaction.followup.send.await_args.args[0])
+                guild.fetch_member.assert_awaited_once_with(30)
+
+            asyncio.run(check())
+
+
+class SlashListTests(unittest.TestCase):
+    def test_list_rechecks_role_and_uses_ticket_tenant(self):
+        with tempfile.TemporaryDirectory() as directory:
+            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
+                1: Tenant(1, 101, "http://127.0.0.1/v1", "chat-key", "Nature Footprint", "knowledge-key"),
+            })
+
+            async def check():
+                bot = create_bot(config)
+                bot.store.create_session(Session(40, 10, 30, 1, None))
+                thread = MagicMock(spec=discord.Thread)
+                thread.id = 40
+                thread.parent_id = 20
+                thread.type = discord.ChannelType.private_thread
+                guild = MagicMock(spec=discord.Guild)
+                guild.id = 10
+                member = MagicMock(spec=discord.Member)
+                member.roles = []
+                guild.fetch_member = AsyncMock(return_value=member)
+                interaction = MagicMock(spec=discord.Interaction)
+                interaction.guild = guild
+                interaction.guild_id = 10
+                interaction.channel = thread
+                interaction.user.id = 30
+                interaction.response.defer = AsyncMock()
+                interaction.followup.send = AsyncMock()
+
+                with patch("discord_bot.bot.list_project_files") as inventory:
+                    await bot.tree.get_command("list").callback(interaction)
+                    inventory.assert_not_called()
+                self.assertIn("ไม่มีสิทธิ์", interaction.followup.send.await_args.args[0])
+                member.roles = [MagicMock(id=101)]
+                with patch("discord_bot.bot.list_project_files", return_value=[]) as inventory:
+                    await bot.tree.get_command("list").callback(interaction)
+                    self.assertEqual(inventory.call_args.args[0].tenant_id, 1)
+                self.assertIn("ไม่พบไฟล์", interaction.followup.send.await_args.args[0])
+
+            asyncio.run(check())
+
 
 class ProjectChoiceTests(unittest.TestCase):
     def test_single_eligible_project_opens_ticket_without_choice(self):
@@ -202,10 +322,12 @@ class ProjectChoiceTests(unittest.TestCase):
 
             async def check():
                 bot = create_bot(config)
-                bot.store.set_membership(10, 30, 1, True)
-                bot.store.set_membership(10, 30, 2, True)
                 guild = MagicMock(spec=discord.Guild)
                 guild.id = 10
+                member = MagicMock(spec=discord.Member)
+                member.id = 30
+                member.roles = [MagicMock(id=101)]
+                guild.fetch_member = AsyncMock(return_value=member)
                 channel = MagicMock(spec=discord.TextChannel)
                 channel.guild = guild
                 thread = MagicMock(spec=discord.Thread)
@@ -221,11 +343,12 @@ class ProjectChoiceTests(unittest.TestCase):
                 interaction.channel_id = 20
                 interaction.user = MagicMock(spec=discord.Member)
                 interaction.user.id = 30
-                interaction.user.roles = [MagicMock(id=101)]
+                interaction.user.roles = []  # access comes from a fresh guild fetch
                 interaction.response.defer = AsyncMock()
                 interaction.followup.send = AsyncMock()
 
                 await bot.start_ticket_handler(interaction)
+                guild.fetch_member.assert_awaited_once_with(30)
                 self.assertEqual(channel.create_thread.await_count, 1)
                 self.assertEqual(bot.store.get_session(40).tenant_id, 1)
                 self.assertIsNone(interaction.followup.send.await_args.kwargs.get("view"))
@@ -241,8 +364,6 @@ class ProjectChoiceTests(unittest.TestCase):
 
             async def check():
                 bot = create_bot(config)
-                bot.store.set_membership(10, 30, 1, True)
-                bot.store.set_membership(10, 30, 2, True)
                 guild = MagicMock(spec=discord.Guild)
                 guild.id = 10
                 guild.get_role.side_effect = lambda role_id: MagicMock(name=f"Role {role_id}")

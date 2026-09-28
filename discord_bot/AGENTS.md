@@ -5,11 +5,12 @@
   local adapter flow, owner-reported live observations, and unverified limits.
 - Keep Discord and Dify credentials in local environment variables. Never print,
   commit, or include them in screenshots or test fixtures.
-- The local membership store and a current Discord role must both authorize a
-  user. A thread ID, Discord message, or slash-command argument never grants an
-  AW5 project tenant.
+- Treat configured Discord project roles as the demo membership authority. Fetch
+  the current member record from the configured guild before Start, project
+  selection, and each question. A thread ID, Discord message, or slash-command
+  argument never grants an AW5 project tenant.
 - Keep each Dify conversation tied to one Discord user, private thread, and AW5
-  `tenant_id`. Deny absent or revoked membership before contacting Dify.
+  `tenant_id`. Deny absent or revoked project roles before contacting Dify.
 - Run focused unit tests with the project environment:
   `.venv/bin/python -m unittest discover -s tests -p 'test_discord_bot.py'`.
 - Do not run the bot against Discord or Dify, install dependencies, or change

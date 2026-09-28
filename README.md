@@ -98,8 +98,9 @@ Not yet verified or complete:
   scoring fixture. `ISO-01` remains N/A until at least two real project tenants
   are onboarded and the trusted backend project-tenant filter is tested with
   owner-approved controlled evidence.
-- A local Discord demo adapter checks active backend membership and Discord
-  roles before sending questions to a tenant-configured Dify Chatflow. Its
+- A local Discord demo adapter checks the member's current configured Discord
+  project role before sending questions to a tenant-configured Dify Chatflow;
+  manual user-ID registration is no longer required. Its
   two-project selector has offline unit tests; Project B onboarding, trusted
   cross-project retrieval isolation, production deployment, and formal adapter
   evaluation remain unverified.
@@ -166,6 +167,6 @@ Custom Dify plugins are maintained in separate Git repositories and are not vers
 ## Discord demo adapter
 
 The local Discord bot accepts questions in private tickets and forwards them to
-the configured Dify Chatflow after checking project membership and role. See
+the configured Dify Chatflow after checking the member's current project role. See
 [its setup guide](discord_bot/README.md) and the
 [dated implementation handoff](docs/architecture/discord-bot-demo-handoff-2026-09-28.md).
