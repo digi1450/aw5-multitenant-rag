@@ -94,8 +94,15 @@ Not yet verified or complete:
   unverified, and Dify does not synchronize automatically with Git.
 - The historical baseline result was `19/19`, but the 2026-08-28 regression was `16/19` strict after bounded retry. Treat repeatability as unresolved and do not quote the historical score as a current stability guarantee.
 - The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
-- `ISO-01` remains N/A until a Project B tenant fixture and a trusted backend project-tenant filter exist.
-- The project-tenant identity is defined, but its authorization, production deployment, frontend/backend implementation, and conversation-memory behavior are not complete or proven.
+- Project B is another real organizational software project, not a synthetic
+  scoring fixture. `ISO-01` remains N/A until at least two real project tenants
+  are onboarded and the trusted backend project-tenant filter is tested with
+  owner-approved controlled evidence.
+- A local Discord demo adapter checks active backend membership and Discord
+  roles before sending questions to a tenant-configured Dify Chatflow. Its
+  two-project selector has offline unit tests; Project B onboarding, trusted
+  cross-project retrieval isolation, production deployment, and formal adapter
+  evaluation remain unverified.
 
 ## Immediate scope
 
@@ -133,6 +140,7 @@ docs/
   deliverables/              Submitted and working deliverables
   research/                  Evidence inventory and publication-oriented records
 dify/                        Dify workflow export instructions/artifacts
+discord_bot/                 Local Discord ticket and Dify demo adapter
 knowledge_base/
   nature_footprint/          Publishable metadata and evaluation material
 ```
@@ -154,3 +162,10 @@ design. Provider selection and new transfers of private material need approval.
 Running Dify applications are maintained separately from this repository. After authorized meaningful changes, export DSL/YAML under `dify/exports/`; never commit API keys or provider credentials. [`dify/exports/CURRENT.md`](dify/exports/CURRENT.md) identifies the owner-confirmed self-hosted main workflow, the previous AW5-RAG 1.2 snapshot, historical artifacts, and the frozen control separately.
 
 Custom Dify plugins are maintained in separate Git repositories and are not versioned in this repository.
+
+## Discord demo adapter
+
+The local Discord bot accepts questions in private tickets and forwards them to
+the configured Dify Chatflow after checking project membership and role. See
+[its setup guide](discord_bot/README.md) and the
+[dated implementation handoff](docs/architecture/discord-bot-demo-handoff-2026-09-28.md).

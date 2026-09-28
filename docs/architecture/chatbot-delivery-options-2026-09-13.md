@@ -6,6 +6,10 @@ AW5 is expected to expose its RAG capability through a chatbot, potentially
 Microsoft Teams or Discord. The platform is not selected and may change. This is
 a provisional product/deployment direction, not an implementation record.
 
+Since this proposal, a local Discord demo adapter has been implemented. See the
+[dated demo handoff](discord-bot-demo-handoff-2026-09-28.md) for its verified
+scope and limits. The demo does not settle the product platform decision.
+
 The current Dify candidate remains the RAG engine. A platform-neutral trusted AW5
 backend is the proposed integration and authorization boundary:
 

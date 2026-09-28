@@ -4,22 +4,32 @@
 
 AW5 is a senior-project repository for a multi-tenant conversational assistant that retrieves evidence from selected SDLC project artifacts. It does not claim to perform the entire SDLC. The current case study uses Nature Footprint TOR, System Design Specification, and ER/dbdiagram artifacts.
 
-## Read first
+## Read on demand
 
-Before planning or changing the project, read these files in order:
+Do not read every project document for each task. Open only the relevant
+authoritative sources, expanding when evidence conflicts or the task needs it:
 
-1. `README.md` — current direction, historical evidence, and unresolved decisions.
-2. `docs/architecture/current-direction-2026-09-02.md` — authoritative owner-confirmed architecture; supersedes the old locked roadmap.
-3. `docs/architecture/tenant-project-boundary-2026-09-03.md` — authoritative definition that one AW5 tenant is one project and the required isolation boundary.
-4. `docs/research/research-evidence-inventory.md` — chronological evidence map, raw-artifact locations, verified/partial/missing boundaries, and Git/local classification.
-5. `dify/exports/CURRENT.md` — owner-confirmed self-hosted main workflow, previous snapshots, frozen baseline, and historical candidates.
-6. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md` — historical baseline accuracy/latency/cost evidence and demonstrated failures.
-7. `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md` — historical scored `19/19` RAG evidence and its limits.
-8. `knowledge_base/nature_footprint/evaluation/evaluation-suite-v1.md` — legacy evaluation definitions, including the unexecuted `ISO-01` fixture; source-router expectations are not the new architecture contract.
-9. `docs/course-requirements/ds1-ds3-requirements.md` — instructor-supplied deliverable requirements.
-10. `knowledge_base/nature_footprint/README.md` and `manifest.json` — corpus provenance and ingestion boundaries.
+- General orientation: `README.md`.
+- Architecture and tenant isolation: `docs/architecture/current-direction-2026-09-02.md`
+  and `docs/architecture/tenant-project-boundary-2026-09-03.md` as relevant.
+- Dify workflow status or changes: `dify/exports/CURRENT.md`, then the exact
+  export and linked record. Do not infer current state from filenames alone.
+- Evaluation: `docs/research/research-evidence-inventory.md` to locate the
+  applicable run and protocol; legacy baseline files are historical controls.
+- Course work: `docs/course-requirements/ds1-ds3-requirements.md`.
+- Corpus ingestion or provenance: `knowledge_base/nature_footprint/README.md`
+  and `knowledge_base/nature_footprint/manifest.json`.
+- Discord demo adapter: `discord_bot/AGENTS.md`, `discord_bot/README.md`, and
+  `docs/architecture/discord-bot-demo-handoff-2026-09-28.md`. Keep its local
+  demo evidence separate from Dify workflow promotion and isolation claims.
 
-Do not infer the latest workflow from export filenames alone. Follow `dify/exports/CURRENT.md` for artifacts and the current-direction document for design intent. Newer explicit owner instructions supersede older repository plans or agent memory; ask before resolving ambiguity.
+Read relevant sections first; a partial read is not proof that other evidence
+does not exist. Newer owner instructions supersede older plans or memory. Ask
+when a material ambiguity remains.
+
+Keep tool output focused on needed fields or sections. Open full prompts,
+exports, logs, or chunks only when needed to verify the task. Preserve required
+raw evidence locally; never hide errors, anomalies, or supporting evidence.
 
 ## Evidence and status rules
 
@@ -31,7 +41,10 @@ Do not infer the latest workflow from export filenames alone. Follow `dify/expor
   repeatability result, production-readiness claim, or tenant-isolation test. It
   must not inherit old evaluation scores.
 - The historical RAG baseline run has `19/19` strict passes, while the 2026-08-28 regression scored `16/19` strict after bounded retry under the legacy rubric. This does not prove the new architecture, stability, production readiness, multi-tenant isolation, or conversation memory.
-- `ISO-01` is N/A until a synthetic Project B tenant fixture and trusted backend project-tenant filtering exist.
+- Project B is another real software project in the organization, not a synthetic
+  scoring fixture. `ISO-01` remains N/A until at least two real project tenants
+  are onboarded and trusted backend project-tenant filtering is tested with
+  owner-approved controlled evidence.
 - The verified DSL/evaluation baseline is committed on `origin/main` at `64418f8`. The working tree may contain newer documentation, so inspect `git status` before making a current repository-state claim. The Dify Cloud app is maintained separately and does not synchronize automatically with Git.
 - The baseline export records a saved draft on 2026-08-25; later dated traces and candidate reports are separate evidence. Check the live application before claiming that it is currently Published or unchanged.
 - Do not describe the assistant as doing the whole SDLC. Describe it as retrieving and tracing evidence across selected SDLC artifacts.

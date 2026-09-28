@@ -38,10 +38,13 @@ browser-supplied dataset IDs, Discord/Teams messages, and an untrusted frontend
 selector are not authorization sources. Retrieval must fail closed if the ID is
 absent, invalid, mismatched, or unauthorized.
 
-Isolation testing must use at least two project tenants with conflicting synthetic
-facts and verify that neither tenant retrieves the other's data. Existing `ISO-01`
-material remains a historical placeholder and does not prove this isolation or
-the trusted backend filter.
+Project B is another real software project in the organization; it is not a
+synthetic scoring fixture. Isolation testing must use at least two real project
+tenants and verify that neither tenant retrieves the other's data. The test may
+use owner-approved controlled marker records so that private project content is
+not exposed merely to create a test. Existing `ISO-01` material remains a
+historical placeholder and does not prove this isolation or the trusted backend
+filter.
 
 ## Identifier naming
 

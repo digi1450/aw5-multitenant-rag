@@ -12,6 +12,7 @@
 **/.DS_Store
 .vscode/
 .idea/
+~$*.docx
 
 # Temporary and generated files
 tmp/
