@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-27T23:33:00+07:00",
+  "generated_at": "2026-09-28T22:55:46+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
@@ -8,66 +8,56 @@
   "status": "verified-for-automatic-commit",
   "repository": {
     "branch": "feature/dify-self-hosted",
-    "head": "732485c2703f73e9c7287797b9b71c9db0e332de",
+    "head": "8530e092fb449b26b80b69dcf60973ed9ef1d0f3",
     "upstream": "origin/feature/dify-self-hosted",
-    "ahead": 4,
+    "ahead": 0,
     "behind": 0,
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-26T23-31-19+07-00-report.md",
-    "report_bytes": 1743,
-    "report_sha256": "4680ec0bbe5edda0fb25fe96e3aef835a2e899e569dddacc698025e64f19c16f",
-    "tracked_checkpoint_commit": "732485c2703f73e9c7287797b9b71c9db0e332de"
+    "report": "output/research-evidence/daily/2026-09-27T23-33-00+07-00-report.md",
+    "report_bytes": 7341,
+    "report_sha256": "661547debd186de6765432b3c1a0a4fe9833210ff175977b04f5688354422d4e",
+    "tracked_checkpoint_commit": "d81735afb8dd015de5ae6c2464f704406cb99c86"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-27T23-33-00+07-00-report.md",
-    "bytes": 7341,
-    "sha256": "661547debd186de6765432b3c1a0a4fe9833210ff175977b04f5688354422d4e",
+    "path": "output/research-evidence/daily/2026-09-28T22-55-46+07-00-report.md",
+    "bytes": 11896,
+    "sha256": "60291236aab34247feb1e8fc8b2c7e28ca96fd8ff34aefe43a92135e61b35d03",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 1931,
-    "sha256": "573f83a1fd4431781b09da4108655429016f0575933922c032e472566c57d293",
+    "bytes": 1713,
+    "sha256": "1b18f6cedcf847cc35dc7c8a9215f44a76e7dd56b4a6b0af78cc3595bc1abfb8",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "output/research-evidence/experiments/2026-09-27-test4-7-topk30-context10-one-run/",
-      "classification": "local-only-private-exploratory-evidence",
-      "evidence_status": "one-run-topk30-control"
+      "path": "docs/architecture/discord-bot-demo-handoff-2026-09-28.md",
+      "classification": "git-safe-candidate-already-committed-outside-automation-allowlist",
+      "evidence_status": "mixed-owner-observed-offline-tested-partial"
     },
     {
-      "path": "output/research-evidence/experiments/2026-09-27-test4-8-topk10-one-run/",
-      "classification": "local-only-private-exploratory-evidence",
-      "evidence_status": "one-run-topk10-review"
-    },
-    {
-      "path": "output/research-evidence/experiments/2026-09-27-test4-8-browser-topk10-review/",
-      "classification": "local-only-private-exploratory-evidence",
-      "evidence_status": "one-run-browser-comparison-with-content-drift"
+      "path": "discord_bot/",
+      "classification": "git-safe-candidate-already-committed-outside-automation-allowlist",
+      "evidence_status": "implementation-source-offline-tested-live-not-verified-by-collector"
     },
     {
       "path": "docs/deliverables/ds2/working/",
-      "classification": "needs-human-privacy-review-outside-automation-allowlist",
+      "classification": "needs-human-privacy-review-already-committed-outside-automation-allowlist",
       "evidence_status": "proposed-working-deliverable"
-    },
-    {
-      "path": "docs/architecture/diagrams/aw5-mvp-system-architecture-discord-variant.drawio",
-      "classification": "needs-human-review-outside-automation-allowlist",
-      "evidence_status": "proposed-architecture-variant"
     }
   ],
   "classifications": {
     "current_main": "owner-confirmed-2026-09-06-unchanged",
     "test4_2": "frozen-candidate-not-current-main",
-    "test4_7": "exploratory-topk30-control-not-formal-scoring",
-    "test4_8": "exploratory-topk10-two-reviews-not-current-main",
-    "ds2": "proposed-working-files-needs-human-review",
+    "test4_7": "separate-demo-and-exploratory-not-formal-evaluation",
+    "test4_8": "exploratory-not-current-main",
+    "ds2": "proposed-working-files",
     "historical_scores": "retained-with-original-workflows",
-    "trusted_tenant_isolation": "unimplemented-unverified"
+    "trusted_tenant_isolation": "unverified"
   },
   "allowlist": [
     "docs/research/automation-evidence/latest-report.md",
@@ -75,18 +65,15 @@
   ],
   "excluded_local_only_paths": [
     "output/research-evidence/daily/",
-    "output/research-evidence/experiments/",
-    "docs/deliverables/ds2/working/~$5-Requirements-Specification-DS2.docx",
-    "**/.DS_Store"
+    "output/discord-bot/aw5.sqlite3",
+    "output/discord-bot/tenants.local.json",
+    "discord_bot/.env",
+    "output/research-evidence/experiments/"
   ],
   "checks": {
-    "source_package_manifests_parse": true,
-    "source_package_report_and_evidence_hashes_match": true,
     "initial_staging_area_empty": true,
     "tracked_allowlist_files_clean_before_run": true,
-    "raw_private_content_excluded": true,
-    "allowlist_only_staged_set": true,
-    "git_diff_cached_check": true
+    "raw_private_content_excluded": true
   },
   "notes": [
     "Manifest excludes its own hash.",
