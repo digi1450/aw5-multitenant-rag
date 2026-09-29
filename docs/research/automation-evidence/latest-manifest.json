@@ -1,63 +1,78 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-28T22:55:46+07:00",
+  "generated_at": "2026-09-29T23:32:51+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
   "classification": "sanitized-git-safe",
-  "status": "verified-for-automatic-commit",
+  "status": "partial-evidence-not-runtime-verified",
   "repository": {
     "branch": "feature/dify-self-hosted",
-    "head": "8530e092fb449b26b80b69dcf60973ed9ef1d0f3",
+    "head": "83904408e6c3083a63b6946a7e8f484b4897a963",
     "upstream": "origin/feature/dify-self-hosted",
-    "ahead": 0,
+    "ahead": 1,
     "behind": 0,
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-27T23-33-00+07-00-report.md",
-    "report_bytes": 7341,
-    "report_sha256": "661547debd186de6765432b3c1a0a4fe9833210ff175977b04f5688354422d4e",
-    "tracked_checkpoint_commit": "d81735afb8dd015de5ae6c2464f704406cb99c86"
+    "report": "output/research-evidence/daily/2026-09-28T23-47-52+07-00-report.md",
+    "report_bytes": 2637,
+    "report_sha256": "389d0ea09593ea3cc75bf5ac8b406840aea4145c73de458172fac335828d758e",
+    "tracked_checkpoint_commit": "83904408e6c3083a63b6946a7e8f484b4897a963"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-28T22-55-46+07-00-report.md",
-    "bytes": 11896,
-    "sha256": "60291236aab34247feb1e8fc8b2c7e28ca96fd8ff34aefe43a92135e61b35d03",
+    "path": "output/research-evidence/daily/2026-09-29T23-32-51+07-00-report.md",
+    "bytes": 10756,
+    "sha256": "70e24a5a73a8666cfc7d29a45f2146b413675aea279ce2c14636d5b9b1120c4c",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 1713,
-    "sha256": "1b18f6cedcf847cc35dc7c8a9215f44a76e7dd56b4a6b0af78cc3595bc1abfb8",
+    "bytes": 1755,
+    "sha256": "7d2d5d5fdc621bff83854a2e0cc423592e699e66f65ff624ec48b978e34c6028",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "docs/architecture/discord-bot-demo-handoff-2026-09-28.md",
-      "classification": "git-safe-candidate-already-committed-outside-automation-allowlist",
-      "evidence_status": "mixed-owner-observed-offline-tested-partial"
+      "path": "aw5_backend/",
+      "classification": "git-safe-candidate-uncommitted-outside-automation-allowlist",
+      "evidence_status": "repo-documented-local-checks-partial-not-rerun"
     },
     {
       "path": "discord_bot/",
-      "classification": "git-safe-candidate-already-committed-outside-automation-allowlist",
-      "evidence_status": "implementation-source-offline-tested-live-not-verified-by-collector"
+      "classification": "git-safe-candidate-uncommitted-outside-automation-allowlist",
+      "evidence_status": "adapter-refactor-offline-only-not-live-verified"
     },
     {
-      "path": "docs/deliverables/ds2/working/",
-      "classification": "needs-human-privacy-review-already-committed-outside-automation-allowlist",
-      "evidence_status": "proposed-working-deliverable"
+      "path": "tests/test_aw5_backend.py",
+      "classification": "git-safe-candidate-uncommitted-outside-automation-allowlist",
+      "evidence_status": "offline-test-source-not-rerun"
+    }
+  ],
+  "credential_pattern_paths": [
+    {
+      "path": "aw5_backend/admin.py",
+      "category": "credential-like-pattern-needs-review"
+    },
+    {
+      "path": "aw5_backend/bootstrap_local.py",
+      "category": "credential-like-pattern-needs-review"
+    },
+    {
+      "path": "discord_bot/backend.py",
+      "category": "credential-like-pattern-needs-review"
     }
   ],
   "classifications": {
     "current_main": "owner-confirmed-2026-09-06-unchanged",
     "test4_2": "frozen-candidate-not-current-main",
-    "test4_7": "separate-demo-and-exploratory-not-formal-evaluation",
+    "test4_7": "separate-demo-exploratory-not-formal-evaluation",
     "test4_8": "exploratory-not-current-main",
-    "ds2": "proposed-working-files",
-    "historical_scores": "retained-with-original-workflows",
-    "trusted_tenant_isolation": "unverified"
+    "backend": "uncommitted-partial-documentation-and-owner-observed-local-checks",
+    "discord": "revised-process-not-live-verified",
+    "trusted_tenant_isolation": "unverified",
+    "historical_scores": "retained-with-original-workflows"
   },
   "allowlist": [
     "docs/research/automation-evidence/latest-report.md",
@@ -65,10 +80,11 @@
   ],
   "excluded_local_only_paths": [
     "output/research-evidence/daily/",
+    "output/research-evidence/experiments/",
     "output/discord-bot/aw5.sqlite3",
     "output/discord-bot/tenants.local.json",
-    "discord_bot/.env",
-    "output/research-evidence/experiments/"
+    "aw5_backend/.env",
+    "discord_bot/.env"
   ],
   "checks": {
     "initial_staging_area_empty": true,
@@ -77,7 +93,7 @@
   },
   "notes": [
     "Manifest excludes its own hash.",
-    "Only the exact two allowlisted checkpoint files may be committed.",
+    "Only exact two checkpoint files may be committed.",
     "No push is authorized."
   ],
   "manifest_excludes_its_own_hash": true
