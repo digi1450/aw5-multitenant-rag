@@ -1,5 +1,16 @@
 # Discord bot demo handoff — 2026-09-28
 
+> Historical record of the 2026-09-28 local adapter. The subsequent AW5 backend
+> refactor is described in `aw5_backend/README.md` and `discord_bot/README.md`.
+> Its offline tests do not retroactively verify a live migration. The old
+> Docker and per-project JSON steps below document the former demo only.
+> On 2026-09-29 the separate AW5 backend was started locally, Nature Footprint
+> was registered, and 13 legacy ticket records were imported. The revised bot
+> was subsequently moved into Docker and produced a confirmed live answer on
+> 2026-09-30. Read the
+> [current backend/Discord handoff](aw5-backend-discord-handoff-2026-09-30.md)
+> for verified checks and remaining limits.
+
 ## Scope and status
 
 `discord_bot/` is a local Python adapter between Discord and a configured Dify
@@ -81,11 +92,14 @@ revision; the rollback has offline verification only.
   Chatflow API URL/key, and optional display name. AW5 `tenant_id` means one
   software project; it is distinct from Dify's internal workspace tenant ID.
 - `discord_bot/dify.py`: server-side Chatflow `/chat-messages` request.
+- `discord_bot/workflow.py`: reads the current Published app's Retrieval
+  Knowledge Base IDs from local Dify PostgreSQL through Docker for `/list`.
+  This is a local demo dependency and does not modify the workflow.
 - `discord_bot/knowledge.py`: read-only, paginated Knowledge API inventory for
-  `/list`; exact AW5 document `tenant_id` metadata filter after role and ticket
-  authorization. It includes disabled/archived matches with status and omits
-  documents missing metadata. An inventory entry does not prove the Published
-  Chatflow retrieves that document.
+  `/list`; after role and ticket authorization it reads documents only from
+  those Published Retrieval bases and applies the exact AW5 document
+  `tenant_id` metadata filter. It includes disabled/archived matches with
+  status and omits documents missing metadata.
 - `discord_bot/README.md`: setup, required Message Content Intent, run command,
   permissions, and current limits. Read `discord_bot/AGENTS.md` before edits.
 
@@ -108,8 +122,13 @@ revision; the rollback has offline verification only.
   private corpus text, and generated `output/` artifacts out of Git and chat.
 - `/list` needs a separate Knowledge API key in the local environment. The
   Chatflow app key alone is insufficient for Knowledge management endpoints.
-  This source change has offline test coverage only; it has not been tested
-  against live Discord or the Dify Knowledge API.
+  The local tenant configuration identifies the Test4.7 app and Dify database
+  container. `/list` reads the Published graph on each request, so a republished
+  Retrieval selection does not need a manual Knowledge Base ID update. This
+  source change has offline test coverage only; it has not been tested against
+  live Discord or the Dify Knowledge API. Docker access is currently required
+  by the owner-run bot process; a deployed adapter needs a narrower read-only
+  integration. No cross-project isolation claim follows from this inventory.
 
 ## Proposed file selection in tickets — not implemented
 

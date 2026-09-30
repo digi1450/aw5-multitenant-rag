@@ -1,4 +1,8 @@
-"""Bot-owned ticket and conversation state."""
+"""Legacy SQLite ticket state and the bot's persistent Start panel ID.
+
+New tickets and conversation IDs are stored by aw5_backend in PostgreSQL.
+The sessions table remains readable for the one-time migration.
+"""
 
 from dataclasses import dataclass
 from contextlib import closing

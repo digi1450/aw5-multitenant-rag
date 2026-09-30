@@ -1,333 +1,120 @@
 import asyncio
-import json
 from pathlib import Path
 import tempfile
 import unittest
+from urllib.error import HTTPError
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import discord
 
-from discord_bot.auth import AccessDenied, authorize_session, authorize_start, authorized_tenants
-from discord_bot.bot import create_bot
-from discord_bot.config import Config, Tenant, load_config
-from discord_bot.dify import DifyAnswer, ask_dify
-from discord_bot.knowledge import KnowledgeError, list_project_files
-from discord_bot.store import Session, Store
+from discord_bot.backend import BackendClient, BackendDenied, BackendRouteMissing, BackendUnavailable, Project
+from discord_bot.bot import _chunks, create_bot
+from discord_bot.config import Config, load_config
+from discord_bot.store import Store
 
 
-class AuthTests(unittest.TestCase):
-    def setUp(self):
-        self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
-        self.store = Store(Path(self.temp.name) / "test.sqlite3")
-        self.config = Config("fake-token", 10, 20, self.store.path, {
-            1: Tenant(1, 101, "http://127.0.0.1/v1", "fake-key"),
-            2: Tenant(2, 202, "http://127.0.0.1/v1", "fake-key"),
-        })
-
-    def test_role_alone_grants_configured_project(self):
-        with self.assertRaises(AccessDenied):
-            authorize_start(self.config, 10, set())
-        self.assertEqual(authorize_start(self.config, 10, {101}).tenant_id, 1)
-        with self.assertRaises(AccessDenied):
-            authorize_start(self.config, 11, {101})
-
-    def test_ambiguous_tenant_and_foreign_ticket_fail_closed(self):
-        with self.assertRaises(AccessDenied):
-            authorize_start(self.config, 10, {101, 202})
-        self.assertEqual(
-            {tenant.tenant_id for tenant in authorized_tenants(self.config, 10, {101, 202})},
-            {1, 2},
-        )
-        self.store.create_session(Session(40, 10, 30, 1, None))
-        with self.assertRaises(AccessDenied):
-            authorize_session(self.config, self.store, 10, 31, {101}, 40)
-        with self.assertRaises(AccessDenied):
-            authorize_session(self.config, self.store, 11, 30, {101}, 40)
-        self.assertEqual(authorize_session(self.config, self.store, 10, 30, {101}, 40)[0].tenant_id, 1)
-        with self.assertRaises(AccessDenied):
-            authorize_session(self.config, self.store, 10, 30, set(), 40)
-
-    def test_start_panel_id_survives_store_reopen(self):
-        self.assertIsNone(self.store.get_start_panel_id(10, 20))
-        self.store.set_start_panel_id(10, 20, 50)
-        reopened = Store(self.store.path)
-        self.assertEqual(reopened.get_start_panel_id(10, 20), 50)
-        self.assertIsNone(reopened.get_start_panel_id(10, 21))
-        reopened.set_start_panel_id(10, 20, 51)
-        self.assertEqual(self.store.get_start_panel_id(10, 20), 51)
+def config(path: Path) -> Config:
+    return Config("fake-discord-token", 10, 20, path, "http://127.0.0.1:8765", "fake-backend-token")
 
 
 class ConfigTests(unittest.TestCase):
-    def test_knowledge_key_defaults_to_tenant_environment_name(self):
-        with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "tenants.json"
-            path.write_text(json.dumps({"tenants": [{
-                "tenant_id": 1,
-                "discord_role_id": 101,
-                "dify_api_base_url": "http://127.0.0.1/v1",
-                "dify_api_key_env": "AW5_DIFY_API_KEY_1",
-            }]}), encoding="utf-8")
-            config = load_config({
-                "AW5_DISCORD_BOT_TOKEN": "fake-token",
-                "AW5_DISCORD_GUILD_ID": "10",
-                "AW5_DISCORD_START_CHANNEL_ID": "20",
-                "AW5_TENANTS_FILE": str(path),
-                "AW5_DIFY_API_KEY_1": "chat-key",
-                "AW5_DIFY_KNOWLEDGE_API_KEY_1": "knowledge-key",
+    def test_config_needs_backend_not_tenant_json(self):
+        value = load_config({
+            "AW5_DISCORD_BOT_TOKEN": "fake-discord-token", "AW5_DISCORD_GUILD_ID": "10",
+            "AW5_DISCORD_START_CHANNEL_ID": "20", "AW5_BACKEND_API_URL": "http://127.0.0.1:8765",
+            "AW5_BACKEND_BOT_TOKEN": "fake-backend-token",
+        })
+        self.assertEqual(value.backend_api_url, "http://127.0.0.1:8765")
+        self.assertFalse(hasattr(value, "tenants"))
+
+    def test_remote_plain_http_rejected(self):
+        with self.assertRaises(ValueError):
+            load_config({
+                "AW5_DISCORD_BOT_TOKEN": "fake", "AW5_DISCORD_GUILD_ID": "10",
+                "AW5_DISCORD_START_CHANNEL_ID": "20", "AW5_BACKEND_API_URL": "http://example.com",
+                "AW5_BACKEND_BOT_TOKEN": "fake",
             })
-            self.assertEqual(config.tenants[1].dify_knowledge_api_key, "knowledge-key")
 
-    def test_insecure_remote_dify_url_rejected(self):
+    def test_docker_api_service_is_allowed(self):
+        value = load_config({
+            "AW5_DISCORD_BOT_TOKEN": "fake", "AW5_DISCORD_GUILD_ID": "10",
+            "AW5_DISCORD_START_CHANNEL_ID": "20", "AW5_BACKEND_API_URL": "http://aw5_api:8765",
+            "AW5_BACKEND_BOT_TOKEN": "fake",
+        })
+        self.assertEqual(value.backend_api_url, "http://aw5_api:8765")
+
+
+class BackendClientTests(unittest.TestCase):
+    def test_missing_route_is_not_reported_as_denied(self):
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "tenants.json"
-            path.write_text(json.dumps({"tenants": [{
-                "tenant_id": 1,
-                "discord_role_id": 101,
-                "dify_api_base_url": "http://example.com/v1",
-                "dify_api_key_env": "AW5_DIFY_API_KEY_1",
-            }]}), encoding="utf-8")
-            with self.assertRaises(ValueError):
-                load_config({
-                    "AW5_DISCORD_BOT_TOKEN": "fake-token",
-                    "AW5_DISCORD_GUILD_ID": "10",
-                    "AW5_DISCORD_START_CHANNEL_ID": "20",
-                    "AW5_TENANTS_FILE": str(path),
-                    "AW5_DIFY_API_KEY_1": "fake-key",
-                })
+            client = BackendClient(config(Path(directory) / "state.sqlite3"))
+            for status, expected in ((404, BackendRouteMissing), (403, BackendDenied)):
+                error = HTTPError("", status, "", {}, None)
+                try:
+                    with patch.object(client.opener, "open", side_effect=error):
+                        with self.assertRaises(expected):
+                            client.close_ticket(40, 10, 30)
+                finally:
+                    error.close()
 
-
-class DifyTests(unittest.TestCase):
-    def test_chatflow_payload_preserves_thread_conversation(self):
-        tenant = Tenant(1, 101, "http://127.0.0.1/v1", "fake-key")
-
-        class Response:
-            def __enter__(self):
-                return self
-
-            def __exit__(self, *_):
-                return False
-
-            def read(self, *_):
-                return b'{"answer":"Answer [1]","conversation_id":"conversation-1"}'
-
-        def fake_open(request, timeout):
-            self.assertEqual(timeout, 30.0)
-            self.assertEqual(request.full_url, "http://127.0.0.1/v1/chat-messages")
-            payload = json.loads(request.data)
-            self.assertEqual(payload["conversation_id"], "conversation-0")
-            self.assertEqual(payload["user"], "aw5:1:30:40")
-            self.assertEqual(payload["response_mode"], "blocking")
-            return Response()
-
-        with patch("discord_bot.dify.urllib.request.urlopen", side_effect=fake_open):
-            result = ask_dify(tenant, question="Question", user_key="aw5:1:30:40", conversation_id="conversation-0")
-        self.assertEqual(result.text, "Answer [1]")
-        self.assertEqual(result.conversation_id, "conversation-1")
-
-
-class KnowledgeTests(unittest.TestCase):
-    def test_lists_all_pages_and_only_exact_project_metadata(self):
-        tenant = Tenant(1, 101, "http://127.0.0.1/v1", "chat-key", "Nature Footprint", "knowledge-key")
-
-        def page(path, number):
-            if path == "/datasets":
-                return {"data": [{"id": "1f4b4f33-c29b-431a-ac21-416c6f3806fc", "name": "SDS"}], "has_more": False}
-            if number == 1:
-                return {"data": [
-                    {"name": "SDS.pdf", "doc_metadata": [{"name": "tenant_id", "value": "1"}],
-                     "enabled": True, "archived": False, "indexing_status": "completed"},
-                    {"name": "other.pdf", "doc_metadata": [{"name": "tenant_id", "value": "2"}],
-                     "enabled": True, "archived": False, "indexing_status": "completed"},
-                ], "has_more": True}
-            return {"data": [
-                {"name": "old.pdf", "doc_metadata": {"tenant_id": "1"},
-                 "enabled": False, "archived": False, "indexing_status": "completed"},
-                {"name": "untagged.pdf", "doc_metadata": [], "enabled": True},
-            ], "has_more": False}
-
-        with patch("discord_bot.knowledge._get_page", side_effect=lambda t, p, n, timeout: page(p, n)) as fetch:
-            files = list_project_files(tenant)
-        self.assertEqual([(f.name, f.status) for f in files], [("old.pdf", "disabled"), ("SDS.pdf", "available")])
-        self.assertEqual(fetch.call_count, 3)
-
-    def test_missing_knowledge_key_fails_closed(self):
-        with self.assertRaises(KnowledgeError):
-            list_project_files(Tenant(1, 101, "http://127.0.0.1/v1", "chat-key"))
-
-
-class ButtonTests(unittest.TestCase):
-    def test_start_view_dispatches_when_created_during_setup(self):
+    def test_eligible_projects_parse(self):
         with tempfile.TemporaryDirectory() as directory:
-            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
-                1: Tenant(1, 101, "http://127.0.0.1:8080/v1", "fake-key"),
-            })
+            client = BackendClient(config(Path(directory) / "state.sqlite3"))
+            with patch.object(client, "_request", return_value={"projects": [
+                {"tenant_id": 1, "tenant_name": "Nature Footprint"},
+                {"tenant_id": 2, "tenant_name": "Project B"},
+            ]}) as request:
+                self.assertEqual([item.tenant_id for item in client.eligible_projects(10, 30)], [1, 2])
+            self.assertEqual(request.call_args.kwargs["query"], {"guild_id": 10, "user_id": 30})
+
+    def test_close_ticket_requires_boolean_result(self):
+        with tempfile.TemporaryDirectory() as directory:
+            client = BackendClient(config(Path(directory) / "state.sqlite3"))
+            with patch.object(client, "_request", return_value={"closed": True}) as request:
+                self.assertTrue(client.close_ticket(40, 10, 30))
+                request.assert_called_once_with(
+                    "POST", "/v1/tickets/40/close", data={"guild_id": 10, "user_id": 30},
+                )
+            with patch.object(client, "_request", return_value={"closed": "true"}):
+                with self.assertRaises(BackendUnavailable):
+                    client.close_ticket(40, 10, 30)
+
+
+class StoreTests(unittest.TestCase):
+    def test_start_panel_id_survives_restart(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Store(Path(directory) / "state.sqlite3")
+            store.set_start_panel_id(10, 20, 50)
+            self.assertEqual(Store(store.path).get_start_panel_id(10, 20), 50)
+
+
+class ChunkTests(unittest.TestCase):
+    def test_long_code_block_reopens_with_language_and_stays_within_limit(self):
+        chunks = _chunks("```python\n" + "print('hello')\n" * 50 + "```", limit=100)
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(len(chunk) <= 100 for chunk in chunks))
+        self.assertTrue(all(chunk.startswith("```python\n") and chunk.endswith("\n```")
+                            for chunk in chunks))
+
+    def test_long_table_repeats_header_and_separator(self):
+        header = "| File | Status |\n| --- | --- |\n"
+        chunks = _chunks(header + "| SDS | available |\n" * 30, limit=110)
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(chunk.startswith(header) and len(chunk) <= 110 for chunk in chunks))
+
+    def test_oversized_code_line_and_table_row_keep_size_bound(self):
+        message = "```text\n" + "x" * 500 + "\n```\n\n| A | B |\n| --- | --- |\n| " + "y" * 500 + " |"
+        self.assertTrue(all(len(chunk) <= 100 for chunk in _chunks(message, limit=100)))
+
+
+class BotTests(unittest.TestCase):
+    def test_single_project_start_registers_ticket_with_backend(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bot = create_bot(config(Path(directory) / "state.sqlite3"))
 
             async def check():
-                bot = create_bot(config)
-                with patch("discord_bot.bot.app_commands.CommandTree.sync", new_callable=AsyncMock):
-                    await bot.setup_hook()
-                view = bot.start_view
-                self.assertIsNotNone(view)
-                self.assertTrue(view.is_persistent())
-                task = view._dispatch_item(view.children[0], object())
-                self.assertIsNotNone(task)
-                task.cancel()
-
-            asyncio.run(check())
-
-
-class PlainMessageTests(unittest.TestCase):
-    def test_only_ticket_owner_text_reaches_dify_and_reuses_conversation(self):
-        with tempfile.TemporaryDirectory() as directory:
-            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
-                1: Tenant(1, 101, "http://127.0.0.1:8080/v1", "fake-key"),
-            })
-
-            async def check():
-                bot = create_bot(config)
-                self.assertTrue(bot.intents.message_content)
-                bot.store.create_session(Session(40, 10, 30, 1, None))
-                thread = MagicMock(spec=discord.Thread)
-                thread.id = 40
-                thread.parent_id = 20
-                thread.type = discord.ChannelType.private_thread
-                thread.send = AsyncMock()
                 guild = MagicMock(spec=discord.Guild)
                 guild.id = 10
-                member = MagicMock(spec=discord.Member)
-                member.id = 30
-                member.roles = [MagicMock(id=101)]
-                guild.fetch_member = AsyncMock(return_value=member)
-                message = MagicMock(spec=discord.Message)
-                message.guild = guild
-                message.channel = thread
-                message.author.id = 30
-                message.author.bot = False
-                message.webhook_id = None
-                message.type = discord.MessageType.default
-                message.content = "คำถามแรก"
-
-                with patch("discord_bot.bot.ask_dify", side_effect=[
-                    DifyAnswer("คำตอบแรก", "conversation-1"),
-                    DifyAnswer("คำตอบสอง", "conversation-1"),
-                ]) as dify:
-                    await bot.on_message(message)
-                    message.content = "คำถามสอง"
-                    await bot.on_message(message)
-                    self.assertEqual(dify.call_count, 2)
-                    self.assertIsNone(dify.call_args_list[0].kwargs["conversation_id"])
-                    self.assertEqual(dify.call_args_list[1].kwargs["conversation_id"], "conversation-1")
-                    self.assertEqual(thread.send.await_count, 2)
-                    self.assertEqual(thread.typing.call_count, 2)
-                    message.author.id = 31
-                    await bot.on_message(message)
-                    message.author.id = 30
-                    message.author.bot = True
-                    await bot.on_message(message)
-                    message.author.bot = False
-                    member.roles = []
-                    await bot.on_message(message)
-                    self.assertEqual(dify.call_count, 2)
-                    self.assertEqual(thread.send.await_count, 3)
-
-            asyncio.run(check())
-
-class SlashAskTests(unittest.TestCase):
-    def test_ask_uses_fresh_roles_even_when_interaction_has_old_role(self):
-        with tempfile.TemporaryDirectory() as directory:
-            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
-                1: Tenant(1, 101, "http://127.0.0.1/v1", "fake-key"),
-            })
-
-            async def check():
-                bot = create_bot(config)
-                bot.store.create_session(Session(40, 10, 30, 1, None))
-                thread = MagicMock(spec=discord.Thread)
-                thread.id = 40
-                thread.parent_id = 20
-                thread.type = discord.ChannelType.private_thread
-                guild = MagicMock(spec=discord.Guild)
-                guild.id = 10
-                member = MagicMock(spec=discord.Member)
-                member.id = 30
-                member.roles = []
-                guild.fetch_member = AsyncMock(return_value=member)
-                interaction = MagicMock(spec=discord.Interaction)
-                interaction.guild = guild
-                interaction.guild_id = 10
-                interaction.channel = thread
-                interaction.user = MagicMock(spec=discord.Member)
-                interaction.user.id = 30
-                interaction.user.roles = [MagicMock(id=101)]  # stale interaction data
-                interaction.response.defer = AsyncMock()
-                interaction.followup.send = AsyncMock()
-
-                with patch("discord_bot.bot.ask_dify") as dify:
-                    await bot.tree.get_command("ask").callback(interaction, "Question")
-                    dify.assert_not_called()
-                self.assertIn("ไม่มีสิทธิ์", interaction.followup.send.await_args.args[0])
-                guild.fetch_member.assert_awaited_once_with(30)
-
-            asyncio.run(check())
-
-
-class SlashListTests(unittest.TestCase):
-    def test_list_rechecks_role_and_uses_ticket_tenant(self):
-        with tempfile.TemporaryDirectory() as directory:
-            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
-                1: Tenant(1, 101, "http://127.0.0.1/v1", "chat-key", "Nature Footprint", "knowledge-key"),
-            })
-
-            async def check():
-                bot = create_bot(config)
-                bot.store.create_session(Session(40, 10, 30, 1, None))
-                thread = MagicMock(spec=discord.Thread)
-                thread.id = 40
-                thread.parent_id = 20
-                thread.type = discord.ChannelType.private_thread
-                guild = MagicMock(spec=discord.Guild)
-                guild.id = 10
-                member = MagicMock(spec=discord.Member)
-                member.roles = []
-                guild.fetch_member = AsyncMock(return_value=member)
-                interaction = MagicMock(spec=discord.Interaction)
-                interaction.guild = guild
-                interaction.guild_id = 10
-                interaction.channel = thread
-                interaction.user.id = 30
-                interaction.response.defer = AsyncMock()
-                interaction.followup.send = AsyncMock()
-
-                with patch("discord_bot.bot.list_project_files") as inventory:
-                    await bot.tree.get_command("list").callback(interaction)
-                    inventory.assert_not_called()
-                self.assertIn("ไม่มีสิทธิ์", interaction.followup.send.await_args.args[0])
-                member.roles = [MagicMock(id=101)]
-                with patch("discord_bot.bot.list_project_files", return_value=[]) as inventory:
-                    await bot.tree.get_command("list").callback(interaction)
-                    self.assertEqual(inventory.call_args.args[0].tenant_id, 1)
-                self.assertIn("ไม่พบไฟล์", interaction.followup.send.await_args.args[0])
-
-            asyncio.run(check())
-
-
-class ProjectChoiceTests(unittest.TestCase):
-    def test_single_eligible_project_opens_ticket_without_choice(self):
-        with tempfile.TemporaryDirectory() as directory:
-            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
-                1: Tenant(1, 101, "http://127.0.0.1/v1", "fake-key", "Nature Footprint"),
-                2: Tenant(2, 202, "http://127.0.0.1/v1", "fake-key", "Project B"),
-            })
-
-            async def check():
-                bot = create_bot(config)
-                guild = MagicMock(spec=discord.Guild)
-                guild.id = 10
-                member = MagicMock(spec=discord.Member)
-                member.id = 30
-                member.roles = [MagicMock(id=101)]
-                guild.fetch_member = AsyncMock(return_value=member)
                 channel = MagicMock(spec=discord.TextChannel)
                 channel.guild = guild
                 thread = MagicMock(spec=discord.Thread)
@@ -341,80 +128,107 @@ class ProjectChoiceTests(unittest.TestCase):
                 interaction.guild = guild
                 interaction.guild_id = 10
                 interaction.channel_id = 20
-                interaction.user = MagicMock(spec=discord.Member)
                 interaction.user.id = 30
-                interaction.user.roles = []  # access comes from a fresh guild fetch
                 interaction.response.defer = AsyncMock()
                 interaction.followup.send = AsyncMock()
-
-                await bot.start_ticket_handler(interaction)
-                guild.fetch_member.assert_awaited_once_with(30)
-                self.assertEqual(channel.create_thread.await_count, 1)
-                self.assertEqual(bot.store.get_session(40).tenant_id, 1)
-                self.assertIsNone(interaction.followup.send.await_args.kwargs.get("view"))
+                with patch.object(bot.backend, "eligible_projects", return_value=[Project(1, "Nature Footprint")]), \
+                        patch.object(bot.backend, "create_ticket") as register:
+                    await bot.tree.get_command("start").callback(interaction)
+                register.assert_called_once_with(10, 30, 40, 1)
+                thread.add_user.assert_awaited_once()
+                self.assertIn("Nature Footprint", thread.send.await_args.args[0])
 
             asyncio.run(check())
 
-    def test_project_button_rechecks_role_and_binds_ticket_to_selection(self):
+    def test_plain_text_uses_backend_and_denies_revoked_user(self):
         with tempfile.TemporaryDirectory() as directory:
-            config = Config("fake-token", 10, 20, Path(directory) / "test.sqlite3", {
-                1: Tenant(1, 101, "http://127.0.0.1/v1", "fake-key", "Nature Footprint"),
-                2: Tenant(2, 202, "http://127.0.0.1/v1", "fake-key", "Project B"),
-            })
+            bot = create_bot(config(Path(directory) / "state.sqlite3"))
 
             async def check():
-                bot = create_bot(config)
-                guild = MagicMock(spec=discord.Guild)
-                guild.id = 10
-                guild.get_role.side_effect = lambda role_id: MagicMock(name=f"Role {role_id}")
-                member = MagicMock(spec=discord.Member)
-                member.id = 30
-                member.roles = [MagicMock(id=101), MagicMock(id=202)]
-                guild.fetch_member = AsyncMock(return_value=member)
-                channel = MagicMock(spec=discord.TextChannel)
-                channel.guild = guild
                 thread = MagicMock(spec=discord.Thread)
                 thread.id = 40
-                thread.mention = "<#40>"
-                thread.add_user = AsyncMock()
+                thread.parent_id = 20
+                thread.type = discord.ChannelType.private_thread
                 thread.send = AsyncMock()
-                channel.create_thread = AsyncMock(return_value=thread)
-                bot.get_channel = MagicMock(return_value=channel)
-
-                def interaction():
-                    value = MagicMock(spec=discord.Interaction)
-                    value.guild = guild
-                    value.guild_id = 10
-                    value.channel_id = 20
-                    value.user = member
-                    value.response.defer = AsyncMock()
-                    value.followup.send = AsyncMock()
-                    return value
-
-                start = interaction()
-                await bot.start_ticket_handler(start)
-                view = start.followup.send.await_args.kwargs["view"]
-                self.assertEqual({button.tenant_id for button in view.children}, {1, 2})
-                self.assertEqual(channel.create_thread.await_count, 0)
-
-                member.roles = [MagicMock(id=202)]
-                stale_choice = interaction()
-                await view.choose(stale_choice, 1)
-                self.assertEqual(channel.create_thread.await_count, 0)
-                self.assertIn("สิทธิ์โปรเจกต์นี้เปลี่ยนไป", stale_choice.followup.send.await_args.args[0])
-
-                member.roles = [MagicMock(id=101), MagicMock(id=202)]
-                retry = interaction()
-                await bot.start_ticket_handler(retry)
-                retry_view = retry.followup.send.await_args.kwargs["view"]
-                chosen = interaction()
-                await next(button for button in retry_view.children if button.tenant_id == 2).callback(chosen)
-                self.assertEqual(channel.create_thread.await_count, 1)
-                self.assertTrue(channel.create_thread.await_args.kwargs["name"].startswith("aw5-p2-ticket-"))
-                self.assertEqual(bot.store.get_session(40).tenant_id, 2)
+                guild = MagicMock(spec=discord.Guild)
+                guild.id = 10
+                message = MagicMock(spec=discord.Message)
+                message.guild = guild
+                message.channel = thread
+                message.author.id = 30
+                message.author.bot = False
+                message.webhook_id = None
+                message.type = discord.MessageType.default
+                message.content = "คำถาม"
+                message.attachments = []
+                with patch.object(bot.backend, "ask", return_value="คำตอบ") as ask:
+                    await bot.on_message(message)
+                ask.assert_called_once_with(40, 10, 30, "คำถาม")
+                self.assertEqual(thread.send.await_args.args[0], "คำตอบ")
+                with patch.object(bot.backend, "ask", side_effect=BackendDenied):
+                    await bot.on_message(message)
+                self.assertIn("ไม่มีสิทธิ์", thread.send.await_args.args[0])
 
             asyncio.run(check())
 
+    def test_attachment_only_warns_and_text_plus_attachment_uses_text(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bot = create_bot(config(Path(directory) / "state.sqlite3"))
 
-if __name__ == "__main__":
-    unittest.main()
+            async def check():
+                thread = MagicMock(spec=discord.Thread)
+                thread.id = 40
+                thread.parent_id = 20
+                thread.type = discord.ChannelType.private_thread
+                thread.send = AsyncMock()
+                guild = MagicMock(spec=discord.Guild)
+                guild.id = 10
+                message = MagicMock(spec=discord.Message)
+                message.guild = guild
+                message.channel = thread
+                message.author.id = 30
+                message.author.bot = False
+                message.webhook_id = None
+                message.type = discord.MessageType.default
+                message.attachments = [object()]
+                with patch.object(bot.backend, "ask", return_value="Answer") as ask:
+                    message.content = ""
+                    await bot.on_message(message)
+                    ask.assert_not_called()
+                    self.assertIn("ไม่รองรับการอ่านไฟล์แนบ", thread.send.await_args.args[0])
+                    message.content = "What is this?"
+                    await bot.on_message(message)
+                    ask.assert_called_once_with(40, 10, 30, "What is this?")
+                    self.assertIn("ข้อความที่พิมพ์เท่านั้น", thread.send.await_args_list[-2].args[0])
+            asyncio.run(check())
+
+    def test_close_archives_owners_ticket_and_rejects_other_user(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bot = create_bot(config(Path(directory) / "state.sqlite3"))
+
+            async def check():
+                thread = MagicMock(spec=discord.Thread)
+                thread.id = 40
+                thread.parent_id = 20
+                thread.type = discord.ChannelType.private_thread
+                thread.edit = AsyncMock()
+                interaction = MagicMock(spec=discord.Interaction)
+                interaction.channel = thread
+                interaction.guild_id = 10
+                interaction.user.id = 30
+                interaction.response.defer = AsyncMock()
+                interaction.followup.send = AsyncMock()
+                with patch.object(bot.backend, "close_ticket", return_value=True) as close:
+                    await bot.tree.get_command("close").callback(interaction)
+                    close.assert_called_once_with(40, 10, 30)
+                    thread.edit.assert_awaited_once_with(archived=True)
+                thread.edit.reset_mock()
+                with patch.object(bot.backend, "close_ticket", side_effect=BackendDenied):
+                    await bot.tree.get_command("close").callback(interaction)
+                    thread.edit.assert_not_awaited()
+                    self.assertIn("ไม่ใช่เจ้าของ", interaction.followup.send.await_args.args[0])
+                with patch.object(bot.backend, "close_ticket", side_effect=BackendRouteMissing):
+                    await bot.tree.get_command("close").callback(interaction)
+                    thread.edit.assert_not_awaited()
+                    self.assertIn("backend", interaction.followup.send.await_args.args[0])
+            asyncio.run(check())

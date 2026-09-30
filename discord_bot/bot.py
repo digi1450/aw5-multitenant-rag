@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import re
 import sqlite3
 from collections.abc import Awaitable, Callable
 from uuid import uuid4
@@ -9,25 +10,15 @@ from uuid import uuid4
 import discord
 from discord import app_commands
 
-from .auth import AccessDenied, authorize_session, authorized_tenants
-from .config import Config, Tenant, load_config
-from .dify import DifyError, ask_dify
-from .knowledge import KnowledgeError, list_project_files
-from .store import Session, Store
+from .backend import BackendClient, BackendDenied, BackendRouteMissing, BackendUnavailable, Project
+from .config import Config, load_config
+from .store import Store
 
 
 LOG = logging.getLogger(__name__)
 START_BUTTON_ID = "aw5:start:v1"
-
-
-async def _current_role_ids(guild: discord.Guild | None, user_id: int) -> set[int]:
-    if guild is None:
-        raise AccessDenied("Discord server identity is unavailable")
-    try:
-        member = await guild.fetch_member(user_id)
-    except discord.NotFound as exc:
-        raise AccessDenied("Discord member is unavailable") from exc
-    return {role.id for role in member.roles}
+FENCE_RE = re.compile(r"^ {0,3}(`{3,}|~{3,})([^\r\n]*)$")
+TABLE_SEPARATOR_RE = re.compile(r"^\s*\|?\s*:?-{3,}:?\s*(?:\|\s*:?-{3,}:?\s*)+\|?\s*$")
 
 
 def _ticket_thread(config: Config, guild_id: int | None, channel: object) -> bool:
@@ -39,23 +30,108 @@ def _ticket_thread(config: Config, guild_id: int | None, channel: object) -> boo
     )
 
 
-def _project_label(guild: discord.Guild | None, tenant: Tenant) -> str:
-    role = guild.get_role(tenant.discord_role_id) if guild else None
-    return tenant.tenant_name or (role.name if role else f"Project {tenant.tenant_id}")
-
-
-def _chunks(message: str, limit: int = 1900) -> list[str]:
-    chunks: list[str] = []
+def _split_plain(message: str, limit: int) -> list[str]:
+    parts: list[str] = []
     while message:
         if len(message) <= limit:
-            chunks.append(message)
+            parts.append(message)
             break
         cut = message.rfind("\n", 0, limit + 1)
         if cut < limit // 2:
             cut = limit
-        chunks.append(message[:cut])
+        parts.append(message[:cut])
         message = message[cut:].lstrip("\n")
-    return chunks
+    return parts
+
+
+def _split_code(header: str, marker: str, body: str, limit: int) -> list[str]:
+    prefix = header + "\n"
+    budget = limit - len(prefix) - len(marker) - 1
+    if budget < 1:
+        return _split_plain(prefix + body + marker, limit)
+    parts: list[str] = []
+    while body:
+        cut = min(len(body), budget)
+        if cut < len(body):
+            newline = body.rfind("\n", 0, cut + 1)
+            if newline >= max(1, cut // 2):
+                cut = newline + 1
+        piece, body = body[:cut], body[cut:]
+        parts.append(prefix + piece + ("" if piece.endswith("\n") else "\n") + marker)
+    return parts or [prefix + marker]
+
+
+def _split_table(header: str, separator: str, rows: list[str], limit: int) -> list[str]:
+    repeated_header = header.rstrip("\n") + "\n" + separator.rstrip("\n") + "\n"
+    if len(repeated_header) >= limit:
+        return _split_plain(repeated_header + "".join(rows), limit)
+    parts: list[str] = []
+    current = repeated_header
+    for row in rows:
+        if len(repeated_header) + len(row) > limit:
+            if current != repeated_header:
+                parts.append(current.rstrip("\n"))
+            parts.extend(_split_plain(row, limit))
+            current = repeated_header
+            continue
+        if len(current) + len(row) > limit:
+            parts.append(current.rstrip("\n"))
+            current = repeated_header
+        current += row
+    if current != repeated_header or not parts:
+        parts.append(current.rstrip("\n"))
+    return parts
+
+
+def _chunks(message: str, limit: int = 1900) -> list[str]:
+    """Keep fenced code and ordinary Markdown table headers intact across sends."""
+    if not message:
+        return []
+    lines = message.splitlines(keepends=True)
+    parts: list[str] = []
+    plain: list[str] = []
+
+    def flush_plain() -> None:
+        if plain:
+            parts.extend(_split_plain("".join(plain), limit))
+            plain.clear()
+
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        opener = FENCE_RE.fullmatch(line.rstrip("\r\n"))
+        if opener:
+            flush_plain()
+            marker = opener.group(1)
+            header = line.rstrip("\r\n")
+            index += 1
+            body: list[str] = []
+            while index < len(lines):
+                candidate = lines[index].rstrip("\r\n").strip()
+                if (candidate.startswith(marker[0] * len(marker))
+                        and set(candidate) == {marker[0]}):
+                    index += 1
+                    break
+                body.append(lines[index])
+                index += 1
+            parts.extend(_split_code(header, marker, "".join(body), limit))
+            continue
+        if (index + 1 < len(lines) and "|" in line
+                and TABLE_SEPARATOR_RE.fullmatch(lines[index + 1].rstrip("\r\n"))):
+            flush_plain()
+            header, separator = line, lines[index + 1]
+            index += 2
+            rows: list[str] = []
+            while index < len(lines) and "|" in lines[index] and lines[index].strip():
+                rows.append(lines[index])
+                index += 1
+            parts.extend(_split_table(header, separator, rows, limit))
+            continue
+        plain.append(line)
+        index += 1
+    flush_plain()
+
+    return [part for part in parts if part]
 
 
 class StartView(discord.ui.View):
@@ -141,6 +217,7 @@ class AW5Bot(discord.Client):
         super().__init__(intents=intents, allowed_mentions=discord.AllowedMentions.none())
         self.config = config
         self.store = Store(config.database_path)
+        self.backend = BackendClient(config)
         self.tree = app_commands.CommandTree(self)
         self.ticket_locks: dict[int, asyncio.Lock] = {}
         self.start_ticket_handler: Callable[[discord.Interaction], Awaitable[None]] | None = None
@@ -160,7 +237,7 @@ class AW5Bot(discord.Client):
 def create_bot(config: Config) -> AW5Bot:
     bot = AW5Bot(config)
 
-    async def create_ticket(interaction: discord.Interaction, tenant: Tenant) -> None:
+    async def create_ticket(interaction: discord.Interaction, project: Project) -> None:
         try:
             channel = bot.get_channel(config.start_channel_id)
             if channel is None:
@@ -168,14 +245,15 @@ def create_bot(config: Config) -> AW5Bot:
             if not isinstance(channel, discord.TextChannel) or channel.guild.id != config.guild_id:
                 raise RuntimeError("configured start channel is not a guild text channel")
             thread = await channel.create_thread(
-                name=f"aw5-p{tenant.tenant_id}-ticket-{uuid4().hex[:8]}",
+                name=f"aw5-p{project.tenant_id}-ticket-{uuid4().hex[:8]}",
                 type=discord.ChannelType.private_thread,
                 invitable=False,
                 auto_archive_duration=60,
             )
             try:
                 await thread.add_user(interaction.user)
-                bot.store.create_session(Session(thread.id, config.guild_id, interaction.user.id, tenant.tenant_id, None))
+                await asyncio.to_thread(bot.backend.create_ticket, config.guild_id,
+                                        interaction.user.id, thread.id, project.tenant_id)
             except Exception:
                 try:
                     await thread.edit(archived=True)
@@ -183,12 +261,13 @@ def create_bot(config: Config) -> AW5Bot:
                     LOG.exception("Could not archive failed ticket")
                 raise
             await thread.send(
-                f"เริ่ม session ของ {_project_label(channel.guild, tenant)} แล้ว "
+                f"เริ่ม session ของ {project.tenant_name} แล้ว "
                 "พิมพ์คำถามได้เลยใน thread นี้ หรือใช้ `/ask`",
                 allowed_mentions=discord.AllowedMentions.none(),
             )
             await interaction.followup.send(f"สร้าง ticket แล้ว: {thread.mention}", ephemeral=True)
-        except (discord.DiscordException, OSError, RuntimeError, sqlite3.Error):
+        except (discord.DiscordException, OSError, RuntimeError, sqlite3.Error,
+                BackendDenied, BackendUnavailable):
             LOG.exception("Could not create ticket")
             await interaction.followup.send("สร้าง ticket ไม่สำเร็จ กรุณาตรวจสิทธิ์ของ bot", ephemeral=True)
 
@@ -197,17 +276,17 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("กรุณากด Start ในห้อง #aw5-start ใหม่", ephemeral=True)
             return
         try:
-            role_ids = await _current_role_ids(interaction.guild, interaction.user.id)
-            eligible = authorized_tenants(config, interaction.guild_id, role_ids)
-        except (AccessDenied, discord.DiscordException, OSError, sqlite3.Error):
+            eligible = await asyncio.to_thread(bot.backend.eligible_projects,
+                                               interaction.guild_id, interaction.user.id)
+        except (BackendDenied, BackendUnavailable, OSError):
             LOG.exception("Could not recheck project access")
             await interaction.followup.send("ตรวจสิทธิ์โปรเจกต์ไม่สำเร็จ กรุณากด Start ใหม่", ephemeral=True)
             return
-        tenant = next((item for item in eligible if item.tenant_id == tenant_id), None)
-        if tenant is None:
+        project = next((item for item in eligible if item.tenant_id == tenant_id), None)
+        if project is None:
             await interaction.followup.send("สิทธิ์โปรเจกต์นี้เปลี่ยนไป กรุณากด Start ใหม่", ephemeral=True)
             return
-        await create_ticket(interaction, tenant)
+        await create_ticket(interaction, project)
 
     async def start_ticket(interaction: discord.Interaction) -> None:
         await interaction.response.defer(ephemeral=True, thinking=True)
@@ -215,9 +294,9 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("ใช้ /start ในห้อง #aw5-start เท่านั้น", ephemeral=True)
             return
         try:
-            role_ids = await _current_role_ids(interaction.guild, interaction.user.id)
-            eligible = authorized_tenants(config, interaction.guild_id, role_ids)
-        except (AccessDenied, discord.DiscordException, OSError):
+            eligible = await asyncio.to_thread(bot.backend.eligible_projects,
+                                               interaction.guild_id, interaction.user.id)
+        except (BackendDenied, BackendUnavailable, OSError):
             await interaction.followup.send("ไม่พบสิทธิ์สมาชิกโปรเจกต์ที่ใช้งานได้", ephemeral=True)
             return
         if not eligible:
@@ -230,8 +309,8 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("มีโปรเจกต์มากเกินจำนวนปุ่มที่รองรับ กรุณาติดต่อผู้ดูแล", ephemeral=True)
             return
         choices = []
-        for tenant in eligible:
-            choices.append((tenant.tenant_id, f"{_project_label(interaction.guild, tenant)} ({tenant.tenant_id})"))
+        for project in eligible:
+            choices.append((project.tenant_id, f"{project.tenant_name} ({project.tenant_id})"))
         await interaction.followup.send(
             "เลือกโปรเจกต์ที่ต้องการถาม:",
             view=ProjectChoiceView(interaction.user.id, choices, select_project),
@@ -304,11 +383,11 @@ def create_bot(config: Config) -> AW5Bot:
         try:
             await answer_ticket(thread, interaction.guild, interaction.user.id, question)
             await interaction.followup.send("ส่งคำตอบใน ticket แล้ว", ephemeral=True)
-        except AccessDenied:
+        except BackendDenied:
             await interaction.followup.send("ไม่มีสิทธิ์ใช้งาน ticket นี้หรือสมาชิกถูกเพิกถอน", ephemeral=True)
-        except DifyError as exc:
-            LOG.warning("Dify request failed: %s", exc)
-            await interaction.followup.send("Dify ตอบกลับไม่สำเร็จ กรุณาลองใหม่ภายหลัง", ephemeral=True)
+        except BackendUnavailable as exc:
+            LOG.warning("AW5 backend request failed: %s", exc)
+            await interaction.followup.send("ระบบตอบกลับไม่สำเร็จ กรุณาลองใหม่ภายหลัง", ephemeral=True)
         except (discord.DiscordException, OSError, sqlite3.Error):
             LOG.exception("Could not deliver Dify answer")
             await interaction.followup.send("ส่งคำตอบไม่สำเร็จ กรุณาติดต่อผู้ดูแล", ephemeral=True)
@@ -321,47 +400,76 @@ def create_bot(config: Config) -> AW5Bot:
             await interaction.followup.send("ใช้ /list ใน private ticket ที่ bot สร้างเท่านั้น", ephemeral=True)
             return
         try:
-            role_ids = await _current_role_ids(interaction.guild, interaction.user.id)
-            tenant, _ = authorize_session(
-                config, bot.store, interaction.guild_id, interaction.user.id, role_ids, thread.id
+            files, tenant_id = await asyncio.to_thread(
+                bot.backend.files, thread.id, interaction.guild_id, interaction.user.id
             )
-            files = await asyncio.to_thread(list_project_files, tenant)
             if not files:
                 await interaction.followup.send("ไม่พบไฟล์ที่ติด tenant_id ของโปรเจกต์นี้", ephemeral=True)
                 return
-            lines = [f"ไฟล์ที่ติด tenant_id = {tenant.tenant_id} ({len(files)} รายการ):"]
+            lines = [f"ไฟล์ของโปรเจกต์ {tenant_id} ({len(files)} รายการ):"]
             for item in files:
                 name = discord.utils.escape_markdown(item.name.replace("\n", " ").replace("\r", " "))
-                dataset = discord.utils.escape_markdown(item.dataset_name.replace("\n", " ").replace("\r", " "))
-                label = {"available": "พร้อมใช้งาน", "disabled": "ปิดใช้งาน", "archived": "เก็บถาวร", "indexing": "ยังไม่พร้อม"}[item.status]
-                lines.append(f"• {name} — {dataset} ({label})")
+                lines.append(f"• {name}")
             for chunk in _chunks("\n".join(lines)):
                 await interaction.followup.send(chunk, ephemeral=True, allowed_mentions=discord.AllowedMentions.none())
-        except AccessDenied:
+        except BackendDenied:
             await interaction.followup.send("ไม่มีสิทธิ์ใช้งาน ticket นี้หรือสมาชิกถูกเพิกถอน", ephemeral=True)
-        except KnowledgeError as exc:
-            LOG.warning("Knowledge inventory failed: %s", exc)
-            await interaction.followup.send("ดึงรายการไฟล์ไม่สำเร็จ กรุณาตรวจการตั้งค่า Knowledge API", ephemeral=True)
+        except BackendUnavailable as exc:
+            LOG.warning("AW5 file inventory failed: %s", exc)
+            await interaction.followup.send("ดึงรายการไฟล์ไม่สำเร็จ กรุณาลองใหม่ภายหลัง", ephemeral=True)
         except (discord.DiscordException, OSError, sqlite3.Error):
             LOG.exception("Could not list project files")
             await interaction.followup.send("ดึงรายการไฟล์ไม่สำเร็จ กรุณาติดต่อผู้ดูแล", ephemeral=True)
 
+    @bot.tree.command(name="close", description="ปิด ticket ส่วนตัวนี้")
+    async def close(interaction: discord.Interaction) -> None:
+        await interaction.response.defer(ephemeral=True, thinking=True)
+        thread = interaction.channel
+        if not _ticket_thread(config, interaction.guild_id, thread):
+            await interaction.followup.send("ใช้ /close ใน private ticket ที่ bot สร้างเท่านั้น", ephemeral=True)
+            return
+        lock = bot.ticket_locks.setdefault(thread.id, asyncio.Lock())
+        try:
+            async with lock:
+                if interaction.guild_id is None:
+                    raise BackendDenied("Discord guild unavailable")
+                await asyncio.to_thread(bot.backend.close_ticket, thread.id,
+                                        interaction.guild_id, interaction.user.id)
+                try:
+                    await thread.edit(archived=True)
+                except discord.DiscordException:
+                    LOG.exception("Ticket closed in backend but thread archival failed")
+                    await interaction.followup.send(
+                        "ปิด ticket ในระบบแล้ว แต่ archive เธรดไม่สำเร็จ กรุณาติดต่อผู้ดูแล",
+                        ephemeral=True,
+                    )
+                    return
+            await interaction.followup.send("ปิด ticket แล้ว หากต้องการถามใหม่ให้กด Start", ephemeral=True)
+        except BackendDenied:
+            await interaction.followup.send("คุณไม่ใช่เจ้าของ ticket นี้", ephemeral=True)
+        except BackendRouteMissing as exc:
+            LOG.warning("AW5 backend close route is missing: %s", exc)
+            await interaction.followup.send(
+                "backend ที่กำลังรันยังไม่มีคำสั่ง /close กรุณาอัปเดตและเริ่ม backend ใหม่",
+                ephemeral=True,
+            )
+        except BackendUnavailable as exc:
+            LOG.warning("AW5 backend close failed: %s", exc)
+            await interaction.followup.send("ปิด ticket ไม่สำเร็จ กรุณาลองใหม่", ephemeral=True)
+        except (discord.DiscordException, OSError):
+            LOG.exception("Could not close ticket")
+            await interaction.followup.send("ปิด ticket ไม่สำเร็จ กรุณาติดต่อผู้ดูแล", ephemeral=True)
+
     async def answer_ticket(thread: discord.Thread, guild: discord.Guild | None, user_id: int, question: str) -> None:
         lock = bot.ticket_locks.setdefault(thread.id, asyncio.Lock())
         async with lock:
-            role_ids = await _current_role_ids(guild, user_id)
-            tenant, session = authorize_session(config, bot.store, guild.id, user_id, role_ids, thread.id)
-            user_key = f"aw5:{tenant.tenant_id}:{user_id}:{thread.id}"
+            if guild is None:
+                raise BackendDenied("Discord guild unavailable")
             async with thread.typing():
-                result = await asyncio.to_thread(
-                    ask_dify,
-                    tenant,
-                    question=question,
-                    user_key=user_key,
-                    conversation_id=session.dify_conversation_id,
+                answer = await asyncio.to_thread(
+                    bot.backend.ask, thread.id, guild.id, user_id, question,
                 )
-            bot.store.set_conversation(thread.id, result.conversation_id)
-            for chunk in _chunks(result.text):
+            for chunk in _chunks(answer):
                 await thread.send(chunk, allowed_mentions=discord.AllowedMentions.none())
 
     @bot.event
@@ -374,22 +482,25 @@ def create_bot(config: Config) -> AW5Bot:
         ):
             return
         question = message.content.strip()
-        if not question:
-            return
         thread = message.channel
         try:
-            session = bot.store.get_session(thread.id)
-            if session is None or session.discord_user_id != message.author.id:
+            if message.attachments:
+                await thread.send(
+                    "ระบบยังไม่รองรับการอ่านไฟล์แนบ กรุณาพิมพ์คำถามเป็นข้อความ"
+                    + (" (จะตอบจากข้อความที่พิมพ์เท่านั้น)" if question else ""),
+                    allowed_mentions=discord.AllowedMentions.none(),
+                )
+            if not question:
                 return
             if len(question) > 2000:
                 await thread.send("คำถามต้องมีความยาว 1–2000 ตัวอักษร")
                 return
             await answer_ticket(thread, message.guild, message.author.id, question)
-        except AccessDenied:
+        except BackendDenied:
             await thread.send("ไม่มีสิทธิ์ใช้งาน ticket นี้หรือสมาชิกถูกเพิกถอน")
-        except DifyError as exc:
-            LOG.warning("Dify request failed: %s", exc)
-            await thread.send("Dify ตอบกลับไม่สำเร็จ กรุณาลองใหม่ภายหลัง")
+        except BackendUnavailable as exc:
+            LOG.warning("AW5 backend request failed: %s", exc)
+            await thread.send("ระบบตอบกลับไม่สำเร็จ กรุณาลองใหม่ภายหลัง")
         except (discord.DiscordException, OSError, sqlite3.Error):
             LOG.exception("Could not deliver Dify answer")
             try:

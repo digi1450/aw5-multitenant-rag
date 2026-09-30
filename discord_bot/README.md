@@ -1,118 +1,90 @@
-# AW5 Discord demo bot
+# AW5 Discord adapter
 
-This local adapter implements `/start` in one configured text channel and
-accepts ordinary text messages, `/ask`, or `/list` in a bot-created private thread. The
-bot fetches the member's current project roles from the configured Discord
-server before Start, project selection, and every question. It derives the AW5
-`tenant_id` from a configured role-to-tenant mapping and selects the corresponding
-Dify app from local operator configuration. The Discord user ID identifies the
-ticket owner and conversation; there is no manual user-ID allowlist. Command
-text cannot supply an arbitrary app, dataset, or tenant.
+The bot provides a Start button and `/start` in `#aw5-start`. A private ticket
+accepts ordinary text, `/ask`, `/list`, and `/close`. The bot sends user and thread IDs to
+the private AW5 backend. The backend looks up the member's current Discord roles,
+resolves the project, reads the Published Dify selection, and calls the assigned
+Dify app. No manual user-ID enrollment is needed. One eligible project opens a
+ticket directly; two or more offer a project choice.
 
-For the dated implementation and evidence handoff, see
-[Discord bot demo handoff](../docs/architecture/discord-bot-demo-handoff-2026-09-28.md).
+The bot container was started on 2026-09-30. Startup logs confirmed Discord
+Gateway connection, guild command sync, and reuse of the existing Start button.
+The bot reached the backend health endpoint over its Compose network, and its
+mounted SQLite database contained the existing Start-panel record. A live Start
+created a ticket, but questions returned HTTP 503. The AW5 API service and
+Dify API service both used the Compose name `api`; renaming AW5 to `aw5_api`
+fixed the DNS collision. A second failure came from reading only one chunk of
+Dify's JSON response. The backend now reads the complete bounded response, and
+a preflight plus Dify diagnostic answered successfully. The owner then retried
+in Discord and confirmed that the bot answered; AW5 recorded HTTP 200 for that
+request. `/close` remains unverified after the Docker move. Read the
+[current handoff](../docs/architecture/aw5-backend-discord-handoff-2026-09-30.md)
+for current operations and remaining work. The
+[2026-09-28 handoff](../docs/architecture/discord-bot-demo-handoff-2026-09-28.md)
+preserves earlier live observations.
+The backend setup and validation steps are in
+[AW5 backend README](../aw5_backend/README.md).
 
-This is demo source code, not tenant-isolation evidence. The current Nature
-Footprint workflow does not by itself enforce cross-tenant retrieval. Each
-configured Dify app must contain only its authorized project Knowledge Bases;
-Project B must be onboarded and tested separately before making an isolation
-claim.
+## Run the bot with Docker Compose
 
-## Local setup
-
-1. Use Python with `discord.py` installed from `requirements.txt`. Keep the
-   virtual environment outside Git or in `.venv/`.
-2. Copy `.env.example` to `discord_bot/.env`. The example already has the IDs
-   supplied for `AW5 Demo Test` and `#aw5-start`; fill the bot token locally.
-3. Copy `tenants.example.json` to
-   `output/discord-bot/tenants.local.json`. The example already has the supplied
-   Nature Footprint Member role ID; verify the **Chatflow API** base URL for the
-   intended tenant-specific Dify app.
-   `tenant_name` is an optional display label for the project-selection button;
-   if omitted, the bot displays the configured Discord role name.
-   Set its app API key in `AW5_DIFY_API_KEY_1` in `.env`. The local file is under
-   ignored `output/` and must not contain the API key itself.
-   To enable `/list`, also create a Dify **Knowledge API** key in the same
-   workspace and set `AW5_DIFY_KNOWLEDGE_API_KEY_1` in `.env`. Add a
-   `dify_knowledge_api_key_env` field to the ignored local JSON only if a
-   different environment variable name is needed; by default the bot reads
-   `AW5_DIFY_KNOWLEDGE_API_KEY_<tenant_id>`. This is separate from the Chatflow
-   app key. If the Knowledge key is absent, questions continue to work but
-   `/list` reports that inventory is unavailable. Do not paste keys into chat.
-   The supplied `AW5-RAG Test4.7.yml` is an `advanced-chat` Chatflow whose
-   Start node has no extra inputs, so the adapter's `inputs: {}` request fits
-   its exported interface. The owner later reported publishing Test4.7 and
-   demonstrated the Discord-to-Dify path in this chat. That demo does not
-   promote Test4.7 to the current-main Dify workflow or prove tenant isolation.
-   The export does not include a usable API credential.
-4. Have an authorized Discord server administrator grant the configured project
-   role to each approved member. Removing that role denies new requests; no
-   `discord_bot.members add` command is needed. Restrict who can manage the role.
-5. In Discord Developer Portal, open **AW5-Bot → Bot → Privileged Gateway
-   Intents** and enable **Message Content Intent**, then save. The bot needs
-   this to receive ordinary question text. Leave **Server Members Intent**
-   disabled; the bot fetches the current member record by ID on each request.
-6. From the repository root, load the local env file and run the adapter:
+1. Start the AW5 backend and register the Nature Footprint project using its
+   Discord role ID, Dify app ID, and Dify Chatflow API key. Complete the one-time
+   legacy ticket import if existing threads need to keep working.
+2. Copy `.env.example` to `discord_bot/.env`. Set the Discord bot token and the
+   same `AW5_BACKEND_BOT_TOKEN` configured for the backend. The Compose service
+   overrides the API URL with `http://aw5_api:8765` on its private bot network.
+   Do not copy keys into Git or chat.
+3. Enable **Message Content Intent** for ordinary ticket text. The bot does not
+   need Server Members Intent; the backend checks membership through Discord's
+   REST API.
+4. Stop any bot process running in a Terminal, then start the Compose service
+   from the repository root:
 
    ```sh
-   set -a
-   source discord_bot/.env
-   set +a
-   .venv/bin/python -m discord_bot.bot
+   docker compose --env-file aw5_backend/.env -f aw5_backend/compose.yml up -d --build bot
    ```
 
-The bot registers guild-scoped slash commands and posts a persistent **Start**
-button in `#aw5-start` on startup. It records the panel message ID in local
-SQLite so a restart reuses the existing button instead of posting another.
-The button and `/start` use the same authorization and ticket creation path.
-If exactly one configured project matches the user's current Discord role,
-the bot opens a ticket directly. If multiple
-projects match, it shows private buttons to choose one. Clicking a project
-rechecks the current role before creating a private thread.
-The chosen AW5 `tenant_id` is stored in that ticket; another project requires
-another ticket. The bot adds the authorized requester and stores a ticket
-record. Plain text messages and `/ask` work only for that requester in that
-thread, recheck the current role, and forward the question to the
-tenant-specific Dify Chatflow. The Dify conversation ID is stored per thread.
-`/list` works only for the ticket owner in that ticket. It rechecks the current
-Discord role, reads the paginated Knowledge Base and document lists, and shows
-only documents whose Dify document metadata has the exact AW5 `tenant_id` for
-the ticket. It shows disabled/archived documents with their status. Documents
-without that metadata are omitted. The result is private to the requester and
-does not send a Chatflow question or change the conversation. A listed document
-is not necessarily connected to the currently Published Chatflow retrieval node;
-`/list` is a metadata inventory, not a guarantee that `/ask` can cite the file.
-Messages outside bot-created private tickets, bot messages, and messages
-without text are ignored. Attachments are not forwarded to Dify.
-The answer is posted in the private thread after Dify returns it. Discord shows
-the bot's typing indicator while Dify is processing. The bot does not invent
-or append source citations; the selected Dify workflow remains
-responsible for grounding and citation text.
+The bot has no published port and can reach only the AW5 API service on its
+Compose network. Its source code is mounted read-only for local development.
+The existing ignored `output/discord-bot/aw5.sqlite3` is mounted at
+`/data/aw5.sqlite3`, preserving the Start panel ID across container recreation.
+After changing bot Python code, run
+`docker compose --env-file aw5_backend/.env -f aw5_backend/compose.yml restart bot`.
+Rebuild when bot dependencies or its Dockerfile change. Keep only one bot
+instance running.
 
-The app needs `View Channels`, `Send Messages`, `Create Private Threads`,
-`Send Messages in Threads`, `Read Message History`, and `Embed Links` in the
-start channel. A server owner or anyone with Discord `Manage Threads` can
-view private threads. Do not place private corpus text or credentials in the
-public start channel.
+For a local Terminal run instead, keep `AW5_BACKEND_API_URL` on loopback and
+load `discord_bot/.env` before running `.venv/bin/python -m discord_bot.bot`.
 
-## Current limits
+The existing Start panel message ID stays in local SQLite. New tickets and
+Dify conversation IDs live in AW5 PostgreSQL. Questions require the ticket
+owner's current project role, even if the ticket was opened earlier. A role
+removed during an already running Dify request does not retract that request.
+The bot posts the complete answer after Dify finishes and displays Discord's
+typing indicator while waiting. Long fenced code blocks are reopened with their
+language in each message, and long Markdown tables repeat their header. An
+individual table row longer than the message limit is sent as plain text.
+`/close` closes the backend ticket and archives its private thread. A closed
+ticket cannot ask or list files, even if its thread is later unarchived; use
+Start to begin a new conversation. A ticket owner can close it after losing
+the project role, since closing does not retrieve project data.
+If `/close` reports that the backend route is missing, restart the `aw5_api` service
+from `aw5_backend/compose.yml` to load mounted source changes. A backend HTTP 404
+means that its running API lacks the route;
+HTTP 403 means the recorded ticket owner does not match the requesting user.
 
-- Project buttons cover up to 25 eligible projects and expire after 3 minutes.
-  Each project still needs its own configured Discord role and tenant-specific
-  Dify app. The button label does not grant access.
-- Local SQLite stores tickets, Dify conversation IDs, and the Start panel ID.
-  Old membership rows in an existing database are ignored and left intact.
-  Existing `.env` files using `AW5_MEMBERSHIP_DB` still work; new setups use
-  `AW5_STATE_DB` for the same file.
-- The configured Discord server and its role administrators are the demo trust
-  boundary. This does not verify Dify cross-project retrieval isolation or
-  provide production identity governance.
-- Dify requests use a 30-second HTTP timeout. Errors return a generic message
-  in Discord; they are not scored as RAG quality evidence.
-- Knowledge API access uses a separate server-side credential with workspace
-  scope. The backend filters the response by AW5 project metadata after
-  authorizing Discord membership. This is a demo filter, not verified
-  database-level tenant isolation. Listing traverses paginated Knowledge Bases
-  and documents, so large workspaces can take longer.
-- Installing dependencies, running live Discord/Dify calls, onboarding Project
-  B, and isolation testing are separate operational steps.
+The bot needs View Channel, Send Messages, Create Private Threads, Send
+Messages in Threads, Read Message History, and Embed Links in `#aw5-start`.
+A server owner or member with Manage Threads can see private threads.
+
+## Limits
+
+- The project selector supports at most 25 eligible projects per click.
+- `/list` shows file names from the current Published Knowledge Retrieval
+  selection; it does not show Knowledge Base names or select files for `/ask`.
+- The bot ignores messages outside its private ticket threads. It warns when a
+  ticket message contains attachments, does not read the attachments, and
+  answers only the typed text when both are present.
+- The Test4.7 Discord demo is separate from the owner-confirmed current-main
+  Dify workflow. Multi-project isolation remains unverified until a second
+  real project is onboarded and controlled testing is completed.

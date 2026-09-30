@@ -52,6 +52,23 @@ classification are maintained in the
 Historical scores in that inventory remain attached to their original workflows
 and must not be reported as validation of the self-hosted target.
 
+## Discord and AW5 backend — implementation update 2026-09-30
+
+The Discord adapter now calls a separate AW5 backend for current role checks,
+project selection, ticket state, questions and file inventory. The backend owns
+its PostgreSQL registry and Dify credentials, and reads the Published Retrieval
+selection through a restricted Dify database view. The administrator still
+Publishes using Dify's UI; no project JSON or manual user-ID enrollment is needed.
+
+The existing AW5 Compose deployment runs separate PostgreSQL, API and bot
+containers. A live ticket and post-fix answer were confirmed after the Docker
+migration, and the focused offline suite passes 27 tests. This is demo/incident
+evidence, not formal RAG evaluation or cross-project isolation proof. Project B
+and the remaining operational/security work are recorded in the
+[current backend/Discord handoff](docs/architecture/aw5-backend-discord-handoff-2026-09-30.md).
+See [backend setup](aw5_backend/README.md) and [bot operation](discord_bot/README.md).
+The owner-confirmed main Dify workflow below remains a separate evidence track.
+
 ## Current main workflow — owner-confirmed 2026-09-06
 
 The owner supplied the Published **AW5-RAG Test** export and promoted it to the

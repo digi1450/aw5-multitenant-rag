@@ -22,6 +22,13 @@ authoritative sources, expanding when evidence conflicts or the task needs it:
 - Discord demo adapter: `discord_bot/AGENTS.md`, `discord_bot/README.md`, and
   `docs/architecture/discord-bot-demo-handoff-2026-09-28.md`. Keep its local
   demo evidence separate from Dify workflow promotion and isolation claims.
+- AW5 backend registry and Published selection sync: `aw5_backend/AGENTS.md`
+  and `aw5_backend/README.md`, then
+  `docs/architecture/aw5-backend-discord-handoff-2026-09-30.md` for the latest
+  implementation, incident verification and remaining work.
+  The 2026-09-28 Discord handoff is a historical
+  record of the pre-backend adapter. The administrator still Publishes in Dify;
+  AW5 reads Published state through a restricted database view.
 
 Read relevant sections first; a partial read is not proof that other evidence
 does not exist. Newer owner instructions supersede older plans or memory. Ask

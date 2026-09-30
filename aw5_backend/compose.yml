@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aw5
+      POSTGRES_USER: aw5
+      POSTGRES_PASSWORD: ${AW5_POSTGRES_PASSWORD:?Set AW5_POSTGRES_PASSWORD}
+    volumes:
+      - aw5_backend_data:/var/lib/postgresql/data
+    networks:
+      - aw5_private
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aw5 -d aw5"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  aw5_api:
+    build:
+      context: ..
+      dockerfile: aw5_backend/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: .
+        target: /app/aw5_backend
+        read_only: true
+    env_file: .env
+    environment:
+      AW5_DATABASE_URL: postgresql://aw5:${AW5_POSTGRES_PASSWORD}@postgres:5432/aw5
+      PYTHONDONTWRITEBYTECODE: "1"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8765:8765"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=2).close()"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    networks:
+      - aw5_private
+      - aw5_bot
+      - dify_internal
+
+  bot:
+    build:
+      context: ../discord_bot
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: ../discord_bot/.env
+    environment:
+      AW5_BACKEND_API_URL: http://aw5_api:8765
+      AW5_STATE_DB: /data/aw5.sqlite3
+      PYTHONDONTWRITEBYTECODE: "1"
+    volumes:
+      - type: bind
+        source: ../discord_bot
+        target: /app/discord_bot
+        read_only: true
+      - type: bind
+        source: ../output/discord-bot
+        target: /data
+    depends_on:
+      aw5_api:
+        condition: service_healthy
+    networks:
+      - aw5_bot
+
+volumes:
+  aw5_backend_data:
+
+networks:
+  aw5_private:
+  aw5_bot:
+  dify_internal:
+    external: true
+    name: ${AW5_DIFY_DOCKER_NETWORK:-aw5-dify_default}
