@@ -54,6 +54,16 @@ and must not be reported as validation of the self-hosted target.
 
 ## Discord and AW5 backend — implementation update 2026-09-30
 
+The owner selected Git `main` as the shared development baseline on 2026-09-30,
+including the self-hosted Dify records, AW5 backend and Discord adapter developed
+on `feature/dify-self-hosted`. Cloud development should start from the updated
+`main` and run the focused offline tests below. Repository promotion does not
+Publish Dify, deploy services, or validate live tenant isolation.
+
+```sh
+python -m unittest tests.test_aw5_backend tests.test_discord_bot
+```
+
 The Discord adapter now calls a separate AW5 backend for current role checks,
 project selection, ticket state, questions and file inventory. The backend owns
 its PostgreSQL registry and Dify credentials, and reads the Published Retrieval

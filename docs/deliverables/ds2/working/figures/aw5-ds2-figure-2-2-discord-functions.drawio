@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" agent="Codex" version="24.7.17">
+  <diagram id="figure-2.2-system-functions" name="Figure 2.2 System Functions">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" connect="1" arrows="1" page="1" pageScale="1" pageWidth="1200" pageHeight="730" background="#FFFFFF">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="box-3" vertex="1" parent="1" style="rounded=1;arcSize=20;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;strokeWidth=1;">
+          <mxGeometry x="230" y="145" width="940" height="525" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" edge="1" parent="1" style="edgeStyle=segmentEdgeStyle;html=1;rounded=1;strokeColor=#2563EB;strokeWidth=3;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="185" y="270" as="sourcePoint" />
+            <mxPoint x="265" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-6" edge="1" parent="1" style="edgeStyle=segmentEdgeStyle;html=1;rounded=1;strokeColor=#2563EB;strokeWidth=3;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="530" y="285" as="sourcePoint" />
+            <mxPoint x="568" y="285" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-7" edge="1" parent="1" style="edgeStyle=segmentEdgeStyle;html=1;rounded=1;strokeColor=#059669;strokeWidth=3;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="840" y="285" as="sourcePoint" />
+            <mxPoint x="878" y="285" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge-8" edge="1" parent="1" style="edgeStyle=segmentEdgeStyle;html=1;rounded=1;strokeColor=#6D5BD0;strokeWidth=3;endArrow=block;endFill=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="185" y="539" as="sourcePoint" />
+            <mxPoint x="265" y="539" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="box-9" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#C4B5FD;strokeWidth=2;">
+          <mxGeometry x="38" y="221" width="147" height="97" as="geometry" />
+        </mxCell>
+        <mxCell id="box-12" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#93C5FD;strokeWidth=2;">
+          <mxGeometry x="265" y="208" width="265" height="156" as="geometry" />
+        </mxCell>
+        <mxCell id="box-15" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FBBF24;strokeWidth=2;">
+          <mxGeometry x="568" y="208" width="272" height="156" as="geometry" />
+        </mxCell>
+        <mxCell id="box-18" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#059669;strokeWidth=2;">
+          <mxGeometry x="878" y="208" width="256" height="156" as="geometry" />
+        </mxCell>
+        <mxCell id="box-21" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#C4B5FD;strokeWidth=2;">
+          <mxGeometry x="38" y="491" width="147" height="97" as="geometry" />
+        </mxCell>
+        <mxCell id="box-24" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#6D5BD0;strokeWidth=2;">
+          <mxGeometry x="265" y="450" width="400" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="box-27" vertex="1" parent="1" style="rounded=1;arcSize=16;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#CBD5E1;strokeWidth=2;">
+          <mxGeometry x="704" y="450" width="430" height="174" as="geometry" />
+        </mxCell>
+        <mxCell id="text-1" value="AW5  |  SYSTEM FUNCTIONS" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=30;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="40" y="26" width="1145" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="text-2" value="What members and administrators do; internal checks apply before any project retrieval" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=17;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="40" y="70" width="1145" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="text-4" value="AW5 FUNCTIONAL BOUNDARY" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=14;fontColor=#60718B;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="250" y="158" width="935" height="21" as="geometry" />
+        </mxCell>
+        <mxCell id="text-10" value="Member" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="55" y="236" width="113" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-11" value="Discord user" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="55" y="272" width="113" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="text-13" value="1  Ticket interaction" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="282" y="223" width="231" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-14" value="Start private ticket&lt;br&gt;Choose project if multiple&lt;br&gt;Ask • /list • /close" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="282" y="259" width="231" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="text-16" value="2  Access &amp; session" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="585" y="223" width="238" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-17" value="Fetch current Discord role&lt;br&gt;Derive AW5 tenant_id&lt;br&gt;Bind user + thread + tenant&lt;br&gt;Deny if check fails" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="585" y="259" width="238" height="81" as="geometry" />
+        </mxCell>
+        <mxCell id="text-19" value="3  Knowledge answer" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="895" y="223" width="222" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-20" value="Validate Published files&lt;br&gt;Retrieve within project&lt;br&gt;Answer + real citations&lt;br&gt;or insufficient evidence" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="895" y="259" width="222" height="81" as="geometry" />
+        </mxCell>
+        <mxCell id="text-22" value="Administrator" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="55" y="506" width="113" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-23" value="Project / Dify" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="55" y="542" width="113" height="24" as="geometry" />
+        </mxCell>
+        <mxCell id="text-25" value="4  Project knowledge administration" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="282" y="465" width="366" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-26" value="Register role → tenant → Dify app in AW5&lt;br&gt;Onboard files with correct tenant metadata&lt;br&gt;Publish project app in Dify UI&lt;br&gt;No AW5 admin UI yet" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="282" y="501" width="366" height="81" as="geometry" />
+        </mxCell>
+        <mxCell id="text-28" value="5  Operations &amp; safeguards" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=19;fontColor=#14213D;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="721" y="465" width="396" height="29" as="geometry" />
+        </mxCell>
+        <mxCell id="text-29" value="Keep Dify credentials in backend only&lt;br&gt;Observe errors, latency and provider usage&lt;br&gt;Fail closed on missing/mismatched metadata&lt;br&gt;No AW5 per-user question/token quota" vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=15;fontColor=#60718B;fontStyle=0;strokeColor=none;fillColor=none;">
+          <mxGeometry x="721" y="501" width="396" height="81" as="geometry" />
+        </mxCell>
+        <mxCell id="text-30" value="Figure status: Nature Footprint demo exists; multi-role live behavior and Project B isolation need controlled verification." vertex="1" parent="1" style="text;html=1;whiteSpace=wrap;overflow=fill;align=left;verticalAlign=top;spacing=0;fontFamily=Arial;fontSize=14;fontColor=#B45309;fontStyle=1;strokeColor=none;fillColor=none;">
+          <mxGeometry x="40" y="683" width="1145" height="21" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -15,6 +15,7 @@
 ~$*.docx
 
 # Temporary and generated files
+*.log
 tmp/
 .memory-staging/
 __pycache__/
