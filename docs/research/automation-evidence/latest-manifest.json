@@ -1,72 +1,90 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-30T23:31:55+07:00",
+  "generated_at": "2026-10-03T23:31:59+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
   "classification": "sanitized-git-safe",
-  "status": "incident-confirmation-and-repository-context",
+  "status": "bounded-diagnostics-local-deployment-and-partial-snapshot-evidence",
   "repository": {
     "branch": "main",
-    "head": "725c9432b8c6dc7ff43ccee805146222f004dde5",
-    "upstream": "origin/main",
-    "ahead": 0,
-    "behind": 0,
+    "head": "c68dc1660a8e82247840716d3b41a5c1a8feecdc",
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-09-29T23-32-51+07-00-report.md",
-    "report_bytes": 10756,
-    "report_sha256": "70e24a5a73a8666cfc7d29a45f2146b413675aea279ce2c14636d5b9b1120c4c",
-    "tracked_checkpoint_commit": "57da55a4d1d40475cc742cefa3ad3c50f9de3071"
+    "report": "output/research-evidence/daily/2026-10-02T23-31-37+07-00-report.md",
+    "report_bytes": 2612,
+    "report_sha256": "517b251c9ff9d9aca6f287f3a1fbeeae2b869b85476c4ea31a441fb8f703ff86",
+    "tracked_checkpoint_commit": "c68dc1660a8e82247840716d3b41a5c1a8feecdc"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-09-30T23-31-55+07-00-report.md",
-    "bytes": 15832,
-    "sha256": "60491f7e328a75b14945732a6bf74e34e8ead77c2d7f9219558a7072e9b7e057",
+    "path": "output/research-evidence/daily/2026-10-03T23-31-59+07-00-report.md",
+    "bytes": 53152,
+    "sha256": "db46c8d5bc6f26b617ad2cd71f5c4665023c1ed70d7518e60583f378c5a1776c",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 2051,
-    "sha256": "5060309974e5dd31014ede8a37f25eb3a4a41b7448fcab23a5ee0ca0e103e8d5",
+    "bytes": 2116,
+    "sha256": "27106b9a879761379d1654743422b03c55f6304859ce5157144431b0178919b7",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "output/research-evidence/experiments/2026-09-30-discord-ask-api-name-collision/",
-      "classification": "local-only-incident-evidence",
-      "evidence_status": "verified-integrity-and-owner-observed-one-live-confirmation"
+      "path": "output/research-evidence/experiments/",
+      "classification": "local-only",
+      "evidence_status": "package-specific-exploratory-incident-release-evidence"
     },
     {
-      "path": "docs/architecture/aw5-backend-discord-handoff-2026-09-30.md",
-      "classification": "Git-safe-candidate-already-committed",
-      "evidence_status": "sanitized-handoff-partial-runtime-and-offline-evidence"
+      "path": "output/admin-onboarding/2026-10-03/",
+      "classification": "local-only",
+      "evidence_status": "release-evidence-local-session-checks-new-enrollment-unverified"
     },
     {
-      "path": "docs/deliverables/ds2/working/figures/CURRENT.md",
-      "classification": "Git-safe-candidate-already-committed",
-      "evidence_status": "owner-confirmed-concept-figure-selection-images-partial"
+      "path": "dify/exports/CURRENT.md",
+      "classification": "Git-safe-candidate-uncommitted-outside-allowlist",
+      "evidence_status": "current-Discord-pointer-and-historical-stages"
+    },
+    {
+      "path": "docs/architecture/admin-onboarding-2026-10-03.md",
+      "classification": "Git-safe-candidate-uncommitted-outside-allowlist",
+      "evidence_status": "implementation-and-local-checks"
     }
   ],
   "classifications": {
-    "current_main": "Dify-owner-confirmed-2026-09-06-unchanged",
-    "test4_2": "frozen-candidate-not-current-main",
-    "test4_7": "separate-demo-exploratory",
-    "test4_8": "exploratory",
-    "backend_discord": "incident-confirmation-no-formal-quality-or-reliability-result",
-    "ds2": "concept-deliverables-neighboring-images-stale",
-    "historical_scores": "retained-with-original-workflows",
-    "trusted_tenant_isolation": "unverified"
+    "current_discord": "owner-Published-v3.2-and-tenant1-rebound",
+    "post_guard_answer": "owner-observed",
+    "post_guard_full_export_runtime_retest": "missing",
+    "v3_4": "preserved-development-Draft",
+    "v2": "historical-supplied-snapshot",
+    "main_2026_09_06": "historical-promoted-control",
+    "test4_2": "frozen-candidate",
+    "onboarding": "local-checks-new-role-and-project-enrollment-unverified",
+    "historical_scores": "retained-with-original-configurations",
+    "tenant_isolation": "unverified"
+  },
+  "package_consistency": {
+    "manifests_parsed": 19,
+    "hash_references_checked": 94,
+    "matching": 90,
+    "historical_mutable_document_drift": [
+      "README.md",
+      "AGENTS.md",
+      "dify/exports/CURRENT.md",
+      "dify/code/README.md"
+    ],
+    "private_references_excluded": 2,
+    "preserved_v3_4_export_hash_matches": true
   },
   "allowlist": [
     "docs/research/automation-evidence/latest-report.md",
     "docs/research/automation-evidence/latest-manifest.json"
   ],
   "excluded_local_only_paths": [
-    "output/research-evidence/daily/",
-    "output/research-evidence/experiments/",
+    "output/research-evidence/",
+    "output/admin-onboarding/",
+    "output/workflow-candidates/",
     "output/discord-bot/",
     "aw5_backend/.env",
     "discord_bot/.env"
@@ -74,14 +92,12 @@
   "checks": {
     "initial_staging_area_empty": true,
     "tracked_allowlist_files_clean_before_run": true,
-    "incident_package_hashes_match": true,
-    "incident_evidence_json_parses": true,
     "raw_private_content_excluded": true
   },
   "notes": [
     "Manifest excludes its own hash.",
-    "Prior broad credential-pattern source flags were not adjudicated by this collector.",
-    "Only the exact two checkpoint paths may be committed; no push."
+    "Historical source-reference drift is retained, not repaired.",
+    "Only exact allowlist checkpoint files may be committed; no push."
   ],
   "manifest_excludes_its_own_hash": true
 }
