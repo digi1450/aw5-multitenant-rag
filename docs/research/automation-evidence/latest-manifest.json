@@ -1,81 +1,81 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-03T23:31:59+07:00",
+  "generated_at": "2026-10-04T23:32:11+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "mode": "automatic-evidence-commit",
   "classification": "sanitized-git-safe",
-  "status": "bounded-diagnostics-local-deployment-and-partial-snapshot-evidence",
+  "status": "completed-exploratory-backend-development-regression",
   "repository": {
     "branch": "main",
-    "head": "c68dc1660a8e82247840716d3b41a5c1a8feecdc",
+    "head": "decefd5606522761cb1d5de9a675c2e87060a69a",
     "initial_index_clean": true
   },
   "comparison": {
-    "report": "output/research-evidence/daily/2026-10-02T23-31-37+07-00-report.md",
-    "report_bytes": 2612,
-    "report_sha256": "517b251c9ff9d9aca6f287f3a1fbeeae2b869b85476c4ea31a441fb8f703ff86",
-    "tracked_checkpoint_commit": "c68dc1660a8e82247840716d3b41a5c1a8feecdc"
+    "report": "output/research-evidence/daily/2026-10-03T23-31-59+07-00-report.md",
+    "report_bytes": 53152,
+    "report_sha256": "db46c8d5bc6f26b617ad2cd71f5c4665023c1ed70d7518e60583f378c5a1776c",
+    "tracked_checkpoint_commit": "decefd5606522761cb1d5de9a675c2e87060a69a"
   },
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-10-03T23-31-59+07-00-report.md",
-    "bytes": 53152,
-    "sha256": "db46c8d5bc6f26b617ad2cd71f5c4665023c1ed70d7518e60583f378c5a1776c",
+    "path": "output/research-evidence/daily/2026-10-04T23-32-11+07-00-report.md",
+    "bytes": 24841,
+    "sha256": "84598b2aad5ef109db96503e6691ce0d16a66d86d3b511e05a532ed60284bccb",
     "classification": "local-only-sanitized-daily-report"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 2116,
-    "sha256": "27106b9a879761379d1654743422b03c55f6304859ce5157144431b0178919b7",
+    "bytes": 2157,
+    "sha256": "6232c6b25950aac452acbadf41f3e36fc2f7c0bd066c5a06c7a7f875a92c4d1e",
     "classification": "sanitized-git-safe"
   },
   "material_research_movement": true,
   "material_items": [
     {
-      "path": "output/research-evidence/experiments/",
+      "path": "output/research-evidence/experiments/2026-10-04-backend-development-30/",
       "classification": "local-only",
-      "evidence_status": "package-specific-exploratory-incident-release-evidence"
+      "evidence_status": "completed-exploratory-diagnostic-development-regression"
     },
     {
-      "path": "output/admin-onboarding/2026-10-03/",
+      "path": "output/research-evidence/suites/2026-10-03-discord-e2e-30/",
       "classification": "local-only",
-      "evidence_status": "release-evidence-local-session-checks-new-enrollment-unverified"
-    },
-    {
-      "path": "dify/exports/CURRENT.md",
-      "classification": "Git-safe-candidate-uncommitted-outside-allowlist",
-      "evidence_status": "current-Discord-pointer-and-historical-stages"
-    },
-    {
-      "path": "docs/architecture/admin-onboarding-2026-10-03.md",
-      "classification": "Git-safe-candidate-uncommitted-outside-allowlist",
-      "evidence_status": "implementation-and-local-checks"
+      "evidence_status": "prepared-private-suite-and-source-review"
     }
   ],
+  "metrics": {
+    "questions": 30,
+    "attempts": 30,
+    "pass": 25,
+    "partial": 4,
+    "fail": 1,
+    "strict_accuracy_percent": 83.33333333333334,
+    "backend_p50_seconds": 6.907944041500741,
+    "backend_p95_nearest_rank_seconds": 10.835414707995369,
+    "latency_boundary": "localhost-backend-request-to-complete-response; excludes-Discord-Gateway-delivery-UI-and-ticket-setup",
+    "llm_estimate_mean_usd": 0.015609616666666666,
+    "llm_estimate_total_usd": 0.4682885,
+    "cost_boundary": "LLM-only-list-price-estimate; embedding-unavailable; not-invoice",
+    "timeouts": 0,
+    "retries": 0,
+    "operational_errors": 0
+  },
   "classifications": {
-    "current_discord": "owner-Published-v3.2-and-tenant1-rebound",
-    "post_guard_answer": "owner-observed",
-    "post_guard_full_export_runtime_retest": "missing",
+    "current_discord": "v3.2-registered-owner-post-guard-answer-recorded",
+    "evaluated_snapshot": "locally-preserved-Published-backend-run-2026-10-04",
     "v3_4": "preserved-development-Draft",
     "v2": "historical-supplied-snapshot",
     "main_2026_09_06": "historical-promoted-control",
     "test4_2": "frozen-candidate",
-    "onboarding": "local-checks-new-role-and-project-enrollment-unverified",
     "historical_scores": "retained-with-original-configurations",
-    "tenant_isolation": "unverified"
+    "isolation": "unverified"
   },
-  "package_consistency": {
-    "manifests_parsed": 19,
-    "hash_references_checked": 94,
-    "matching": 90,
-    "historical_mutable_document_drift": [
-      "README.md",
-      "AGENTS.md",
-      "dify/exports/CURRENT.md",
-      "dify/code/README.md"
-    ],
-    "private_references_excluded": 2,
-    "preserved_v3_4_export_hash_matches": true
+  "checks": {
+    "initial_staging_area_empty": true,
+    "allowlist_clean_before_run": true,
+    "prior_inventory_hashes_unchanged": 170,
+    "run_manifest_matching_references": 48,
+    "suite_manifest_matching_references": 7,
+    "private_content_excluded": true
   },
   "allowlist": [
     "docs/research/automation-evidence/latest-report.md",
@@ -89,15 +89,10 @@
     "aw5_backend/.env",
     "discord_bot/.env"
   ],
-  "checks": {
-    "initial_staging_area_empty": true,
-    "tracked_allowlist_files_clean_before_run": true,
-    "raw_private_content_excluded": true
-  },
   "notes": [
     "Manifest excludes its own hash.",
-    "Historical source-reference drift is retained, not repaired.",
-    "Only exact allowlist checkpoint files may be committed; no push."
+    "No evaluation or inference was performed by collector.",
+    "Only exact checkpoint allowlist may be committed; no push."
   ],
   "manifest_excludes_its_own_hash": true
 }
