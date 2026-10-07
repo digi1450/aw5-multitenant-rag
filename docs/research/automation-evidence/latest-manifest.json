@@ -1,30 +1,27 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-05T23:36:59+07:00",
+  "generated_at": "2026-10-07T23:34:27+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "branch": "main",
-  "head": "20bbcd493bace5624d9a53366a18b9d5f9962866",
+  "head": "4618e2b0ba41010707a4d4f49dcfd8aa14928524",
   "comparison": {
-    "report": "output/research-evidence/daily/2026-10-04T23-32-11+07-00-report.md",
-    "bytes": 24841,
-    "sha256": "84598b2aad5ef109db96503e6691ce0d16a66d86d3b511e05a532ed60284bccb",
-    "checkpoint_commit": "20bbcd493bace5624d9a53366a18b9d5f9962866"
+    "report": "output/research-evidence/daily/2026-10-06T23-26-28+07-00-report.md",
+    "bytes": 65364,
+    "sha256": "59f6586b329075ad6150fac4363196d27e73988c220033501a0955c8373339c2",
+    "tracked_checkpoint_commit": "4618e2b0ba41010707a4d4f49dcfd8aa14928524"
   },
   "report": {
-    "path": "output/research-evidence/daily/2026-10-05T23-38-00+07-00-report.md",
-    "bytes": 5993,
-    "sha256": "faac6a94d96f285760d26410076b15266bf7116533f76c5b0cc1555f43cb232b"
+    "path": "output/research-evidence/daily/2026-10-07T23-34-27+07-00-report.md",
+    "bytes": 65921,
+    "sha256": "fbe9770c65324512284b01949f206dcaff7b14a1dc283d7405e5949bb11dd4e6"
   },
   "material_research_movement": true,
   "prior_inventory": {
-    "checked": 244,
-    "changed": 0,
-    "missing": 0,
-    "manifests": [
-      "output/research-evidence/daily/2026-10-03T23-31-59+07-00-manifest.json",
-      "output/research-evidence/daily/2026-10-04T23-32-11+07-00-manifest.json"
-    ]
+    "checked": 254,
+    "unchanged": 249,
+    "changed": 5,
+    "missing": 0
   },
   "classifications": {
     "current_discord": "v3.2-registered; Published remediation of Oct5 incident unverified",
@@ -37,18 +34,9 @@
     "test4_2": "frozen candidate",
     "isolation": "unverified",
     "ds2_artifacts": "local-only partial artifact inventory; not validated",
-    "future_boolean_improvements": "planned, not implemented by collector"
-  },
-  "metrics": {
-    "draft_cases": 4,
-    "draft_succeeded": 4,
-    "draft_elapsed_seconds": [
-      24.600069,
-      5.73257,
-      1.615245,
-      16.705753
-    ],
-    "latency_boundary": "recorded owner Preview runs; not backend or Discord E2E; one case exceeds20seconds; not representative reliability"
+    "future_boolean_improvements": "planned, not implemented by collector",
+    "new_source_progress": "partial; statically inspected, test execution and deployment missing",
+    "new_diagrams": "needs review; local-only; content and owner approval unverified"
   },
   "excluded_local_only_paths": [
     "output/",
@@ -71,30 +59,60 @@
   "classification": "sanitized-git-safe",
   "mode": "automatic-evidence-commit",
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-10-05T23-38-00+07-00-report.md",
-    "bytes": 5993,
-    "sha256": "faac6a94d96f285760d26410076b15266bf7116533f76c5b0cc1555f43cb232b"
+    "path": "output/research-evidence/daily/2026-10-07T23-34-27+07-00-report.md",
+    "bytes": 65921,
+    "sha256": "fbe9770c65324512284b01949f206dcaff7b14a1dc283d7405e5949bb11dd4e6"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 2529,
-    "sha256": "34f293e473845a88b716f67191e44d4f471ae6e32f4a00580244694cb1d6517d"
+    "bytes": 1942,
+    "sha256": "b810cb8e69d3b99192c877a960f14066bdb82525cf07ff077135696f9c9e5701"
   },
   "material_items": [
     {
-      "path": "output/research-evidence/experiments/2026-10-05-resolver-boolean-incident/",
-      "classification": "local-only",
-      "evidence_status": "verified-recorded-incident"
+      "path": "aw5_backend/integrations.py",
+      "bytes": 13087,
+      "modified_at": "2026-10-07T00:18:49+0700",
+      "sha256": "7c8623c94b6f6ef12c5ae6aefce7614625f4d154e3af440f9b41d071772673cf",
+      "classification": "Git-safe candidate outside automation allowlist",
+      "evidence_status": "uncommitted-source-context"
     },
     {
-      "path": "output/research-evidence/experiments/2026-10-05-boolean-draft-four-cases/",
-      "classification": "local-only",
-      "evidence_status": "verified-recorded-exploratory-diagnostic"
+      "path": "aw5_backend/onboarding.py",
+      "bytes": 12208,
+      "modified_at": "2026-10-07T00:18:49+0700",
+      "sha256": "ea2f23030556dde5e084c82fec256e8c351abc71bbec6d433861a793ceecb87f",
+      "classification": "Git-safe candidate outside automation allowlist",
+      "evidence_status": "uncommitted-source-context"
     },
     {
-      "path": "output/ds2/",
-      "classification": "local-only",
-      "evidence_status": "partial-unvalidated-artifact"
+      "path": "aw5_backend/static/admin.css",
+      "bytes": 1495,
+      "modified_at": "2026-10-07T00:26:39+0700",
+      "sha256": "dbad7853763d2a2dc06dc84fce50702c2975934a5d8b43c5ee54fa0ba59db0f1",
+      "classification": "Git-safe candidate outside automation allowlist",
+      "evidence_status": "uncommitted-source-context"
+    },
+    {
+      "path": "aw5_backend/static/admin.js",
+      "bytes": 5303,
+      "modified_at": "2026-10-07T00:18:49+0700",
+      "sha256": "76368d047bbf21a0cf94d595cf9bfb541e69f108daf7083573ab9bb781e95ceb",
+      "classification": "Git-safe candidate outside automation allowlist",
+      "evidence_status": "uncommitted-source-context"
+    },
+    {
+      "path": "tests/test_admin_onboarding.py",
+      "bytes": 12647,
+      "modified_at": "2026-10-07T00:19:02+0700",
+      "sha256": "1982ca8c9363c9c9ea1597cbd628d86ee2220f01a3f61fde272e53dd338d8d6d",
+      "classification": "Git-safe candidate outside automation allowlist",
+      "evidence_status": "uncommitted-source-context"
     }
-  ]
+  ],
+  "checks": {
+    "initial_index_empty": true,
+    "allowlist_clean": true,
+    "bounded_source_credential_scan": "no high-confidence pattern hit"
+  }
 }
