@@ -1,26 +1,26 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-07T23:34:27+07:00",
+  "generated_at": "2026-10-10T23:28:46+07:00",
   "timezone": "Asia/Bangkok",
   "automation_id": "aw5-daily-research-evidence",
   "branch": "main",
-  "head": "4618e2b0ba41010707a4d4f49dcfd8aa14928524",
+  "head": "b2135759049186043ba5b11adfe0468386d791e5",
   "comparison": {
-    "report": "output/research-evidence/daily/2026-10-06T23-26-28+07-00-report.md",
-    "bytes": 65364,
-    "sha256": "59f6586b329075ad6150fac4363196d27e73988c220033501a0955c8373339c2",
-    "tracked_checkpoint_commit": "4618e2b0ba41010707a4d4f49dcfd8aa14928524"
+    "report": "output/research-evidence/daily/2026-10-09T23-34-11+07-00-report.md",
+    "bytes": 66946,
+    "sha256": "866b9b36059a2fb6643a7e676c8e04757df219db5efb5f91ec5ea50712372214",
+    "tracked_checkpoint_commit": "b2135759049186043ba5b11adfe0468386d791e5"
   },
   "report": {
-    "path": "output/research-evidence/daily/2026-10-07T23-34-27+07-00-report.md",
-    "bytes": 65921,
-    "sha256": "fbe9770c65324512284b01949f206dcaff7b14a1dc283d7405e5949bb11dd4e6"
+    "path": "output/research-evidence/daily/2026-10-10T23-28-46+07-00-report.md",
+    "bytes": 67591,
+    "sha256": "418c5aee7f9a25f6daf66e66c7a4bf17b4bf0113f812f2bc208eb4b52a945b07"
   },
   "material_research_movement": true,
   "prior_inventory": {
-    "checked": 254,
-    "unchanged": 249,
-    "changed": 5,
+    "checked": 260,
+    "unchanged": 251,
+    "changed": 9,
     "missing": 0
   },
   "classifications": {
@@ -35,8 +35,8 @@
     "isolation": "unverified",
     "ds2_artifacts": "local-only partial artifact inventory; not validated",
     "future_boolean_improvements": "planned, not implemented by collector",
-    "new_source_progress": "partial; statically inspected, test execution and deployment missing",
-    "new_diagrams": "needs review; local-only; content and owner approval unverified"
+    "new_source_progress": "partial; digest-only app identity, role rebinding and project-registration deletion source present; tests and deployment missing",
+    "new_diagrams": "none; previous artifacts remain local-only needs review"
   },
   "excluded_local_only_paths": [
     "output/",
@@ -59,60 +59,92 @@
   "classification": "sanitized-git-safe",
   "mode": "automatic-evidence-commit",
   "source_daily_report": {
-    "path": "output/research-evidence/daily/2026-10-07T23-34-27+07-00-report.md",
-    "bytes": 65921,
-    "sha256": "fbe9770c65324512284b01949f206dcaff7b14a1dc283d7405e5949bb11dd4e6"
+    "path": "output/research-evidence/daily/2026-10-10T23-28-46+07-00-report.md",
+    "bytes": 67591,
+    "sha256": "418c5aee7f9a25f6daf66e66c7a4bf17b4bf0113f812f2bc208eb4b52a945b07"
   },
   "tracked_report": {
     "path": "docs/research/automation-evidence/latest-report.md",
-    "bytes": 1942,
-    "sha256": "b810cb8e69d3b99192c877a960f14066bdb82525cf07ff077135696f9c9e5701"
+    "bytes": 2136,
+    "sha256": "d8a39bfdbf378136fe1965634c877f00070d4f61ee8b02b8eb25f1d60570cc3d"
   },
   "material_items": [
     {
-      "path": "aw5_backend/integrations.py",
-      "bytes": 13087,
-      "modified_at": "2026-10-07T00:18:49+0700",
-      "sha256": "7c8623c94b6f6ef12c5ae6aefce7614625f4d154e3af440f9b41d071772673cf",
-      "classification": "Git-safe candidate outside automation allowlist",
-      "evidence_status": "uncommitted-source-context"
+      "path": "aw5_backend/README.md",
+      "bytes": 11750,
+      "modified_at": "2026-10-10T00:52:05+0700",
+      "sha256": "b12b42b180756539a1731751dc69a23d71c2d4cfbc7939ee9e848ac409ba5e77",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
+    },
+    {
+      "path": "aw5_backend/api.py",
+      "bytes": 10979,
+      "modified_at": "2026-10-10T00:51:02+0700",
+      "sha256": "d905b48e66c8f50e88c31f84c086c2ce55dd2ebbc833387b6e7c9feaba8e92a1",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
+    },
+    {
+      "path": "aw5_backend/db.py",
+      "bytes": 16535,
+      "modified_at": "2026-10-10T00:51:02+0700",
+      "sha256": "d8e284b588611774392023670b6d90ad5c414ce7a65fcb12603d9f4448cae5a1",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
+    },
+    {
+      "path": "aw5_backend/schema.sql",
+      "bytes": 2473,
+      "modified_at": "2026-10-10T00:32:39+0700",
+      "sha256": "54c19821ad5a662005f0e45eefa053ef7cea021df0164ba4bf3014d6f7d74088",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
     },
     {
       "path": "aw5_backend/onboarding.py",
-      "bytes": 12208,
-      "modified_at": "2026-10-07T00:18:49+0700",
-      "sha256": "ea2f23030556dde5e084c82fec256e8c351abc71bbec6d433861a793ceecb87f",
-      "classification": "Git-safe candidate outside automation allowlist",
-      "evidence_status": "uncommitted-source-context"
+      "bytes": 17967,
+      "modified_at": "2026-10-10T00:51:02+0700",
+      "sha256": "1b171868d8fa8d2aae103ce4462777bd5f7a2c90bfee2788468c64f7e30d5b63",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
     },
     {
       "path": "aw5_backend/static/admin.css",
-      "bytes": 1495,
-      "modified_at": "2026-10-07T00:26:39+0700",
-      "sha256": "dbad7853763d2a2dc06dc84fce50702c2975934a5d8b43c5ee54fa0ba59db0f1",
-      "classification": "Git-safe candidate outside automation allowlist",
-      "evidence_status": "uncommitted-source-context"
+      "bytes": 1808,
+      "modified_at": "2026-10-10T00:51:02+0700",
+      "sha256": "de7cbd5505a8c9e7fefee59ba790415ab13cdfa2412717149c224d7bd655397f",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
     },
     {
       "path": "aw5_backend/static/admin.js",
-      "bytes": 5303,
-      "modified_at": "2026-10-07T00:18:49+0700",
-      "sha256": "76368d047bbf21a0cf94d595cf9bfb541e69f108daf7083573ab9bb781e95ceb",
-      "classification": "Git-safe candidate outside automation allowlist",
-      "evidence_status": "uncommitted-source-context"
+      "bytes": 9917,
+      "modified_at": "2026-10-10T00:51:02+0700",
+      "sha256": "f312e03e4f440ad22f800fb492019b773c5b68434e761d05e7cc42c20b4824cd",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
+    },
+    {
+      "path": "aw5_backend/static/index.html",
+      "bytes": 2610,
+      "modified_at": "2026-10-10T01:02:25+0700",
+      "sha256": "6eafd57ab380772e69b4201f2798b6648b8cd2ba013e9799dea456969650e481",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
     },
     {
       "path": "tests/test_admin_onboarding.py",
-      "bytes": 12647,
-      "modified_at": "2026-10-07T00:19:02+0700",
-      "sha256": "1982ca8c9363c9c9ea1597cbd628d86ee2220f01a3f61fde272e53dd338d8d6d",
-      "classification": "Git-safe candidate outside automation allowlist",
-      "evidence_status": "uncommitted-source-context"
+      "bytes": 28702,
+      "modified_at": "2026-10-10T00:52:05+0700",
+      "sha256": "5b5885257e35ca73eaf1706478a3fd2a6ca5d459f532e0d829b38fa33f0e8dda",
+      "classification": "needs review outside automation allowlist",
+      "evidence_status": "partial; source change verified by hash/static inspection; test execution and deployment missing"
     }
   ],
   "checks": {
     "initial_index_empty": true,
     "allowlist_clean": true,
-    "bounded_source_credential_scan": "no high-confidence pattern hit"
+    "bounded_source_credential_scan": "no high-confidence pattern hits"
   }
 }
