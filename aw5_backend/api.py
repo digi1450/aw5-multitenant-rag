@@ -10,6 +10,7 @@ import psycopg
 
 from .config import Settings
 from .db import Ticket
+from .onboarding import AdminPortal, positive_id
 from .service import Denied, Service, Unavailable
 
 
@@ -47,7 +48,23 @@ async def errors(request: web.Request, handler):
 
 def build_app(settings: Settings, service: Service | None = None) -> web.Application:
     service = service or Service(settings)
-    app = web.Application(middlewares=[errors], client_max_size=16 * 1024)
+    portal = AdminPortal(service)
+
+    @web.middleware
+    async def admin_headers(request, handler):
+        try:
+            response = await handler(request)
+        except web.HTTPException as exc:
+            response = exc
+        if request.path.startswith(("/admin", "/v1/admin/portal", "/v1/admin/links")):
+            response.headers.update({"Cache-Control": "no-store", "Referrer-Policy": "no-referrer",
+                                     "X-Content-Type-Options": "nosniff",
+                                     "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"})
+        if isinstance(response, web.HTTPException):
+            raise response
+        return response
+
+    app = web.Application(middlewares=[admin_headers, errors], client_max_size=16 * 1024)
     app[web.AppKey("service", Service)] = service
 
     async def eligible(request: web.Request) -> web.Response:
@@ -103,7 +120,7 @@ def build_app(settings: Settings, service: Service | None = None) -> web.Applica
             raise ValueError("project registration fields are invalid")
         project = await service.register_project(
             name=data["tenant_name"], role_id=_positive(data["discord_role_id"]),
-            app_id=data["dify_app_id"], app_key=data["dify_app_api_key"],
+            app_id=data["dify_app_id"], app_key=data["dify_app_api_key"], tenant_id=positive_id(data["tenant_id"]),
         )
         try:
             project = await service.sync_project(project.tenant_id)
@@ -148,6 +165,29 @@ def build_app(settings: Settings, service: Service | None = None) -> web.Applica
     async def health(request: web.Request) -> web.Response:
         return web.json_response({"status": "running"})
 
+    async def admin_link(request):
+        _auth(request, settings.bot_api_token)
+        data = await request.json()
+        url = await portal.issue_link(positive_id(data["guild_id"]), positive_id(data["channel_id"]),
+                                      positive_id(data["user_id"]))
+        return web.json_response({"url": url})
+
+    async def admin_asset(request):
+        name = request.match_info.get("asset", "index.html")
+        if name not in {"index.html", "admin.js", "admin.css"}:
+            raise web.HTTPNotFound()
+        return web.Response(body=(Path(__file__).parent / "static" / name).read_bytes(),
+                            content_type={"index.html": "text/html", "admin.js": "application/javascript", "admin.css": "text/css"}[name])
+
+    app.router.add_get("/admin", admin_asset)
+    app.router.add_get("/admin/assets/{asset}", admin_asset)
+    app.router.add_post("/v1/admin/links", admin_link)
+    app.router.add_post("/v1/admin/portal/session", portal.exchange)
+    app.router.add_get("/v1/admin/portal/model", portal.model)
+    app.router.add_post("/v1/admin/portal/projects", portal.register)
+    app.router.add_post("/v1/admin/portal/projects/{tenant_id}/role", portal.rebind_role)
+    app.router.add_delete("/v1/admin/portal/projects/{tenant_id}", portal.delete_project)
+    app.router.add_post("/v1/admin/portal/logout", portal.logout)
     app.router.add_get("/health", health)
     app.router.add_get("/v1/projects/eligible", eligible)
     app.router.add_post("/v1/tickets", create_ticket)

@@ -17,3 +17,14 @@
 - Do not run the bot against Discord or Dify, install dependencies, or change
   external configuration merely because source code changed. Follow the root
   `AGENTS.md` authorization and evidence rules.
+
+- Docker bot settings come from the explicit `environment` allowlist in backend
+  Compose, interpolated from `aw5_backend/.env`. Never add Dify secrets, admin
+  service tokens, registry JSON or backend DB credentials to that allowlist.
+- Keep bot source binds, Docker COPY and `.dockerignore` restricted to runtime
+  files. Update those allowlists when adding modules; do not mount the whole
+  `discord_bot/` directory. The SQLite directory needs writable sidecars and
+  must contain no legacy registries or secrets.
+- `discord_bot/.env` is host/Terminal-only, with Discord/backend settings.
+  Bootstrap requests the Knowledge key directly for backend setup; no legacy
+  Dify key may be restored to the bot environment for bootstrap compatibility.

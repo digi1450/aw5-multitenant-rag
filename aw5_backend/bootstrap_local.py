@@ -1,6 +1,7 @@
 """One-time local setup for the narrow Dify reader and AW5 service secrets."""
 
 from pathlib import Path
+import getpass
 import os
 import secrets
 import subprocess
@@ -31,9 +32,13 @@ def main() -> None:
         raise SystemExit("Existing Discord bot environment is missing")
     existing = _read_env(bot_env)
     required = ("AW5_DISCORD_BOT_TOKEN", "AW5_DISCORD_GUILD_ID",
-                "AW5_DIFY_KNOWLEDGE_API_KEY_1")
+                "AW5_DISCORD_START_CHANNEL_ID")
     if any(not existing.get(key) for key in required):
-        raise SystemExit("Discord bot environment lacks a required token, guild ID, or Knowledge API key")
+        raise SystemExit("Discord bot environment lacks a required token, guild ID, or start channel ID")
+    # Dify credentials belong only to backend setup, never to the bot's env file.
+    knowledge_key = getpass.getpass("Dify Knowledge API key for AW5 backend (hidden): ").strip()
+    if not knowledge_key:
+        raise SystemExit("A Dify Knowledge API key is required for backend setup")
 
     role_password = secrets.token_hex(24)
     db_password = secrets.token_hex(24)
@@ -54,6 +59,7 @@ def main() -> None:
            f"{role_verb} ROLE aw5_sync_reader LOGIN PASSWORD '{role_password}';\n"
            "GRANT USAGE ON SCHEMA public TO aw5_sync_reader;\n"
            "GRANT SELECT ON aw5_published_retrieval_v1 TO aw5_sync_reader;\n"
+           "GRANT SELECT ON aw5_app_key_bindings_v1 TO aw5_sync_reader;\n"
            "COMMIT;\n")
     result = subprocess.run(
         ["docker", "exec", "-i", "aw5-dify-db_postgres-1", "psql", "-X", "-q",
@@ -72,8 +78,11 @@ def main() -> None:
         "AW5_BACKEND_ADMIN_TOKEN": admin_api_token,
         "AW5_BACKEND_ENCRYPTION_KEY": Fernet.generate_key().decode(),
         "AW5_DIFY_KNOWLEDGE_API_BASE_URL": "http://api:5001/v1",
-        "AW5_DIFY_KNOWLEDGE_API_KEY": existing["AW5_DIFY_KNOWLEDGE_API_KEY_1"],
+        "AW5_DIFY_KNOWLEDGE_API_KEY": knowledge_key,
         "AW5_DISCORD_GUILD_ID": existing["AW5_DISCORD_GUILD_ID"],
+        "AW5_DISCORD_START_CHANNEL_ID": existing["AW5_DISCORD_START_CHANNEL_ID"],
+        "AW5_DISCORD_ADMIN_CHANNEL_ID": "",
+        "AW5_DISCORD_ADMIN_ROLE_ID": "",
     }
     descriptor = open(backend_env, "x", encoding="utf-8", opener=lambda path, flags: os.open(path, flags, 0o600))
     with descriptor:

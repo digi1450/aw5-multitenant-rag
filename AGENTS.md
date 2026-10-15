@@ -26,6 +26,9 @@ authoritative sources, expanding when evidence conflicts or the task needs it:
   and `aw5_backend/README.md`, then
   `docs/architecture/aw5-backend-discord-handoff-2026-09-30.md` for the latest
   implementation, incident verification and remaining work.
+  Read `docs/architecture/tenant-registry-contract-2026-10-03.md` for the newer
+  owner-confirmed onboarding/tenant contract and offline Registry preparation.
+  It does not establish live deployment, v3 Publish or tenant isolation.
   The 2026-09-28 Discord handoff is a historical
   record of the pre-backend adapter. The administrator still Publishes in Dify;
   AW5 reads Published state through a restricted database view.
@@ -40,6 +43,24 @@ raw evidence locally; never hide errors, anomalies, or supporting evidence.
 
 ## Evidence and status rules
 
+- Later owner-authorized Discord deployment, 2026-10-03: Test4.7 v3.2 is
+  Published and registered to the existing AW5 tenant 1. Read
+  `dify/exports/CURRENT.md` and the v3.2 deployment record. Backend-fed Code
+  Registry replaces tenant-1 SQL. Six Draft diagnostic turns were inspected;
+  Published contract, key binding, document metadata, backend health and role
+  eligibility were checked. Actual deployed Discord integration, repeatability
+  and cross-project isolation remain unverified. Earlier v3-4 status below is
+  a historical development snapshot, not the currently registered Discord app.
+
+- Latest preserved development snapshot, 2026-10-03: owner-supplied
+  `AW5-RAG Test4.7 v3-4.yml`, internally labelled Test4.7 v3. Read
+  `dify/exports/CURRENT.md` and its snapshot/handoff record. Scope/context
+  configuration matches the inspected Draft and has targeted diagnostic
+  evidence; Published promotion, formal validation, repeatability and trusted
+  tenant isolation remain unverified. Registry still hardcodes AW5 tenant 1;
+  its fix is separately scoped. Preserve the exact export and distinguish
+  latest full runs from older runtime and node/fixture evidence. The v2
+  snapshot and 2026-09-06 promotion below are historical references.
 - Separate **verified**, **not verified**, and **planned** work. A plan, prompt, README statement, or configuration is not test evidence by itself.
 - The owner promoted `dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml`
   as the current main workflow. Its byte-identical preservation, Published
@@ -274,3 +295,21 @@ collect runtime data merely because it is available.
 ## Future code directories
 
 When frontend and backend implementation begins, add scoped `AGENTS.md` files inside those directories for framework-specific commands, tests, style, and security rules. The root rules in this file continue to apply unless a more specific nested rule adds stricter guidance.
+
+## Current repository checkpoint — 2026-10-15
+
+Read `docs/architecture/progress-2026-10-15.md` for the current source/offline
+checkpoint. Portal enrollment resolves App ID from its API key; role changes,
+role-name display and explicit AW5 project deletion are implemented. The full
+100-test offline suite passed on this date. This checkpoint does not establish
+live deployment of every addition, a fresh Published export, real Project B
+onboarding or ISO-01. Keep the dated historical records below qualified.
+
+## Administrator onboarding update — 2026-10-03
+
+Read `docs/architecture/admin-onboarding-2026-10-03.md` for the implemented
+local portal, one-use Discord login, fresh admin-role authorization, explicit
+stable tenant IDs, app-key digest projection and role provisioning journal.
+The local session/model flow and guild slash command registration were checked.
+Actual role creation, real Project B enrollment and ISO-01 remain unverified.
+Do not present offline provisioning tests as live isolation evidence.

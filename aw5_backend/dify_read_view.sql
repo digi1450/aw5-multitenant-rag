@@ -14,6 +14,12 @@ SELECT a.id AS app_id,
 FROM apps AS a
 JOIN workflows AS w ON w.id = a.workflow_id AND w.app_id = a.id;
 
+-- Key-to-app proof without exposing plaintext tokens or Dify base tables.
+CREATE OR REPLACE VIEW aw5_app_key_bindings_v1 AS
+SELECT app_id, encode(sha256(convert_to(token, 'UTF8')), 'hex') AS token_sha256
+FROM api_tokens WHERE type = 'app';
+
 -- Provision a LOGIN role with a private password, then grant only:
 -- GRANT USAGE ON SCHEMA public TO aw5_sync_reader;
 -- GRANT SELECT ON aw5_published_retrieval_v1 TO aw5_sync_reader;
+-- GRANT SELECT ON aw5_app_key_bindings_v1 TO aw5_sync_reader;

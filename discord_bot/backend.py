@@ -120,3 +120,12 @@ class BackendClient:
         if type(closed) is not bool:
             raise BackendUnavailable("AW5 close result is invalid")
         return closed
+
+    def admin_link(self, guild_id: int, channel_id: int, user_id: int) -> str:
+        result = self._request("POST", "/v1/admin/links", data={"guild_id": guild_id,
+                               "channel_id": channel_id, "user_id": user_id})
+        url = result.get("url")
+        parsed = urllib.parse.urlparse(url) if isinstance(url, str) else None
+        if not parsed or parsed.scheme != "http" or parsed.hostname not in {"127.0.0.1", "localhost"} or parsed.port != 8765 or parsed.path != "/admin" or parsed.username or parsed.password:
+            raise BackendUnavailable("Invalid admin link")
+        return url

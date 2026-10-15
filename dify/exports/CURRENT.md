@@ -1,5 +1,93 @@
 # AW5-RAG Dify Export Pointer
 
+## Later diagnostic and repository checkpoint — 2026-10-15
+
+The [repository checkpoint](../../docs/architecture/progress-2026-10-15.md)
+records current backend/portal source and 100 passing offline tests. It does
+not promote a workflow or establish live identity as of this date.
+
+Later local evidence exists for the 2026-10-04 backend 30-question development
+diagnostic (25/30 strict passes, not a formal evaluation) and the 2026-10-05
+four-case owner-run Draft diagnostic after the Resolver flag string-enum and
+Code 3 guard changes. Packages remain ignored under
+`output/research-evidence/experiments/2026-10-04-backend-development-30/` and
+`output/research-evidence/experiments/2026-10-05-boolean-draft-four-cases/`.
+The latter uses a manual registry fixture; it does not prove backend shortlist
+behavior or Published promotion. Existing dated YAML exports are preserved
+unchanged and must not be described as exact exports of every later edit.
+
+## Current Discord app — Test4.7 v3.2, switched 2026-10-03
+
+The owner Published v3.2 and authorized rebinding the existing AW5 tenant 1.
+The [byte-identical export](aw5-rag-test4-7-v3-2-owner-supplied-2026-10-03.yml)
+and [deployment/evidence record](aw5-rag-test4-7-v3-2-owner-supplied-2026-10-03.md)
+supersede Registry-preparation status below. The new backend-fed Code Registry
+replaces the hardcoded SQL Registry; tenant and Discord role remain unchanged.
+Published contract, key binding, metadata scan, backend health and role eligibility
+were checked. Six owner-initiated Draft turns provide bounded diagnostic evidence.
+The owner later reported a Discord answer after the STRICT seek guard below.
+List/close after this switch, repeatability and cross-project isolation remain
+unverified. Earlier main exports remain historical controls;
+this switch is not a formal RAG release evaluation.
+
+Subsequent Discord check: Start worked, but the first answer failed in Code 3
+because Resolver supplied `seek_other_sources = "strict_mode"` despite its Boolean
+schema. Registry and Retrieval passed. A minimal STRICT flag guard is offline
+verified; the owner reported installing/Publishing it and then receiving an
+answer in Discord. A post-guard dated full export/runtime retest has not been
+preserved, so do not describe the unchanged v3.2 export as byte-identical to that
+latest Published graph. See the deployment record.
+
+## Earlier Backend Registry preparation — 2026-10-03
+
+The owner confirmed the [tenant/Registry contract](../../docs/architecture/tenant-registry-contract-2026-10-03.md).
+Backend registry input and replacement GET FILE REGISTRY Code node are prepared
+with 44 focused offline tests. The preserved v3-4 export below remains unchanged;
+its SQL tenant-1 condition is still present. No Draft installation, import,
+Publish, deployment or runtime isolation validation occurred in this preparation.
+Use the linked handoff before modifying a duplicate Draft; do not describe the
+source patch as the current Published workflow.
+
+## Latest development snapshot — Test4.7 v3-4, supplied 2026-10-03
+
+The owner supplied `AW5-RAG Test4.7 v3-4.yml` after the Draft scope/context
+changes and targeted diagnostics. Its internal app label is **AW5-RAG Test4.7
+v3**. The [preserved export](aw5-rag-test4-7-v3-4-owner-supplied-2026-10-03.yml)
+is byte-identical; the [snapshot and handoff record](aw5-rag-test4-7-v3-4-owner-supplied-2026-10-03.md)
+records configuration identity, verified cases and remaining work.
+
+SHA-256: `637d6169d571637e9c3505c4ee034f042f3d6288e6d92bef8cc17d14f54c72c2`.
+
+Status: **latest preserved development Draft; targeted diagnostics verified**.
+The graph remains 10 nodes / 9 edges / one Retrieval node / two LLM nodes.
+Code 2 caps context at 15, retains required-source anchors, optionally retains
+one other-source anchor, enforces STRICT by document ID, and produces a
+distinct unresolved-source fallback. Effective Resolver Jinja2 and Writer
+prompts match the tested configuration. Exported Knowledge Base references
+were verified against Dify's encoding of all three runtime IDs; the export
+omits the tool credential reference by design.
+
+This is not Published promotion, formal evaluation, repeatability or tenant
+isolation evidence. Registry still hardcodes AW5 `tenant_id = '1'`; its fix
+belongs to the separately scoped backend/tenant work. Latest full ALL, STRICT
+and unknown/ambiguous-source regressions remain unverified; earlier runtime
+and node/fixture results are identified separately in the snapshot record.
+The earlier v2 and dated main records below retain their historical status.
+
+## Earlier owner direction — Test4.7 v2, supplied 2026-10-03
+
+The owner proposed **AW5-RAG Test4.7 v2** as the next primary development
+workflow. Its [byte-identical export](aw5-rag-test4-7-v2-owner-supplied-2026-10-03.yml)
+and [static review](aw5-rag-test4-7-v2-owner-supplied-2026-10-03.md) are preserved.
+The graph has 10 nodes / 9 edges, with Registry, Scope Resolver, Code 1,
+one Retrieval node, Code 2 and conditional answer/fallback paths.
+
+Status: **latest owner-supplied intended main; static checks only**. Live
+Published identity, Code 1 ALL/null filter behavior, answer quality and tenant
+isolation remain unverified. No live app or backend registration was changed.
+The dated main/candidate sections below retain their historical promotion and
+test status; those results do not validate this supplied version.
+
 ## Current main workflow — owner-confirmed 2026-09-06
 
 - Application label in the preserved export: **AW5-RAG Test**; owner-promoted

@@ -3,7 +3,7 @@
 ## Inventory status
 
 - Inventory baseline date: **2026-09-04 (Asia/Bangkok)**
-- Latest material status update: **2026-09-12 (Asia/Bangkok)**
+- Latest inventory addendum: **2026-10-15 (Asia/Bangkok)**; older baseline metadata below is historical.
 - Repository: `AW5Project`
 - Branch at capture: `feature/dify-self-hosted`
 - HEAD at capture: `f3ca266c7ac81029287c900f58525b57f584e320`
@@ -32,6 +32,26 @@ these updates.
 | Needs-review artifacts | 9 |
 | Local-only artifacts | 131 |
 | Snapshot SHA-256 | `e58adadd98d32dcb774cfa5e3870cc13ec46a0508d451d5432339de4fef75992` |
+
+## Current addendum — 2026-10-15
+
+See [the current repository checkpoint](../architecture/progress-2026-10-15.md)
+for implemented backend/portal functionality and the fresh **100/100 offline**
+unit-test result. No inference or formal evaluation was rerun for this addendum.
+
+- **2026-10-04:** local backend 30-question exploratory diagnostic: strict
+  25/30, content 29/30, fact coverage 123/127; backend p50 6.91 s / p95 10.84 s.
+  Estimated LLM cost US$0.46828850 total excludes unavailable embedding usage;
+  historical run-date rates are not a current-price quotation. This is not
+  Discord end-to-end latency or held-out formal accuracy.
+- **2026-10-05:** four owner-initiated Draft runs succeeded after the Resolver
+  flag contract correction; manual fixture, one run per case, no isolation claim.
+- Reports/evidence/manifests remain local-only under
+  `output/research-evidence/experiments/2026-10-04-backend-development-30/` and
+  `output/research-evidence/experiments/2026-10-05-boolean-draft-four-cases/`.
+  This addendum publishes no private questions, answers or retrieved chunks.
+- Real Project B/ISO-01, repeatability and complete embedding billing remain
+  unverified. Historical scores below are not transferred to new workflows.
 
 ## Evidence language
 

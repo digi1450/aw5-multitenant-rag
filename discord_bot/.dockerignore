@@ -1,6 +1,9 @@
-.env
-.env.*
-!.env.example
-__pycache__/
-*.pyc
-*.sqlite3
+# Send only runtime code and dependency/build definitions to Docker.
+*
+!Dockerfile
+!requirements.txt
+!__init__.py
+!backend.py
+!bot.py
+!config.py
+!store.py

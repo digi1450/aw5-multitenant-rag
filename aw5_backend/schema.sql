@@ -32,3 +32,31 @@ CREATE TABLE IF NOT EXISTS tickets (
 ALTER TABLE tickets ADD COLUMN IF NOT EXISTS closed_at timestamptz;
 
 CREATE INDEX IF NOT EXISTS tickets_owner_idx ON tickets(discord_user_id, tenant_id);
+
+-- Reserve an enrollment before external role creation. Replays never create a
+-- second role; ambiguous external failures require administrator repair.
+CREATE TABLE IF NOT EXISTS onboarding_requests (
+    request_id uuid PRIMARY KEY,
+    tenant_id bigint NOT NULL UNIQUE CHECK (tenant_id > 0),
+    app_id uuid NOT NULL UNIQUE,
+    actor_id bigint NOT NULL,
+    fingerprint text NOT NULL,
+    state text NOT NULL CHECK (state IN ('in_progress', 'completed', 'needs_attention')),
+    role_id bigint,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+-- Separate journal: changing a role must not replace the enrollment identity.
+CREATE TABLE IF NOT EXISTS project_role_changes (
+    request_id uuid PRIMARY KEY,
+    tenant_id bigint NOT NULL REFERENCES projects(tenant_id),
+    actor_id bigint NOT NULL,
+    fingerprint text NOT NULL,
+    old_role_id bigint NOT NULL,
+    role_id bigint,
+    state text NOT NULL CHECK (state IN ('in_progress', 'completed', 'needs_attention')),
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE UNIQUE INDEX IF NOT EXISTS project_role_changes_pending_idx
+    ON project_role_changes(tenant_id) WHERE state <> 'completed';

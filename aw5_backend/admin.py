@@ -34,6 +34,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Manage AW5 project registrations")
     subcommands = parser.add_subparsers(dest="command", required=True)
     register = subcommands.add_parser("register", help="register a project once")
+    register.add_argument("--tenant-id", type=int, required=True)
     register.add_argument("--name", required=True)
     register.add_argument("--discord-role-id", type=int, required=True)
     register.add_argument("--dify-app-id", required=True)
@@ -42,6 +43,7 @@ def main() -> None:
     if args.command == "register":
         key = getpass.getpass("Dify Chatflow API key (hidden): ")
         result = _request("POST", "/v1/admin/projects", {
+            "tenant_id": args.tenant_id,
             "tenant_name": args.name,
             "discord_role_id": args.discord_role_id,
             "dify_app_id": args.dify_app_id,

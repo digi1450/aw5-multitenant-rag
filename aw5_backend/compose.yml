@@ -51,15 +51,36 @@ services:
       context: ../discord_bot
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file: ../discord_bot/.env
+    # Explicit allowlist from the backend Compose env file; no Dify credentials.
     environment:
+      AW5_DISCORD_BOT_TOKEN: ${AW5_DISCORD_BOT_TOKEN:?Set AW5_DISCORD_BOT_TOKEN}
+      AW5_DISCORD_GUILD_ID: ${AW5_DISCORD_GUILD_ID:?Set AW5_DISCORD_GUILD_ID}
+      AW5_DISCORD_START_CHANNEL_ID: ${AW5_DISCORD_START_CHANNEL_ID:?Set AW5_DISCORD_START_CHANNEL_ID}
+      AW5_DISCORD_ADMIN_CHANNEL_ID: ${AW5_DISCORD_ADMIN_CHANNEL_ID:-}
+      AW5_BACKEND_BOT_TOKEN: ${AW5_BACKEND_BOT_TOKEN:?Set AW5_BACKEND_BOT_TOKEN}
       AW5_BACKEND_API_URL: http://aw5_api:8765
       AW5_STATE_DB: /data/aw5.sqlite3
       PYTHONDONTWRITEBYTECODE: "1"
     volumes:
       - type: bind
-        source: ../discord_bot
-        target: /app/discord_bot
+        source: ../discord_bot/__init__.py
+        target: /app/discord_bot/__init__.py
+        read_only: true
+      - type: bind
+        source: ../discord_bot/backend.py
+        target: /app/discord_bot/backend.py
+        read_only: true
+      - type: bind
+        source: ../discord_bot/bot.py
+        target: /app/discord_bot/bot.py
+        read_only: true
+      - type: bind
+        source: ../discord_bot/config.py
+        target: /app/discord_bot/config.py
+        read_only: true
+      - type: bind
+        source: ../discord_bot/store.py
+        target: /app/discord_bot/store.py
         read_only: true
       - type: bind
         source: ../output/discord-bot

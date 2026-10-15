@@ -14,6 +14,7 @@ class Config:
     database_path: Path
     backend_api_url: str
     backend_api_token: str
+    admin_channel_id: int = 0
 
 
 def _positive_id(value: object, name: str) -> int:
@@ -46,4 +47,5 @@ def load_config(env: dict[str, str] | None = None) -> Config:
         database_path=Path(env.get("AW5_STATE_DB", "output/discord-bot/aw5.sqlite3")),
         backend_api_url=api_url,
         backend_api_token=api_token,
+        admin_channel_id=_positive_id(env["AW5_DISCORD_ADMIN_CHANNEL_ID"], "AW5_DISCORD_ADMIN_CHANNEL_ID") if env.get("AW5_DISCORD_ADMIN_CHANNEL_ID") else 0,
     )

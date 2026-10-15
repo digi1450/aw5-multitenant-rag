@@ -24,23 +24,61 @@ async def _client_session(shared: aiohttp.ClientSession | None):
             yield session
 
 
-def _metadata_tenant(document: dict) -> str | None:
+def _metadata_value(document: dict, name: str) -> object:
     metadata = document.get("doc_metadata")
     if isinstance(metadata, dict):
-        value = metadata.get("tenant_id")
-        return str(value) if type(value) in (str, int) else None
+        return metadata.get(name)
     if isinstance(metadata, list):
         for item in metadata:
-            if isinstance(item, dict) and item.get("name") == "tenant_id":
-                value = item.get("value")
-                return str(value) if type(value) in (str, int) else None
+            if isinstance(item, dict) and item.get("name") == name:
+                return item.get("value")
     return None
+
+
+def _metadata_tenant(document: dict) -> str | None:
+    value = _metadata_value(document, "tenant_id")
+    return str(value) if type(value) in (str, int) else None
 
 
 class DiscordAccess:
     def __init__(self, token: str, session: aiohttp.ClientSession | None = None):
         self.token = token
         self.session = session
+
+    async def _admin_request(self, method: str, path: str, payload: dict | None = None):
+        try:
+            async with _client_session(self.session) as session:
+                async with session.request(method, "https://discord.com/api/v10" + path,
+                                           headers={"Authorization": f"Bot {self.token}"},
+                                           json=payload, allow_redirects=False,
+                                           timeout=aiohttp.ClientTimeout(total=8)) as response:
+                    if response.status not in (200, 201):
+                        raise IntegrationError("Discord role operation unavailable")
+                    return await response.json()
+        except (aiohttp.ClientError, TimeoutError, ValueError) as exc:
+            raise IntegrationError("Discord role operation unavailable") from exc
+
+    async def admin_role_options(self, guild_id: int, admin_role_id: int) -> dict:
+        roles = await self._admin_request("GET", f"/guilds/{guild_id}/roles")
+        identity = await self._admin_request("GET", "/users/@me")
+        bot_roles = await self.member_roles(guild_id, int(identity["id"]))
+        permissions = 0
+        for role in roles:
+            if int(role["id"]) in bot_roles or int(role["id"]) == guild_id:
+                permissions |= int(role["permissions"])
+        # Do not enroll an administrator/management role as a project role.
+        privileged = 8 | 16 | 32 | 268435456 | 536870912
+        choices = [{"id": str(role["id"]), "name": role["name"]} for role in roles
+                   if int(role["id"]) not in {guild_id, admin_role_id}
+                   and not role.get("managed") and not int(role["permissions"]) & privileged]
+        return {"roles": choices, "can_create": bool(permissions & (8 | 268435456)),
+                "role_names": {str(role["id"]): role["name"] for role in roles}}
+
+    async def create_project_role(self, guild_id: int, name: str) -> int:
+        # No retries: an uncertain HTTP failure may already have created a role.
+        role = await self._admin_request("POST", f"/guilds/{guild_id}/roles",
+                                        {"name": name, "permissions": "0", "mentionable": False, "hoist": False})
+        return int(role["id"])
 
     async def member_roles(self, guild_id: int, user_id: int) -> set[int]:
         url = f"https://discord.com/api/v10/guilds/{guild_id}/members/{user_id}"
@@ -166,7 +204,18 @@ class DifyAccess:
                         status = "available"
                     else:
                         status = "indexing"
-                    result.append({"name": name, "dataset_name": dataset_name, "status": status})
+                    try:
+                        if not isinstance(document.get("id"), str):
+                            raise ValueError("Invalid document identifier")
+                        document_id = str(UUID(document["id"]))
+                    except (KeyError, TypeError, ValueError) as exc:
+                        raise IntegrationError("Dify document ID is invalid") from exc
+                    kind = _metadata_value(document, "document_type")
+                    if kind is not None and not isinstance(kind, str):
+                        raise IntegrationError("Dify document type is invalid")
+                    result.append({"name": name, "dataset_name": dataset_name, "status": status,
+                                   "document_id": document_id, "dataset_id": dataset_id,
+                                   "document_type": kind, "tenant_id": tenant_id})
                 return result
 
         batches = await asyncio.gather(*(checked_files(dataset_id, dataset_name)
@@ -179,10 +228,16 @@ class DifyAccess:
         return sorted(files, key=lambda value: (value["name"].casefold(), value["dataset_name"].casefold()))
 
     async def ask(self, app_key: str, *, question: str, user_key: str,
-                  conversation_id: str | None) -> tuple[str, str]:
+                  conversation_id: str | None, registry_json: str | None = None,
+                  workflow_id: str | None = None) -> tuple[str, str]:
         request: dict[str, object] = {
             "inputs": {}, "query": question, "response_mode": "blocking", "user": user_key,
         }
+        if registry_json is not None:
+            from .source_registry import REGISTRY_INPUT
+            request["inputs"] = {REGISTRY_INPUT: registry_json}
+        if workflow_id is not None:
+            request["workflow_id"] = str(UUID(workflow_id))
         if conversation_id:
             request["conversation_id"] = conversation_id
         data = await self._json("POST", "/chat-messages", app_key, payload=request, timeout=35)

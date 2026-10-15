@@ -321,6 +321,26 @@ def create_bot(config: Config) -> AW5Bot:
     async def start(interaction: discord.Interaction) -> None:
         await start_ticket(interaction)
 
+    @bot.tree.command(name="aw5-admin", description="เปิดหน้าลงทะเบียนโปรเจกต์ AW5 สำหรับแอดมิน")
+    @app_commands.guild_only()
+    async def admin(interaction: discord.Interaction) -> None:
+        await interaction.response.defer(ephemeral=True)
+        if interaction.guild_id != config.guild_id or not config.admin_channel_id or interaction.channel_id != config.admin_channel_id:
+            await interaction.followup.send("ใช้คำสั่งนี้ในห้องแอดมิน AW5 เท่านั้น", ephemeral=True)
+            return
+        try:
+            url = await asyncio.to_thread(bot.backend.admin_link, interaction.guild_id,
+                                          interaction.channel_id, interaction.user.id)
+        except BackendDenied:
+            await interaction.followup.send("ต้องมียศ AW5 Admin เพื่อเปิดหน้าจัดการ", ephemeral=True)
+            return
+        except BackendUnavailable:
+            await interaction.followup.send("เปิดหน้าจัดการไม่สำเร็จ กรุณาติดต่อผู้ดูแล", ephemeral=True)
+            return
+        view = discord.ui.View(timeout=180)
+        view.add_item(discord.ui.Button(label="เปิดหน้าจัดการ AW5", url=url))
+        await interaction.followup.send("ลิงก์ใช้ได้ครั้งเดียวภายใน 3 นาที เปิดบนเครื่องที่รัน AW5 เท่านั้น กรุณาอย่าส่งต่อ", view=view, ephemeral=True)
+
     bot.start_ticket_handler = start_ticket
     panel_lock = asyncio.Lock()
 

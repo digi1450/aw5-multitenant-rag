@@ -1,5 +1,60 @@
 # AW5 backend: project registry and Discord authorization
 
+**Source update 2026-10-10:** the administrator portal now accepts the App API
+key without requiring a Dify App ID field. The backend resolves exactly one app
+from the existing restricted digest-only key-binding view before provisioning,
+then retains the Published workflow, metadata and key-binding checks. The
+resolved App ID remains available in registered-project details. This source
+change does not establish live deployment or second-project enrollment. The
+terminal fallback and private admin API still accept an explicit App ID.
+
+The portal also provides **เปลี่ยนยศที่ผูก** in each project's details. Choose
+an unbound safe Discord role, or create a zero-permission role named after the
+project, then confirm. This changes only the project's role mapping: tenant ID,
+Dify app/key, datasets and ticket/conversation history are retained. It does not
+delete the previous Discord role or assign members to the new role. Subsequent
+Start/list/question authorization uses the newly registered role; existing
+tickets still require their original owner and current project membership.
+
+Role changes require fresh administrator authorization, Origin and CSRF checks.
+A separate `project_role_changes` journal reserves the operation before role
+creation; the mapping update and journal completion commit together. Incomplete
+or ambiguous operations are retained as `needs_attention` and block another
+change for that project. Verify the Discord role and mapping before manual
+recovery; do not delete the journal or blindly retry. The additive table/index
+are created by the normal backend startup schema initialization. Source/offline
+tests do not establish live deployment or real role creation.
+
+Each registered project has a red **ลบ** button on its right. The administrator
+must type the exact project name to confirm. `DELETE
+/v1/admin/portal/projects/{tenant_id}` rechecks the session/current admin role,
+Origin/CSRF, guild and displayed app/role binding. One AW5 database transaction
+removes that tenant's ticket/conversation mappings, dataset bindings, completed
+role-change/enrollment journals and project registration. Re-registration is
+then possible; old tickets cannot continue through AW5. Neither Discord roles
+or messages nor Dify apps, documents or conversations are deleted. There is no
+Portal undo. In-progress/needs-attention provisioning journals block deletion
+until inspected and recovered; the delete action must not erase ambiguous
+external-operation evidence. This is an administrator-triggered action, not
+automatic cleanup when a Discord role disappears.
+
+**Update 2026-10-03:** local administrator onboarding is implemented. Use
+`/aw5-admin` in the configured private admin channel to open a one-use link.
+The backend checks the current admin role, accepts an explicit stable AW5
+`tenant_id`, validates the Dify app/key and Published corpus, and binds an
+existing project role or creates a new role with zero server permissions.
+App keys are entered directly into the loopback backend and encrypted in AW5
+PostgreSQL; they are never sent through Discord. See the
+[admin onboarding handoff](../docs/architecture/admin-onboarding-2026-10-03.md)
+for configuration, verification and incomplete-operation recovery.
+
+The owner installed and Published v3.2 and reported that Discord answered after
+installing the strict-scope seek guard. The admin link/session/model flow,
+current key binding, and Discord command registration were checked live.
+Actual enrollment of a second real project, role creation and ISO-01 remain
+unverified. The 2026-10-15 full offline suite has 100 passing tests; see
+[the current checkpoint](../docs/architecture/progress-2026-10-15.md).
+
 **Recorded status: local backend started and Nature Footprint registered on
 2026-09-29. On 2026-09-30, live Discord questions returned HTTP 503 after Start
 succeeded; an AW5/Dify `api` service-name collision was also observed. Renaming the
@@ -17,9 +72,11 @@ Knowledge Retrieval dataset IDs in the background and before each request.
 There is no Dify publishing account or publish API call in this service.
 
 AW5 stores projects, role mappings, tickets, and Dify conversation IDs in its
-own PostgreSQL database. A new project receives an AW5 `tenant_id` when
-registered. Registration needs its Discord role ID, Dify app ID, and Chatflow
-API key once; adding or removing members from that role needs no AW5 update.
+own PostgreSQL database. An administrator supplies a stable AW5 `tenant_id` when
+registering a project; existing document metadata and project IDs are preserved.
+Portal registration needs a project role selection (or new-role creation) and
+Chatflow API key once; the backend derives the Dify app ID from that key.
+Adding or removing members from that role needs no AW5 update.
 The bot only receives project names/IDs and answers, never Dify credentials.
 Tickets have a `closed_at` timestamp. On backend startup, the schema adds that
 column to an existing AW5 PostgreSQL database if necessary. The private bot
@@ -31,18 +88,24 @@ denied even if Discord unarchives the thread.
 1. Run `.venv/bin/python -m aw5_backend.bootstrap_local` once from the repo
    root to create a **restricted Dify database reader** with a random password
    and a private `aw5_backend/.env`. Review this script before running it. It
-   reads the existing ignored `discord_bot/.env` for the bot and Knowledge API
-   keys. It never changes a Dify app or calls Publish.
+   reads the existing ignored `discord_bot/.env` only for Discord identity/token
+   and the Start channel. It prompts for the Knowledge API key with hidden input
+   and writes that key only to backend configuration. It never changes a Dify
+   app or calls Publish.
    In the Dify PostgreSQL database, an administrator applies
    `dify_read_view.sql`, creates a login role `aw5_sync_reader`, and grants it
    `USAGE` on the `public` schema and `SELECT` on
-   `aw5_published_retrieval_v1` only. Do not give this role access to Dify base
+   `aw5_published_retrieval_v1` and `aw5_app_key_bindings_v1` only. Do not give this role access to Dify base
    tables. This is a database role, not a Dify workspace account. The view
-   exposes only app ID, Published workflow ID, and retrieval dataset IDs.
+   Published view exposes app ID, workflow ID and retrieval dataset IDs; the
+   separate key binding view exposes only app ID and a SHA-256 token digest.
 2. Keep the generated `.env` local and secret. It contains independent random
    values for the AW5 PostgreSQL password, bot and admin API tokens, Fernet key,
-   and Dify reader password. The Knowledge API key is workspace scoped;
-   authorization happens in AW5.
+   and Dify reader password. It also supplies the Discord Start/admin channel
+   settings used by bot Compose. The Knowledge API key is workspace scoped;
+   authorization happens in AW5. Bot Compose no longer loads `discord_bot/.env`:
+   it receives only its explicit Discord/backend environment allowlist from the
+   Compose invocation's `aw5_backend/.env`.
 3. After reviewing the configuration, start `aw5_backend/compose.yml`. It
    creates a separate AW5 PostgreSQL database and binds the API to
    `127.0.0.1:8765`. The API container joins the existing Dify Docker network
@@ -55,17 +118,18 @@ denied even if Discord unarchives the thread.
    `docker compose --env-file aw5_backend/.env -f aw5_backend/compose.yml restart aw5_api`
    to load the changes. The mount alone does not reload a running Python process.
    Rebuild the image when `requirements.txt` or `Dockerfile` changes.
-4. With `AW5_BACKEND_ADMIN_TOKEN` set locally, register each project once:
+4. Prefer the local administrator portal described above. For a terminal
+   fallback with `AW5_BACKEND_ADMIN_TOKEN` set locally, register each project once:
 
    ```sh
-   .venv/bin/python -m aw5_backend.admin register --name "Nature Footprint" --discord-role-id ROLE_ID --dify-app-id APP_ID
+   .venv/bin/python -m aw5_backend.admin register --tenant-id TENANT_ID --name "Nature Footprint" --discord-role-id ROLE_ID --dify-app-id APP_ID
    ```
 
    The CLI prompts for the Chatflow API key without displaying it or placing it
    in shell history. `python -m aw5_backend.admin status` reports sync status.
    Registration checks that the role exists; the role does not need to be
-   created by AW5. The backend generates the AW5 `tenant_id` and encrypts the
-   app key at rest. The private admin API also supports
+   created by AW5. Supply the same tenant ID already used in document metadata.
+   The backend checks app/key binding and encrypts the app key at rest. The private admin API also supports
    `POST /v1/admin/projects` and `GET /v1/admin/projects`.
 5. For the existing demo's private threads, run
    `.venv/bin/python -m aw5_backend.import_legacy_tickets` from the repository

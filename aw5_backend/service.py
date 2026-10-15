@@ -1,6 +1,7 @@
 """Authorization and automatic reconciliation of Published Dify projects."""
 
 import asyncio
+from dataclasses import dataclass
 import logging
 from time import perf_counter
 from uuid import UUID
@@ -11,6 +12,7 @@ from cryptography.fernet import Fernet, InvalidToken
 from .config import Settings
 from .db import Project, Registry, Ticket
 from .integrations import DifyAccess, DiscordAccess, IntegrationError
+from .source_registry import registry_payload
 
 
 LOG = logging.getLogger(__name__)
@@ -22,6 +24,14 @@ class Denied(Exception):
 
 class Unavailable(Exception):
     pass
+
+
+@dataclass(frozen=True)
+class ValidatedScope:
+    project: Project
+    workflow_id: str
+    dataset_ids: frozenset[str]
+    files: tuple[dict, ...]
 
 
 class Service:
@@ -42,6 +52,9 @@ class Service:
             self.dify.session = session
 
     async def sync_project(self, tenant_id: int) -> Project:
+        return (await self._sync_scope(tenant_id)).project
+
+    async def _sync_scope(self, tenant_id: int) -> ValidatedScope:
         project = await asyncio.to_thread(self.registry.get_project, tenant_id)
         if project is None:
             raise Denied("Unknown project")
@@ -55,7 +68,7 @@ class Service:
             # Validate all documents each time: a new document must not enter
             # retrieval merely because the same Knowledge Base was previously safe.
             validation_started = perf_counter()
-            await self.dify.project_files(tenant_id, datasets)
+            files = await self.dify.project_files(tenant_id, datasets)
             validation_ms = (perf_counter() - validation_started) * 1000
             LOG.info("Project %s preflight: published_view_ms=%.1f document_validation_ms=%.1f datasets=%s",
                      tenant_id, view_ms, validation_ms, len(datasets))
@@ -65,7 +78,11 @@ class Service:
             current = await asyncio.to_thread(self.registry.get_project, tenant_id)
             if current is None:
                 raise Unavailable("Project disappeared during sync")
-            return current
+            if (current.dify_app_id, current.dify_api_key_ciphertext, current.guild_id,
+                    current.discord_role_id) != (project.dify_app_id, project.dify_api_key_ciphertext,
+                                                  project.guild_id, project.discord_role_id):
+                raise Unavailable("Project registration changed during sync")
+            return ValidatedScope(current, workflow_id, frozenset(datasets), tuple(files))
         except (IntegrationError, ValueError, Unavailable) as exc:
             LOG.warning("Project %s sync failed: %s", tenant_id, exc)
             await asyncio.to_thread(self.registry.suspend_project, tenant_id, str(exc))
@@ -94,7 +111,7 @@ class Service:
                 result.append({"tenant_id": current.tenant_id, "tenant_name": current.tenant_name})
         return result
 
-    async def _authorize_project(self, guild_id: int, user_id: int, tenant_id: int) -> Project:
+    async def _authorize_project(self, guild_id: int, user_id: int, tenant_id: int) -> ValidatedScope:
         if guild_id != self.settings.guild_id:
             raise Denied("Guild is not configured")
         project = await asyncio.to_thread(self.registry.get_project, tenant_id)
@@ -106,7 +123,10 @@ class Service:
             raise Unavailable("Discord membership is unavailable") from exc
         if project.discord_role_id not in roles:
             raise Denied("Project role is missing")
-        return await self.sync_project(tenant_id)
+        scope = await self._sync_scope(tenant_id)
+        if (scope.project.guild_id, scope.project.discord_role_id) != (guild_id, project.discord_role_id):
+            raise Unavailable("Project membership mapping changed during authorization")
+        return scope
 
     async def create_ticket(self, *, guild_id: int, user_id: int, thread_id: int,
                             tenant_id: int) -> None:
@@ -114,7 +134,7 @@ class Service:
         await asyncio.to_thread(self.registry.create_ticket,
                                 Ticket(thread_id, guild_id, user_id, tenant_id, None))
 
-    async def _authorize_ticket(self, thread_id: int, guild_id: int, user_id: int) -> tuple[Project, Ticket]:
+    async def _authorize_ticket(self, thread_id: int, guild_id: int, user_id: int) -> tuple[ValidatedScope, Ticket]:
         ticket = await asyncio.to_thread(self.registry.get_ticket, thread_id)
         if ticket is None or ticket.guild_id != guild_id or ticket.discord_user_id != user_id:
             raise Denied("Ticket is not assigned to this member")
@@ -138,14 +158,10 @@ class Service:
     async def ticket_files(self, thread_id: int, guild_id: int, user_id: int) -> list[dict]:
         lock = self.ticket_locks.setdefault(thread_id, asyncio.Lock())
         async with lock:
-            project, _ = await self._authorize_ticket(thread_id, guild_id, user_id)
-            selection = await asyncio.to_thread(self.registry.datasets, project.tenant_id)
-            if not selection:
-                raise Unavailable("Project has no validated Knowledge Base")
-            try:
-                return await self.dify.project_files(project.tenant_id, selection)
-            except IntegrationError as exc:
-                raise Unavailable("Document inventory is unavailable") from exc
+            scope, _ = await self._authorize_ticket(thread_id, guild_id, user_id)
+            # The adapter needs display fields only, not the registry envelope.
+            return [{key: file[key] for key in ("name", "dataset_name", "status")}
+                    for file in scope.files]
 
     async def ask(self, thread_id: int, guild_id: int, user_id: int,
                   question: str) -> str:
@@ -154,15 +170,21 @@ class Service:
         lock = self.ticket_locks.setdefault(thread_id, asyncio.Lock())
         async with lock:
             started = perf_counter()
-            project, ticket = await self._authorize_ticket(thread_id, guild_id, user_id)
+            scope, ticket = await self._authorize_ticket(thread_id, guild_id, user_id)
+            project = scope.project
             preflight_ms = (perf_counter() - started) * 1000
             try:
                 app_key = self.cipher.decrypt(project.dify_api_key_ciphertext).decode()
+                source_registry = registry_payload(
+                    tenant_id=ticket.tenant_id, workflow_id=scope.workflow_id,
+                    dataset_ids=scope.dataset_ids, files=scope.files, question=question,
+                )
                 dify_started = perf_counter()
                 answer, conversation_id = await self.dify.ask(
                     app_key, question=question,
                     user_key=f"aw5:{project.tenant_id}:{user_id}:{thread_id}",
                     conversation_id=ticket.dify_conversation_id,
+                    registry_json=source_registry, workflow_id=scope.workflow_id,
                 )
                 dify_ms = (perf_counter() - dify_started) * 1000
             except (IntegrationError, InvalidToken, ValueError) as exc:
@@ -179,7 +201,7 @@ class Service:
             return answer
 
     async def register_project(self, *, name: str, role_id: int, app_id: str,
-                               app_key: str) -> Project:
+                               app_key: str, tenant_id: int) -> Project:
         if not name.strip() or len(name) > 70 or not app_key.strip():
             raise Denied("Project name or Dify app key is invalid")
         try:
@@ -194,9 +216,13 @@ class Service:
             raise Unavailable("Discord role lookup is unavailable") from exc
         if not role_found:
             raise Denied("Discord role is unavailable")
-        encrypted = self.cipher.encrypt(app_key.encode())
+        if type(tenant_id) is not int or not 0 < tenant_id <= 2**63 - 1:
+            raise Denied("AW5 tenant ID is invalid")
+        if not await asyncio.to_thread(self.registry.verify_app_key, str(parsed_app_id), app_key.strip()):
+            raise Denied("Dify app key does not belong to this app")
+        encrypted = self.cipher.encrypt(app_key.strip().encode())
         return await asyncio.to_thread(
             self.registry.register_project,
             name=name.strip(), guild_id=self.settings.guild_id, role_id=role_id,
-            app_id=parsed_app_id, encrypted_key=encrypted,
+            app_id=parsed_app_id, encrypted_key=encrypted, tenant_id=tenant_id,
         )

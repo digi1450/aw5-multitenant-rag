@@ -4,6 +4,22 @@ Senior project repository for a multi-tenant conversational assistant that retri
 
 ## Current status
 
+**Repository checkpoint — 2026-10-15:** backend-owned source Registry and the
+local administrator portal are implemented. The portal supports enrollment by
+App API key, existing/new Discord roles, role-name display, role changes and
+explicit project removal. All **100 offline unit tests passed** on this date.
+See the [current progress and verification record](docs/architecture/progress-2026-10-15.md).
+
+**Recorded Discord application:** Test4.7 v3.2 was Published and registered to
+tenant 1 on 2026-10-03, replacing hardcoded Registry SQL with backend JSON.
+Later Resolver/Code 3 corrections have bounded Draft evidence; the preserved
+v3.2 export is not a byte-identical export of every later live edit. Consult
+[detailed workflow status](dify/exports/CURRENT.md) before modifying Dify.
+The v3-4 export is a separate historical development Draft. Current live
+Published identity was not rechecked for this repository checkpoint.
+Repeatability, real Project B enrollment and cross-project isolation remain
+unverified. The dated records below describe their original historical states.
+
 **Target direction updated 2026-09-02; local Dify 1.17.0 is installed, and the
 owner promoted the Published five-node self-hosted workflow as the current main
 workflow on 2026-09-06. Its reviewed DSL snapshot and targeted diagnostic are
@@ -53,6 +69,12 @@ Historical scores in that inventory remain attached to their original workflows
 and must not be reported as validation of the self-hosted target.
 
 ## Discord and AW5 backend — implementation update 2026-09-30
+
+**Current implementation:** see the [administrator onboarding guide](docs/architecture/admin-onboarding-2026-10-03.md)
+and [2026-10-15 checkpoint](docs/architecture/progress-2026-10-15.md).
+Explicit stable tenant IDs, encrypted backend key storage and backend-fed
+Registry are implemented; older preparation-only statements are historical.
+This does not establish a formal RAG release or multi-tenant isolation.
 
 The owner selected Git `main` as the shared development baseline on 2026-09-30,
 including the self-hosted Dify records, AW5 backend and Discord adapter developed
@@ -197,3 +219,12 @@ The local Discord bot accepts questions in private tickets and forwards them to
 the configured Dify Chatflow after checking the member's current project role. See
 [its setup guide](discord_bot/README.md) and the
 [dated implementation handoff](docs/architecture/discord-bot-demo-handoff-2026-09-28.md).
+
+### Local administrator onboarding (2026-10-03)
+
+`/aw5-admin` opens a private loopback form for admin-selected tenant IDs,
+Dify app/key validation, and existing/new Discord project roles. It uses the
+AW5 PostgreSQL registry, not a project JSON configuration file. Current
+link/session and command registration checks passed; real Project B enrollment
+and cross-project isolation remain unverified. Read the
+[admin onboarding handoff](docs/architecture/admin-onboarding-2026-10-03.md).

@@ -52,7 +52,7 @@ class DocumentScanTests(unittest.TestCase):
                 max_active = max(max_active, active)
                 try:
                     await asyncio.sleep(0)
-                    yield {"name": f"{dataset_id}.pdf", "doc_metadata": {"tenant_id": document_tenants[dataset_id]},
+                    yield {"id": dataset_id, "name": f"{dataset_id}.pdf", "doc_metadata": {"tenant_id": document_tenants[dataset_id]},
                            "enabled": True, "archived": False, "indexing_status": "completed"}
                 finally:
                     active -= 1
@@ -112,7 +112,12 @@ class ServiceTests(unittest.TestCase):
                                                       {"22222222-2222-2222-2222-222222222222"})
         registry.datasets.return_value = {"22222222-2222-2222-2222-222222222222"}
         discord.member_roles = AsyncMock(return_value={101})
-        dify.project_files = AsyncMock(return_value=[{"name": "SDS.pdf", "dataset_name": "SDS", "status": "available"}])
+        dify.project_files = AsyncMock(return_value=[{
+            "name": "SDS.pdf", "dataset_name": "SDS", "status": "available",
+            "document_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+            "dataset_id": "22222222-2222-2222-2222-222222222222",
+            "document_type": "SDS", "tenant_id": 1,
+        }])
         return service, registry, discord, dify
 
     def test_role_revocation_blocks_question_before_dify(self):

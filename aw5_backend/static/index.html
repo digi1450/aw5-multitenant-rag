@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>จัดการโปรเจกต์ AW5</title><link rel="stylesheet" href="/admin/assets/admin.css"><script src="/admin/assets/admin.js" defer></script></head>
+<body><main><header><div><p class="eyebrow">AW5 ADMIN</p><h1>จัดการโปรเจกต์</h1><p>เชื่อม Dify app กับยศใน Discord</p></div><button id="logout" hidden>ออกจากระบบ</button></header>
+<p id="message" role="status">กำลังตรวจสิทธิ์…</p>
+<section id="workspace" hidden><section><h2>โปรเจกต์ที่ลงทะเบียนแล้ว</h2><div id="projects"></div></section>
+<section><h2>เพิ่มโปรเจกต์</h2><p>ใช้ tenant ID เดียวกับ metadata ของไฟล์ และ Publish Dify app ให้เรียบร้อยก่อน</p>
+<form id="enroll" autocomplete="off">
+<div class="grid"><label>Tenant ID<input name="tenant_id" required inputmode="numeric" pattern="[0-9]+" placeholder="เลขที่กำหนดให้โปรเจกต์"></label><label>ชื่อโปรเจกต์<input name="tenant_name" required maxlength="70" placeholder="ชื่อที่แสดงใน Discord"></label></div>
+<label>App API key<input name="dify_app_api_key" type="password" required maxlength="512" autocomplete="new-password" spellcheck="false" placeholder="คีย์ของ app นี้จาก Service API"></label>
+<fieldset><legend>ยศสำหรับสมาชิกโปรเจกต์</legend><label class="radio"><input type="radio" name="role_mode" value="existing" checked>เลือกยศที่มีอยู่</label><label class="radio"><input id="new-role" type="radio" name="role_mode" value="new">สร้างยศใหม่ตามชื่อโปรเจกต์</label><label id="role-label">ยศใน Discord<select name="discord_role_id" id="roles"></select></label><small id="role-help"></small></fieldset>
+<p>การลงทะเบียนจะไม่เพิ่มสมาชิกเข้ายศให้อัตโนมัติ หลังสำเร็จให้คุณมอบยศให้สมาชิกที่ต้องการอนุญาต</p>
+<button id="submit" type="submit">ตรวจสอบและลงทะเบียน</button></form></section></section></main></body></html>
