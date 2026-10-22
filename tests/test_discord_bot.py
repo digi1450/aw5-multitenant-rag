@@ -61,7 +61,7 @@ class BackendClientTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             client = BackendClient(config(Path(directory) / "state.sqlite3"))
             with patch.object(client, "_request", return_value={"projects": [
-                {"tenant_id": 1, "tenant_name": "Nature Footprint"},
+                {"tenant_id": 1, "tenant_name": "Demo Library"},
                 {"tenant_id": 2, "tenant_name": "Project B"},
             ]}) as request:
                 self.assertEqual([item.tenant_id for item in client.eligible_projects(10, 30)], [1, 2])
@@ -131,12 +131,12 @@ class BotTests(unittest.TestCase):
                 interaction.user.id = 30
                 interaction.response.defer = AsyncMock()
                 interaction.followup.send = AsyncMock()
-                with patch.object(bot.backend, "eligible_projects", return_value=[Project(1, "Nature Footprint")]), \
+                with patch.object(bot.backend, "eligible_projects", return_value=[Project(1, "Demo Library")]), \
                         patch.object(bot.backend, "create_ticket") as register:
                     await bot.tree.get_command("start").callback(interaction)
                 register.assert_called_once_with(10, 30, 40, 1)
                 thread.add_user.assert_awaited_once()
-                self.assertIn("Nature Footprint", thread.send.await_args.args[0])
+                self.assertIn("Demo Library", thread.send.await_args.args[0])
 
             asyncio.run(check())
 

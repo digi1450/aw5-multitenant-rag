@@ -1,0 +1,11 @@
+# Used only with the pinned upstream Compose file, on the operator's machine.
+# Requires Docker Compose 2.24.4+ for !override / !reset.
+services:
+  nginx:
+    ports: !override
+      - "127.0.0.1:8080:80"
+  plugin_daemon:
+    ports: !reset []
+  web:
+    environment:
+      NEXT_TELEMETRY_DISABLED: "1"

@@ -1,34 +1,13 @@
-# Dify workflow artifacts
+# AW5 Chatflow
 
-The recorded baseline and experiments were run in Dify Cloud. The confirmed target
-is now **Dify self-hosted on the owner's computer with locally stored knowledge,
-cloud models, and one Knowledge Retrieval node**. See the
-[current direction](../docs/architecture/current-direction-2026-09-02.md).
-The owner subsequently promoted the Published
-[self-hosted main workflow](exports/aw5-rag-self-hosted-main-2026-09-06.md);
-its export is preserved without modification. It uses one retrieval node and one
-deterministic source-enrichment Code node before the answer LLM. No running Dify
-application synchronizes automatically with GitHub.
+Import [`exports/aw5-rag.yml`](exports/aw5-rag.yml) into Dify **1.17.0** as a Chatflow. Configure the official Gemini provider, select your own available answer/resolver models, and connect your project's Knowledge Bases to the single Knowledge Retrieval node before publishing.
 
-After an authorized meaningful workflow change:
+The template is derived from the owner-supplied baseline export dated 2026-10-15. The original is preserved only in the owner's local backup. Public-template changes are limited to a generic app label/description, removing local Knowledge Base IDs, dropping the unused private embedding-plugin dependency, and removing an inactive duplicate Resolver prompt field. Retrieval settings, active prompts, code and topology are preserved.
 
-1. Export the application DSL/YAML from Dify.
-2. Remove or verify that the export contains no API keys, tokens, or private credentials.
-3. Save it under `dify/exports/` with a date or version in the filename.
-4. Record the tested change and limitations. Commit or push only when the owner
-   explicitly authorizes it.
+The reference model names are `gemini-3.5-flash-lite` for source resolution and `gemini-3.5-flash` for writing. The export references official Gemini plugin 0.9.10. Availability depends on your account; selecting another model is a new configuration and does not inherit any prior result. Embedding is configured on your Knowledge Bases, independently of the Chatflow's LLM nodes.
 
-Do not place provider API keys or private corpus files in this directory.
+`aw5_registry_json` is a required input supplied by the AW5 backend. The Chatflow cannot be tested by entering a question alone in Dify's preview. Complete [installation](../docs/installation.md) and test through the authorized backend/Discord path. Do not add project-specific IDs or sample facts as default workflow inputs.
 
-The owner-confirmed current main export, previous snapshots, frozen baseline, and dated candidate evidence are recorded in
-[`exports/CURRENT.md`](exports/CURRENT.md). Consult that pointer instead of inferring
-the latest workflow from filenames alone. The current export uses one retrieval
-node over three Knowledge Bases, generic source enrichment and a generic
-evidence-grounded prompt. Its Published path and targeted five-case diagnostic
-are recorded; formal quality, repeatability and isolation remain unverified.
+Python sources for the Registry parser and current context selector are in [`code/`](code/README.md). The main workflow uses the six-input context selector.
 
-## Custom model plugins
-
-Custom model plugins are maintained in separate Git repositories. A local plugin
-checkout may be placed under `dify/plugins/`, but that directory, generated
-`.difypkg` files, and local `.env` credentials are excluded from this repository.
+Dify state does not synchronize with Git. When changing your deployment, save a dated, secret-free DSL export and record the configuration and test scope. Never commit private corpus files or provider credentials.

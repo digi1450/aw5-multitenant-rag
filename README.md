@@ -1,230 +1,64 @@
-# AW5 — Multi-Tenant RAG-based Conversational AI for SDLC
+# AW5 — Project-scoped SDLC Assistant
 
-Senior project repository for a multi-tenant conversational assistant that retrieves evidence from selected Software Development Life Cycle (SDLC) project artifacts.
+A conversational assistant that retrieves and cites evidence from a software project's requirements, design documents and database schema. Users ask questions in Discord; a Python backend checks project membership before calling a self-hosted Dify Chatflow.
 
-## Current status
+AW5 supports understanding and comparing selected SDLC artifacts. It does not automate the entire SDLC.
 
-**Repository checkpoint — 2026-10-15:** backend-owned source Registry and the
-local administrator portal are implemented. The portal supports enrollment by
-App API key, existing/new Discord roles, role-name display, role changes and
-explicit project removal. All **100 offline unit tests passed** on this date.
-See the [current progress and verification record](docs/architecture/progress-2026-10-15.md).
+## What is implemented
 
-**Recorded Discord application:** Test4.7 v3.2 was Published and registered to
-tenant 1 on 2026-10-03, replacing hardcoded Registry SQL with backend JSON.
-Later Resolver/Code 3 corrections have bounded Draft evidence; the preserved
-v3.2 export is not a byte-identical export of every later live edit. Consult
-[detailed workflow status](dify/exports/CURRENT.md) before modifying Dify.
-The v3-4 export is a separate historical development Draft. Current live
-Published identity was not rechecked for this repository checkpoint.
-Repeatability, real Project B enrollment and cross-project isolation remain
-unverified. The dated records below describe their original historical states.
-
-**Target direction updated 2026-09-02; local Dify 1.17.0 is installed, and the
-owner promoted the Published five-node self-hosted workflow as the current main
-workflow on 2026-09-06. Its reviewed DSL snapshot and targeted diagnostic are
-recorded, but it has not received a formal evaluation.**
-
-A separate, newer six-node live Published state received an owner-authorized
-20-case real-use-case evaluation on 2026-09-07. It produced 13 pass, 4 partial
-and 3 fail after repeated operational retries, with 11 timeouts across 39
-attempts. The owner then supplied its exact export, now preserved as an
-[evaluated snapshot](dify/exports/aw5-rag-real-use-case-evaluated-2026-09-07.yml).
-It differs from the current-main export, so the result does not validate or
-promote the current main. See the sanitized
-[evaluation summary](docs/research/self-hosted-real-use-case-evaluation-2026-09-07.md).
-
-Installation location, checks and operating instructions are recorded in the
-[local installation record](docs/architecture/dify-local-installation-2026-09-02.md).
-The owner's latest clarification after consulting the
-instructor is recorded in
-[`Current architecture direction`](docs/architecture/current-direction-2026-09-02.md).
-The owner-confirmed business identity is recorded separately in
-[`Tenant and project identity`](docs/architecture/tenant-project-boundary-2026-09-03.md).
-
-- **Dify self-hosted and knowledge/files stored on the owner's computer**, acting as
-  the project server.
-- **Cloud models** for embeddings and answer generation, and reranking if selected.
-- **One Knowledge Retrieval node**, searching across the authorized corpus rather
-  than hard-gating TOR/SDS/ER through source-router flags.
-- **Three Knowledge Bases for the current tenant**, one for each primary file:
-  TOR, SDS, and ER/dbdiagram. All three connect to the same retrieval node.
-- **One tenant is one software project**; `tenant_id` is the sole project-scope
-  identifier and is derived from trusted project membership.
-- **Current tenant:** `tenant_id = 1`, `tenant_name = Nature Footprint`.
-- **Generic prompts**, without file-specific descriptions, routing rules, examples,
-  known questions, expected answers, or exceptions designed to pass particular tests.
-- **Preserve old workflows as historical controls**; the self-hosted main workflow
-  is maintained as a separate dated export.
-
-The previous four-phase Lean Adaptive/local-embedding roadmap is superseded, not
-the current task list. The current export records the models and retrieval
-settings in use. Future model, reranking, ingestion/chunking, and evaluation
-changes require evidence rather than assumptions inherited from historical flows.
-
-The dated research history, raw-evidence locations, current gaps and Git/local
-classification are maintained in the
-[`Research Evidence Inventory`](docs/research/research-evidence-inventory.md).
-Historical scores in that inventory remain attached to their original workflows
-and must not be reported as validation of the self-hosted target.
-
-## Discord and AW5 backend — implementation update 2026-09-30
-
-**Current implementation:** see the [administrator onboarding guide](docs/architecture/admin-onboarding-2026-10-03.md)
-and [2026-10-15 checkpoint](docs/architecture/progress-2026-10-15.md).
-Explicit stable tenant IDs, encrypted backend key storage and backend-fed
-Registry are implemented; older preparation-only statements are historical.
-This does not establish a formal RAG release or multi-tenant isolation.
-
-The owner selected Git `main` as the shared development baseline on 2026-09-30,
-including the self-hosted Dify records, AW5 backend and Discord adapter developed
-on `feature/dify-self-hosted`. Cloud development should start from the updated
-`main` and run the focused offline tests below. Repository promotion does not
-Publish Dify, deploy services, or validate live tenant isolation.
-
-```sh
-python -m unittest tests.test_aw5_backend tests.test_discord_bot
-```
-
-The Discord adapter now calls a separate AW5 backend for current role checks,
-project selection, ticket state, questions and file inventory. The backend owns
-its PostgreSQL registry and Dify credentials, and reads the Published Retrieval
-selection through a restricted Dify database view. The administrator still
-Publishes using Dify's UI; no project JSON or manual user-ID enrollment is needed.
-
-The existing AW5 Compose deployment runs separate PostgreSQL, API and bot
-containers. A live ticket and post-fix answer were confirmed after the Docker
-migration, and the focused offline suite passes 27 tests. This is demo/incident
-evidence, not formal RAG evaluation or cross-project isolation proof. Project B
-and the remaining operational/security work are recorded in the
-[current backend/Discord handoff](docs/architecture/aw5-backend-discord-handoff-2026-09-30.md).
-See [backend setup](aw5_backend/README.md) and [bot operation](discord_bot/README.md).
-The owner-confirmed main Dify workflow below remains a separate evidence track.
-
-## Current main workflow — owner-confirmed 2026-09-06
-
-The owner supplied the Published **AW5-RAG Test** export and promoted it to the
-project's current main development workflow. Its
-[DSL snapshot](dify/exports/aw5-rag-self-hosted-main-2026-09-06.yml) is preserved
-byte-for-byte, with [configuration and status notes](dify/exports/aw5-rag-self-hosted-main-2026-09-06.md).
-It has **5 nodes / 4 edges**:
-`User Input -> Knowledge Retrieval -> Code -> LLM -> Answer`. The single
-retrieval node searches the three current Knowledge Bases. The deterministic
-Code node adds retrieved `document_name` and `dataset_name` values to the content
-seen by the LLM; it does not route or filter by document.
-
-The Published five-node path and source prefixes in the rendered LLM prompts were
-verified. A [targeted five-case diagnostic](docs/research/self-hosted-source-prefix-diagnostic-2026-09-06.md)
-produced 4 pass, 1 partial and 0 fail without timeout or retry. This is
-exploratory evidence, not a formal evaluation, repeatability result, production
-readiness claim or tenant-isolation test. The 2026-09-04 four-node workflow and
-AW5-RAG 1.2 remain previous snapshots.
-
-## Historical implementation and evaluation evidence
-
-These are dated records, not proof of the new design or current live application:
-
-- DS1 Project Concept was submitted.
-- The private Nature Footprint corpus is prepared locally for controlled RAG experiments.
-- The historical Dify source-routed Chatflow has separate TOR, SDS, and ER retrieval paths.
-- The frozen baseline export is `dify/exports/aw5-rag-source-routing-final-2026-08-25.yml`; `dify/exports/CURRENT.md` records its hash and frozen settings.
-- The 2026-08-25 evaluation achieved strict pass `19/19` under the legacy suite; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-25-full-suite-postfix.md`.
-- The final export and its evaluation evidence are committed and available on `origin/main`.
-- The 2026-08-28 Service API regression confirmed the baseline-shaped 9-step graph, two LLM calls, route match `19/19`, and eventual citation boundaries `19/19`. Its strict semantic score was `16/19`, median latency `13.87 s`, and median usage `4,856` tokens per primary case; see `knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-28-baseline-recheck.md`.
-- The 2026-08-27 Route Guard candidate adds conditional retrieval, deterministic route checks, and ER Top K 7. Its final revision has recorded structural checks and a seven-question smoke test, not a full verified regression; it is not promoted.
-- The 2026-08-29 Lean Adaptive v1–v1.4 artifacts and smoke reports are historical source-routing experiments. v1 returned a complete six-table answer in the first `ER-01` smoke but failed the old source-exclusive citation check. Two v1.1 runs had complete answers but zero citations. Their follow-up artifacts and dated results remain available; they are not the next implementation targets.
-- The [v1.4 full report](knowledge_base/nature_footprint/evaluation/evaluation-run-2026-08-29-lean-adaptive-v1.4-full.md) records provisional semantic `19/19` after a provider retry, but explicitly does not claim strict `19/19` citation validation. This historical experiment is not evidence that the new architecture has been tested.
-
-Not yet verified or complete:
-
-- The current main workflow export and its file hash are recorded, and the
-  Published five-node runtime path was independently checked. Only a targeted
-  five-case diagnostic exists; general correctness and repeatability remain
-  unverified, and Dify does not synchronize automatically with Git.
-- The historical baseline result was `19/19`, but the 2026-08-28 regression was `16/19` strict after bounded retry. Treat repeatability as unresolved and do not quote the historical score as a current stability guarantee.
-- The 2026-08-27 candidate is not promoted as the verified correctness baseline; the earlier conditional-gating revision scored `12/19`, while the final Route Guard revision has only a seven-question smoke test so far.
-- Project B is another real organizational software project, not a synthetic
-  scoring fixture. `ISO-01` remains N/A until at least two real project tenants
-  are onboarded and the trusted backend project-tenant filter is tested with
-  owner-approved controlled evidence.
-- A local Discord demo adapter checks the member's current configured Discord
-  project role before sending questions to a tenant-configured Dify Chatflow;
-  manual user-ID registration is no longer required. Its
-  two-project selector has offline unit tests; Project B onboarding, trusted
-  cross-project retrieval isolation, production deployment, and formal adapter
-  evaluation remain unverified.
-
-## Immediate scope
-
-The earlier documentation/current-snapshot update had bounded commit/push
-authorization. The owner subsequently authorized and completed the local Dify
-foundation, created the administrator account, configured model providers,
-installed the signed Gemini Embedding 2 (AW5) plugin, and created the three
-Knowledge Bases. The synthetic embedding pilot and a targeted real-corpus
-diagnostic are recorded. The current self-hosted workflow has a reviewed DSL
-export and verified Published path. It still needs formal validation before its
-general answer quality, repeatability, citations, or tenant isolation can be
-described as verified.
-
-Old evaluation questions/results remain historical evidence. Do not copy their
-answers into prompts or enforce their router/source-exclusive expectations on the
-new architecture. Any revised evaluation protocol requires separate agreement;
-past scores must not be silently rescored.
-
-## Main RAG challenge
-
-The project must optimize three objectives together:
-
-1. answer accurately and only from sufficient evidence;
-2. answer quickly enough for practical interactive use; and
-3. keep model/API cost bounded and observable.
-
-Accuracy and evidence safety are release gates. When two workflows meet the same strict quality bar, prefer the one with lower p50/p95 latency, fewer model calls, fewer tokens, and simpler failure handling. Provider errors and latency spikes must be measured separately from semantic failures so architecture decisions are based on comparable evidence rather than a single aggregate score.
-
-## Repository structure
+- **Discord interface:** Start/project selection, private conversation threads, questions, file listing and close commands.
+- **Project authorization:** current Discord roles are checked on each operation; each AW5 tenant represents one software project.
+- **Dify integration:** the backend reads the Published workflow through restricted database views and validates the selected documents' project metadata.
+- **Evidence processing:** a dynamic document registry, source-scope resolution, hybrid retrieval, deterministic context selection and grounded answer generation.
+- **Local administration:** one-use administrator links, project enrollment, role binding/change and explicit project deregistration.
 
 ```text
-docs/
-  architecture/              Current direction and superseded architecture notes
-  course-requirements/       Official DS1–DS3 submission requirements
-  deliverables/              Submitted and working deliverables
-  research/                  Evidence inventory and publication-oriented records
-dify/                        Dify workflow export instructions/artifacts
-discord_bot/                 Local Discord ticket and Dify demo adapter
-knowledge_base/
-  nature_footprint/          Publishable metadata and evaluation material
+Discord member → Discord bot → AW5 backend → Dify Chatflow → Answer with sources
+                                   │              │
+                            AW5 PostgreSQL    Project Knowledge Bases
+                                   │              │
+                            membership checks  Cloud model APIs
 ```
 
-## Privacy boundary
+The AW5 backend, Discord adapter, administration portal and workflow logic are this project's implementation. Dify is an upstream dependency, installed separately with its own license.
 
-The Nature Footprint source documents and derived text are private project material. They are intentionally excluded from Git. Only metadata, corpus notes, and evaluation questions are version-controlled until publication permission is confirmed.
+## Start here
 
-The GitHub repository must remain **Private** while student information and course deliverables are present.
+- [Installation](docs/installation.md): pinned Dify setup, model/Knowledge Base configuration, Discord and backend setup.
+- [Architecture](docs/architecture.md): request flow, components and project boundaries.
+- [Workflow](dify/README.md): importable template and required configuration.
+- [Limitations](docs/limitations.md): what is implemented, what has been tested, and what remains unverified.
+- [Synthetic demo documents](examples/documents/README.md): public sample requirements, design and schema; no private case-study material is required.
 
-The target keeps persistent knowledge/files locally, but cloud embedding calls send
-document chunks and query text to the provider. Cloud reranking, if selected, sends
-candidate chunks; answer generation sends selected evidence. **Local storage is not
-zero disclosure**, and only-final-Top-K disclosure is not a valid claim for this
-design. Provider selection and new transfers of private material need approval.
+## Inspect and test locally
 
-## Dify workflow
+Python **3.14** is used by the application images. From the repository root:
 
-Running Dify applications are maintained separately from this repository. After authorized meaningful changes, export DSL/YAML under `dify/exports/`; never commit API keys or provider credentials. [`dify/exports/CURRENT.md`](dify/exports/CURRENT.md) identifies the owner-confirmed self-hosted main workflow, the previous AW5-RAG 1.2 snapshot, historical artifacts, and the frozen control separately.
+```sh
+python3.14 -m venv .venv
+.venv/bin/python -m pip install -r aw5_backend/requirements.txt -r discord_bot/requirements.txt
+.venv/bin/python -m unittest discover -s tests
+```
 
-Custom Dify plugins are maintained in separate Git repositories and are not versioned in this repository.
+These are offline tests using fixtures/mocks. They do not need Discord credentials, Dify, Docker or model API calls. Full setup requires Docker Compose, a Discord application/server and a configured cloud model provider; see [installation](docs/installation.md). On Windows, use the equivalent Python executable inside `.venv/Scripts/` or follow the shell commands under WSL.
 
-## Discord demo adapter
+## Repository layout
 
-The local Discord bot accepts questions in private tickets and forwards them to
-the configured Dify Chatflow after checking the member's current project role. See
-[its setup guide](discord_bot/README.md) and the
-[dated implementation handoff](docs/architecture/discord-bot-demo-handoff-2026-09-28.md).
+```text
+aw5_backend/       Authorization, project registry, admin portal and Dify clients
+discord_bot/       Discord interface and private-thread adapter
+dify/              Portable Chatflow template and Python Code-node sources
+deploy/            Dify source/version pin and local Compose override
+scripts/           Reproducible setup preparation
+examples/          Synthetic public SDLC documents
+tests/             Offline regression tests
+docs/              Installation, architecture and limitations
+```
 
-### Local administrator onboarding (2026-10-03)
+The public-facing template is derived from the owner-supplied baseline export. It has no connected Knowledge Bases or private plugin dependency. Import it, select your own Knowledge Bases and configure credentials; it is not a ready-to-query hosted service.
 
-`/aw5-admin` opens a private loopback form for admin-selected tenant IDs,
-Dify app/key validation, and existing/new Discord project roles. It uses the
-AW5 PostgreSQL registry, not a project JSON configuration file. Current
-link/session and command registration checks passed; real Project B enrollment
-and cross-project isolation remain unverified. Read the
-[admin onboarding handoff](docs/architecture/admin-onboarding-2026-10-03.md).
+## Data and deployment scope
+
+Dify and persistent data run locally, while embedding/answer APIs may receive document text and queries. Credentials, databases, private documents, local AI instructions and generated output are ignored by Git. AW5 currently targets a **single-host local demonstration**, with its administrator portal bound to loopback. Cross-project isolation has not been established by a controlled two-project end-to-end test.
+
+Third-party software retains its own license. See [Dify's pinned license](https://github.com/langgenius/dify/blob/1.17.0/LICENSE) before redistributing or deploying it. No repository-wide license grant for AW5 is implied by publishing this source.

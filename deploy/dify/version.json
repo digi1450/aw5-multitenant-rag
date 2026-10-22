@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/langgenius/dify.git",
+  "tag": "1.17.0",
+  "commit": "09a855dcef24c0edc7431c46c0cfaa494481daf5",
+  "compose_project": "aw5-dify",
+  "note": "Pins upstream source and its Compose definitions. Upstream infrastructure image tags and cloud model services are not immutable locks. No owner-specific checkout patches are required by this portable setup."
+}

@@ -29,16 +29,19 @@ build/
 /test_*.pdf
 /test_*.html
 
+# Personal AI instructions and local agent configuration stay on the owner's machine.
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.codex/
+.cursor/
+.claude/
+.github/copilot-instructions.md
+*.code-workspace
+
 # Custom Dify plugins are maintained in separate Git repositories.
 /dify/plugins/
 
-# Private Nature Footprint corpus
-# Publication permission has not been established.
-knowledge_base/nature_footprint/sources/
-knowledge_base/nature_footprint/derived/
-
-# Private benchmark gold/evidence excerpts; keep local until privacy review.
-knowledge_base/nature_footprint/evaluation/development-36.csv
-knowledge_base/nature_footprint/evaluation/development-36.json
-knowledge_base/nature_footprint/evaluation/development-36-human-review.csv
-knowledge_base/nature_footprint/evaluation/development-36-human-review.md
+# Local private corpora, provenance and research data.
+/knowledge_base/
